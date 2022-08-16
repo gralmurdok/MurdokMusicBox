@@ -1,9 +1,9 @@
 "use strict";
 //import request from 'request';
-import express from 'express';
-import bodyParser from 'body-parser';
-import axios from 'axios';
-import dotenv from 'dotenv';
+import express from "express";
+import bodyParser from "body-parser";
+import axios from "axios";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -15,12 +15,12 @@ const app = express().use(bodyParser.json());
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
 
 app.get("/", (req, res) => {
-  res.send('hey');
+  res.send("hey");
 });
 
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
-  console.log('ADSDASDAS')
+  console.log("ADSDASDAS");
   // Parse the request body from the POST
   let body = req.body;
 
@@ -65,7 +65,7 @@ app.post("/webhook", (req, res) => {
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
 // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
 app.get("/webhook", (req, res) => {
-  console.log('ADSDASDAS GET')
+  console.log("ADSDASDAS GET");
   /**
    * UPDATE YOUR VERIFY TOKEN
    *This will be the Verify Token value when you set up webhook
@@ -91,3 +91,37 @@ app.get("/webhook", (req, res) => {
   }
 });
 
+const redirect_uri = "http://localhost:3000/callback";
+
+app.get("/spotifyLogin", (req, res) => {
+  const scope = [""];
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: process.env.CLIENT_ID as string,
+    scope: scope.join(" "),
+    redirect_uri,
+  }).toString();
+  //res.send(`<a href="https://facebook.com">Login with Spotify</a>`);
+  res.redirect("https://accounts.spotify.com/authorize?" + params);
+});
+
+app.get("/callback", async (req, res) => {
+  const authCredentials = Buffer.from(
+    process.env.CLIENT_ID + ":" + process.env.SECRET_ID
+  ).toString("base64");
+  const code = req.query.code;
+  const authResponse = await axios({
+    method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+    url: "https://accounts.spotify.com/api/token",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${authCredentials}`,
+    },
+    params: {
+      code,
+      grant_type: "authorization_code",
+      redirect_uri,
+    },
+  });
+  res.send("success " + JSON.stringify(authResponse.data, null, 2));
+});
