@@ -4,7 +4,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
-import { queueSong, searchTracks } from './spotify';
+import { queueSong, searchTracks } from "./spotify";
+import { replyBackToUser } from "./whatsapp";
 
 dotenv.config();
 
@@ -12,8 +13,8 @@ const token = process.env.WHATSAPP_TOKEN;
 const app = express().use(bodyParser.json());
 
 let appState = {
-  accessToken: '',
-  refreshToken: '',
+  accessToken: "",
+  refreshToken: "",
   expiresIn: 0,
 };
 
@@ -25,16 +26,7 @@ app.get("/", (req, res) => {
   res.send("hey");
 });
 
-// Accepts POST requests at /webhook endpoint
-app.post("/webhook", (req, res) => {
-  console.log("ADSDASDAS");
-  // Parse the request body from the POST
-  let body = req.body;
-
-  // Check the Incoming webhook message
-  console.log(JSON.stringify(req.body, null, 2));
-
-  // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
+app.post("/webhook", async (req, res) => {
   if (req.body.object) {
     if (
       req.body.entry &&
@@ -47,20 +39,23 @@ app.post("/webhook", (req, res) => {
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
       let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-      axios({
-        method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-        url:
-          "https://graph.facebook.com/v12.0/" +
-          phone_number_id +
-          "/messages?access_token=" +
-          token,
-        data: {
-          messaging_product: "whatsapp",
-          to: from,
-          text: { body: "Ack: " + msg_body },
-        },
-        headers: { "Content-Type": "application/json" },
-      });
+
+      const trackId = msg_body.match(/track\/(\w+)/)?.[1];
+
+      if (trackId) {
+        await queueSong(appState.accessToken, trackId as string);
+      } else {
+        const search = await searchTracks(
+          appState.accessToken,
+          msg_body as string
+        );
+        await replyBackToUser(
+          token as string,
+          phone_number_id,
+          from,
+          search.data.tracks.items[0].id
+        );
+      }
     }
     res.sendStatus(200);
   } else {
@@ -135,18 +130,18 @@ app.get("/callback", async (req, res) => {
     accessToken: authResponse.data.access_token,
     refreshToken: authResponse.data.refresh_token,
     expiresIn: authResponse.data.expires_in,
-  }
+  };
 
   res.send("success " + JSON.stringify(authResponse.data, null, 2));
 });
 
 app.get("/queue", async (req, res) => {
-  res.send("TOKEN " + JSON.stringify(appState, null, 2));
-  await queueSong(appState.accessToken, req.query.trackId as string); 
-})
+  await queueSong(appState.accessToken, req.query.trackId as string);
+  res.send("DONE!");
+});
 
-app.get("/search", async (req, res) => {
-  const search = await searchTracks(appState.accessToken, req.query.searchString as string);
-  console.log(JSON.stringify(search.data.tracks.items, null, 2));
-  res.json(search.data.tracks.items);
-})
+// app.get("/search", async (req, res) => {
+//   const search = await searchTracks(appState.accessToken, req.query.searchString as string);
+//   console.log(JSON.stringify(search.data.tracks.items, null, 2));
+//   res.json(search.data.tracks.items);
+// })
