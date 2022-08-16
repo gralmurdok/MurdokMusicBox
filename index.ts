@@ -98,7 +98,7 @@ app.get("/webhook", (req, res) => {
   }
 });
 
-const redirect_uri = "http://localhost:3000/callback";
+const redirect_uri = `${process.env.HOST}/callback`;
 
 app.get("/spotifyLogin", (req, res) => {
   const scope = ["user-modify-playback-state", "user-read-private"];
@@ -142,7 +142,7 @@ app.get("/callback", async (req, res) => {
 
 app.get("/queue", async (req, res) => {
   res.send("TOKEN " + JSON.stringify(appState, null, 2));
-  await queueSong(appState.accessToken, req.query.trackId as string);
+  await queueSong(appState.accessToken, req.query.trackId as string); 
 })
 
 app.get("/search", async (req, res) => {
