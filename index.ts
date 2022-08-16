@@ -4,11 +4,18 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
+import { queueSong, searchTracks } from './spotify';
 
 dotenv.config();
 
 const token = process.env.WHATSAPP_TOKEN;
 const app = express().use(bodyParser.json());
+
+let appState = {
+  accessToken: '',
+  refreshToken: '',
+  expiresIn: 0,
+};
 
 // Sets server port and logs message on success
 
@@ -94,7 +101,7 @@ app.get("/webhook", (req, res) => {
 const redirect_uri = "http://localhost:3000/callback";
 
 app.get("/spotifyLogin", (req, res) => {
-  const scope = [""];
+  const scope = ["user-modify-playback-state", "user-read-private"];
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.CLIENT_ID as string,
@@ -123,5 +130,23 @@ app.get("/callback", async (req, res) => {
       redirect_uri,
     },
   });
+
+  appState = {
+    accessToken: authResponse.data.access_token,
+    refreshToken: authResponse.data.refresh_token,
+    expiresIn: authResponse.data.expires_in,
+  }
+
   res.send("success " + JSON.stringify(authResponse.data, null, 2));
 });
+
+app.get("/queue", async (req, res) => {
+  res.send("TOKEN " + JSON.stringify(appState, null, 2));
+  await queueSong(appState.accessToken, req.query.trackId as string);
+})
+
+app.get("/search", async (req, res) => {
+  const search = await searchTracks(appState.accessToken, req.query.searchString as string);
+  console.log(JSON.stringify(search.data.tracks.items, null, 2));
+  res.json(search.data.tracks.items);
+})
