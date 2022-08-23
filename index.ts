@@ -4,8 +4,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
-import { handleMusicManagement, queueSong, searchTracks } from "./spotify";
-import { replyMusicBackToUser, replyMessageBackToUser, replyTextMessage } from "./whatsapp";
+import { handleMusicManagement, queueSong } from "./spotify";
+import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages } from "./constants";
 
 dotenv.config();
@@ -40,9 +40,16 @@ app.post("/webhook", async (req, res) => {
       let phone_number_id =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-      let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
+      const message = req.body.entry[0].changes[0].value.messages[0];
+      const messageType = message?.type;
+      const messageBody = message?.text?.body;
+      let trackId: string = ''; 
 
-      const trackId = msg_body.match(/track\/(\w+)/)?.[1];
+      if (messageType === 'interactive') {
+        trackId = message?.interactive.id;
+      } else {
+        trackId = messageBody.match(/track\/(\w+)/)?.[1];
+      }
 
       if (!appState.accessToken) {
         await replyTextMessage(
@@ -53,7 +60,7 @@ app.post("/webhook", async (req, res) => {
         );
         return res.sendStatus(204);
       } else {
-        await handleMusicManagement(token as string, appState.accessToken, phone_number_id, from, msg_body, trackId);
+        await handleMusicManagement(token as string, appState.accessToken, phone_number_id, from, messageBody, trackId);
       }
     }
     res.sendStatus(200);
