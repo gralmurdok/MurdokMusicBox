@@ -10,7 +10,7 @@ function replyMusicBackToUser(
   const songsList: Song[] = tracks.map((track) => ({
     trackId: track.id,
     name: track.name.substring(0, 20),
-  }));
+  })).slice(0, 3);
 
   return replyMessageBackToUser(whatsappToken, phoneNumberId, interactiveMessage(
     from,
