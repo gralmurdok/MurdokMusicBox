@@ -1,4 +1,5 @@
 import axios from "axios";
+import { replyMessageBackToUser, replyMusicBackToUser } from "./whatsapp";
 
 function play(token: string) {
   return axios({
@@ -26,7 +27,7 @@ function queueSong(token: string, trackId: string) {
 function searchTracks(token: string, searchString: string) {
   const params = new URLSearchParams({
     q: searchString,
-    type: 'track',
+    type: "track",
   }).toString();
   return axios({
     method: "GET", // Required, HTTP method, a string, e.g. POST, GET
@@ -38,4 +39,35 @@ function searchTracks(token: string, searchString: string) {
   });
 }
 
-export { play, queueSong, searchTracks };
+async function handleMusicManagement(
+  token: string,
+  phoneNumberId: string,
+  from: string,
+  whatsappMessage: string,
+  trackId: string
+) {
+  try {
+    if (token && trackId) {
+      if (trackId) {
+        await queueSong(token, trackId as string);
+      } else {
+        const search = await searchTracks(token, whatsappMessage);
+        await replyMusicBackToUser(
+          token,
+          phoneNumberId,
+          from,
+          search.data.tracks.items[0].id
+        );
+      }
+    }
+  } catch (err) {
+    await replyMessageBackToUser(
+      token,
+      phoneNumberId,
+      from,
+      "algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
+    );
+  }
+}
+
+export { play, queueSong, searchTracks, handleMusicManagement };

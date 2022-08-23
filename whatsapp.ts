@@ -1,10 +1,19 @@
 import axios from "axios";
 
-function replyBackToUser(
+function replyMusicBackToUser(
   whatsappToken: string,
   phoneNumberId: string,
   from: string,
   trackId: string
+) {
+  return replyMessageBackToUser(whatsappToken, phoneNumberId, from, `${process.env.HOST}/queue?trackId=${trackId}`);
+}
+
+function replyMessageBackToUser(
+  whatsappToken: string,
+  phoneNumberId: string,
+  from: string,
+  message: string
 ) {
   return axios({
     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
@@ -16,10 +25,10 @@ function replyBackToUser(
     data: {
       messaging_product: "whatsapp",
       to: from,
-      text: { body: `${process.env.HOST}/queue?trackId=${trackId}` },
+      text: { body: message },
     },
     headers: { "Content-Type": "application/json" },
   });
 }
 
-export { replyBackToUser };
+export { replyMusicBackToUser, replyMessageBackToUser };

@@ -4,8 +4,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
-import { queueSong, searchTracks } from "./spotify";
-import { replyBackToUser } from "./whatsapp";
+import { handleMusicManagement, queueSong, searchTracks } from "./spotify";
+import { replyMusicBackToUser, replyMessageBackToUser } from "./whatsapp";
 
 dotenv.config();
 
@@ -42,19 +42,16 @@ app.post("/webhook", async (req, res) => {
 
       const trackId = msg_body.match(/track\/(\w+)/)?.[1];
 
-      if (trackId) {
-        await queueSong(appState.accessToken, trackId as string);
-      } else {
-        const search = await searchTracks(
-          appState.accessToken,
-          msg_body as string
-        );
-        await replyBackToUser(
+      if (!appState.accessToken) {
+        await replyMessageBackToUser(
           token as string,
           phone_number_id,
           from,
-          search.data.tracks.items[0].id
+          'No habilitado, por favor acercate a la barra para solicitar la activacion del servicio de musica'
         );
+        return res.sendStatus(204);
+      } else {
+        await handleMusicManagement(appState.accessToken, phone_number_id, from, msg_body, trackId);
       }
     }
     res.sendStatus(200);
@@ -67,7 +64,6 @@ app.post("/webhook", async (req, res) => {
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
 // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
 app.get("/webhook", (req, res) => {
-  console.log("ADSDASDAS GET");
   /**
    * UPDATE YOUR VERIFY TOKEN
    *This will be the Verify Token value when you set up webhook
