@@ -47,18 +47,16 @@ async function handleMusicManagement(
   trackId: string
 ) {
   try {
-    if (token && trackId) {
-      if (trackId) {
-        await queueSong(token, trackId as string);
-      } else {
-        const search = await searchTracks(token, whatsappMessage);
-        await replyMusicBackToUser(
-          token,
-          phoneNumberId,
-          from,
-          search.data.tracks.items[0].id
-        );
-      }
+    if (trackId) {
+      await queueSong(token, trackId as string);
+    } else {
+      const search = await searchTracks(token, whatsappMessage);
+      await replyMusicBackToUser(
+        token,
+        phoneNumberId,
+        from,
+        search.data.tracks.items[0].id
+      );
     }
   } catch (err) {
     await replyMessageBackToUser(
