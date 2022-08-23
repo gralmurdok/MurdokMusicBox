@@ -53,7 +53,7 @@ app.post("/webhook", async (req, res) => {
         );
         return res.sendStatus(204);
       } else {
-        await handleMusicManagement(appState.accessToken, phone_number_id, from, msg_body, trackId);
+        await handleMusicManagement(token as string, appState.accessToken, phone_number_id, from, msg_body, trackId);
       }
     }
     res.sendStatus(200);

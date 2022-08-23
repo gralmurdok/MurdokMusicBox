@@ -40,7 +40,8 @@ function searchTracks(token: string, searchString: string) {
 }
 
 async function handleMusicManagement(
-  token: string,
+  whatsappToken: string,
+  spotifyToken: string,
   phoneNumberId: string,
   from: string,
   whatsappMessage: string,
@@ -48,12 +49,12 @@ async function handleMusicManagement(
 ) {
   try {
     if (trackId) {
-      await queueSong(token, trackId as string);
+      await queueSong(spotifyToken, trackId as string);
     } else {
-      const search = await searchTracks(token, whatsappMessage);
+      const search = await searchTracks(spotifyToken, whatsappMessage);
       console.log(search.data.tracks.items);
       await replyMusicBackToUser(
-        token,
+        whatsappToken,
         phoneNumberId,
         from,
         search.data.tracks.items
@@ -62,7 +63,7 @@ async function handleMusicManagement(
   } catch (err) {
     console.log(err);
     await replyTextMessage(
-      token,
+      whatsappToken,
       phoneNumberId,
       from,
       "algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
