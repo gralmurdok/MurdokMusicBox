@@ -45,7 +45,7 @@ app.post("/webhook", async (req, res) => {
       const messageBody = message?.text?.body;
       const whatsappToken = process.env.WHATSAPP_TOKEN as string;
       
-      let trackId: string = messageBody.match(/track\/(\w+)/)?.[1];
+      let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
 
       const apiParams: APIParams = {
         whatsappToken,
