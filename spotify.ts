@@ -51,14 +51,16 @@ async function handleMusicManagement(
       await queueSong(token, trackId as string);
     } else {
       const search = await searchTracks(token, whatsappMessage);
-      await replyMusicBackToUser(
-        token,
-        phoneNumberId,
-        from,
-        search.data.tracks.items
-      );
+      console.log(search.data.tracks.items);
+      // await replyMusicBackToUser(
+      //   token,
+      //   phoneNumberId,
+      //   from,
+      //   search.data.tracks.items
+      // );
     }
   } catch (err) {
+    console.log(err);
     await replyTextMessage(
       token,
       phoneNumberId,
