@@ -6,9 +6,9 @@ function replyMusicBackToUser(
   apiParams: APIParams,
   tracks: any[],
 ) {
-  const songsList: Song[] = tracks.map((track) => ({
+  const songsList: Song[] = tracks.map((track, index) => ({
     trackId: track.id,
-    name: track.name.substring(0, 20),
+    name: `${index}. ${track.name.substring(0, 20)}`,
   })).slice(0, 3);
 
   return replyMessageBackToUser(apiParams, interactiveMessage(
