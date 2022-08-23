@@ -62,7 +62,7 @@ app.post("/webhook", async (req, res) => {
         return res.sendStatus(204);
       } else {
         if (messageType === 'interactive' || trackId) {
-          trackId = message?.interactive.button_reply.id;
+          trackId = trackId ?? message?.interactive.button_reply.id;
           await handleQueueSong(apiParams, trackId)
         } else {
           await handleMusicSearchViaWhatsappMessage(apiParams, messageBody);
