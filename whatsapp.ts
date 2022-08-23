@@ -8,7 +8,7 @@ function replyMusicBackToUser(
 ) {
   const songsList: Song[] = tracks.map((track, index) => ({
     trackId: track.id,
-    name: `${index}. ${track.name.substring(0, 20)}`,
+    name: `${index}. ${track.name}`.substring(0, 20),
   })).slice(0, 3);
 
   return replyMessageBackToUser(apiParams, interactiveMessage(
