@@ -52,12 +52,12 @@ async function handleMusicManagement(
     } else {
       const search = await searchTracks(token, whatsappMessage);
       console.log(search.data.tracks.items);
-      // await replyMusicBackToUser(
-      //   token,
-      //   phoneNumberId,
-      //   from,
-      //   search.data.tracks.items
-      // );
+      await replyMusicBackToUser(
+        token,
+        phoneNumberId,
+        from,
+        search.data.tracks.items
+      );
     }
   } catch (err) {
     console.log(err);
