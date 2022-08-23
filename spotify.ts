@@ -1,5 +1,5 @@
 import axios from "axios";
-import { replyMessageBackToUser, replyMusicBackToUser } from "./whatsapp";
+import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 function play(token: string) {
   return axios({
@@ -55,11 +55,11 @@ async function handleMusicManagement(
         token,
         phoneNumberId,
         from,
-        search.data.tracks.items[0].id
+        search.data.tracks.items
       );
     }
   } catch (err) {
-    await replyMessageBackToUser(
+    await replyTextMessage(
       token,
       phoneNumberId,
       from,

@@ -5,7 +5,8 @@ import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
 import { handleMusicManagement, queueSong, searchTracks } from "./spotify";
-import { replyMusicBackToUser, replyMessageBackToUser } from "./whatsapp";
+import { replyMusicBackToUser, replyMessageBackToUser, replyTextMessage } from "./whatsapp";
+import { ErrorMessages } from "./constants";
 
 dotenv.config();
 
@@ -44,11 +45,11 @@ app.post("/webhook", async (req, res) => {
       const trackId = msg_body.match(/track\/(\w+)/)?.[1];
 
       if (!appState.accessToken) {
-        await replyMessageBackToUser(
+        await replyTextMessage(
           token as string,
           phone_number_id,
           from,
-          'No habilitado, por favor acercate a la barra para solicitar la activacion del servicio de musica'
+          ErrorMessages.NOT_READY
         );
         return res.sendStatus(204);
       } else {
