@@ -1,5 +1,4 @@
 import axios from "axios";
-import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 function play(token: string) {
   return axios({
@@ -13,7 +12,6 @@ function play(token: string) {
 }
 
 function queueSong(token: string, trackId: string) {
-  console.log(token);
   return axios({
     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
     url: `https://api.spotify.com/v1/me/player/queue?uri=spotify:track:${trackId}`,
@@ -39,36 +37,4 @@ function searchTracks(token: string, searchString: string) {
   });
 }
 
-async function handleMusicManagement(
-  whatsappToken: string,
-  spotifyToken: string,
-  phoneNumberId: string,
-  from: string,
-  whatsappMessage: string,
-  trackId: string
-) {
-  try {
-    if (trackId) {
-      await queueSong(spotifyToken, trackId as string);
-    } else {
-      const search = await searchTracks(spotifyToken, whatsappMessage);
-      console.log(search.data.tracks.items);
-      await replyMusicBackToUser(
-        whatsappToken,
-        phoneNumberId,
-        from,
-        search.data.tracks.items
-      );
-    }
-  } catch (err) {
-    console.log(err);
-    await replyTextMessage(
-      whatsappToken,
-      phoneNumberId,
-      from,
-      "algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
-    );
-  }
-}
-
-export { play, queueSong, searchTracks, handleMusicManagement };
+export { play, queueSong, searchTracks };

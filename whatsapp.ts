@@ -1,10 +1,9 @@
 import axios from "axios";
-import { interactiveMessage, simpleMessage, Song, WhatsappMessage } from "./whatsappMessageBuilder";
+import { APIParams, Song, WhatsappMessage } from "./types";
+import { interactiveMessage, simpleMessage } from "./whatsappMessageBuilder";
 
 function replyMusicBackToUser(
-  whatsappToken: string,
-  phoneNumberId: string,
-  from: string,
+  apiParams: APIParams,
   tracks: any[],
 ) {
   const songsList: Song[] = tracks.map((track) => ({
@@ -12,8 +11,8 @@ function replyMusicBackToUser(
     name: track.name.substring(0, 20),
   })).slice(0, 3);
 
-  return replyMessageBackToUser(whatsappToken, phoneNumberId, interactiveMessage(
-    from,
+  return replyMessageBackToUser(apiParams, interactiveMessage(
+    apiParams.toPhoneNumber,
     'elige una cancion',
     'resultados',
     songsList,
@@ -21,26 +20,23 @@ function replyMusicBackToUser(
 }
 
 function replyTextMessage(  
-  whatsappToken: string,
-  phoneNumberId: string,
-  from: string,
+  apiParams: APIParams,
   message: string
 ) {
-  return replyMessageBackToUser(whatsappToken, phoneNumberId, simpleMessage(from, message));
+  return replyMessageBackToUser(apiParams, simpleMessage(apiParams.toPhoneNumber, message));
 }
 
 function replyMessageBackToUser(
-  whatsappToken: string,
-  phoneNumberId: string,
+  apiParams: APIParams,
   data: WhatsappMessage,
 ) {
   return axios({
     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
     url:
       "https://graph.facebook.com/v12.0/" +
-      phoneNumberId +
+      apiParams.phoneNumberId +
       "/messages?access_token=" +
-      whatsappToken,
+      apiParams.whatsappToken,
     data,
     headers: { "Content-Type": "application/json" },
   });

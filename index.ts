@@ -4,14 +4,13 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
-import { handleMusicManagement, queueSong } from "./spotify";
+import { queueSong } from "./spotify";
 import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages } from "./constants";
 import { handleMusicSearchViaWhatsappMessage, handleQueueSong } from "./core";
+import { APIParams } from "./types";
 
 dotenv.config();
-
-const token = process.env.WHATSAPP_TOKEN;
 const app = express().use(bodyParser.json());
 
 let appState = {
@@ -38,28 +37,35 @@ app.post("/webhook", async (req, res) => {
       req.body.entry[0].changes[0].value.messages[0]
     ) {
       console.log(JSON.stringify(req.body.entry, null, 2));
-      let phone_number_id =
+      const phoneNumberId =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
-      let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+      const toPhoneNumber = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
       const message = req.body.entry[0].changes[0].value.messages[0];
       const messageType = message?.type;
       const messageBody = message?.text?.body;
-      let trackId: string = '';
+      const whatsappToken = process.env.WHATSAPP_TOKEN as string;
+      
+      let trackId: string = messageBody.match(/track\/(\w+)/)?.[1];
 
-      if (!appState.accessToken) {
+      const apiParams: APIParams = {
+        whatsappToken,
+        spotifyToken: appState.accessToken,
+        phoneNumberId,
+        toPhoneNumber,
+      }
+
+      if (!apiParams.spotifyToken) {
         await replyTextMessage(
-          token as string,
-          phone_number_id,
-          from,
+          apiParams,
           ErrorMessages.NOT_READY
         );
         return res.sendStatus(204);
       } else {
-        if (messageType === 'interactive') {
+        if (messageType === 'interactive' || trackId) {
           trackId = message?.interactive.button_reply.id;
-          await handleQueueSong(token as string, appState.accessToken, phone_number_id, from, trackId)
+          await handleQueueSong(apiParams, trackId)
         } else {
-          await handleMusicSearchViaWhatsappMessage(token as string, appState.accessToken, phone_number_id, from, messageBody);
+          await handleMusicSearchViaWhatsappMessage(apiParams, messageBody);
         }
       }
     }

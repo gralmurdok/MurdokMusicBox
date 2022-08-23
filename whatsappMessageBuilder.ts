@@ -1,47 +1,4 @@
-interface Song {
-  name: string;
-  trackId: string;
-}
-
-interface Button {
-  type: "reply";
-  reply: {
-    id: string;
-    title: string;
-  };
-}
-
-interface WhatsappMessage {
-  messaging_product: "whatsapp";
-  to: string;
-}
-
-interface TextMessage extends WhatsappMessage {
-  text: {
-    body: string;
-  };
-}
-
-interface InteractiveMessage extends WhatsappMessage {
-  recipient_type: "individual";
-  type: "interactive";
-  interactive: {
-    type: "button";
-    header: {
-      type: "text";
-      text: string;
-    };
-    body: {
-      text: string;
-    };
-    footer: {
-      text: "The Crossroads Loja";
-    };
-    action: {
-      buttons: Button[]
-    };
-  };
-}
+import { InteractiveMessage, ReplyButton, Song, TextMessage } from "./types";
 
 function simpleMessage(from: string, message: string): TextMessage {
   return {
@@ -52,7 +9,7 @@ function simpleMessage(from: string, message: string): TextMessage {
 }
 
 function interactiveMessage(from: string, title: string, message: string, actions: Song[]): InteractiveMessage {
-  const buttons: Button[] = actions.map((song) => ({
+  const buttons: ReplyButton[] = actions.map((song) => ({
     type: "reply",
     reply: {
       id: song.trackId,
@@ -84,5 +41,4 @@ function interactiveMessage(from: string, title: string, message: string, action
   };
 }
 
-export type { TextMessage, WhatsappMessage, Song };
 export { simpleMessage, interactiveMessage };
