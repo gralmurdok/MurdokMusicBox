@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { handleMusicManagement, queueSong } from "./spotify";
 import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages } from "./constants";
+import { handleMusicSearchViaWhatsappMessage, handleQueueSong } from "./core";
 
 dotenv.config();
 
@@ -43,13 +44,7 @@ app.post("/webhook", async (req, res) => {
       const message = req.body.entry[0].changes[0].value.messages[0];
       const messageType = message?.type;
       const messageBody = message?.text?.body;
-      let trackId: string = ''; 
-
-      if (messageType === 'interactive') {
-        trackId = message?.interactive.id;
-      } else {
-        trackId = messageBody.match(/track\/(\w+)/)?.[1];
-      }
+      let trackId: string = '';
 
       if (!appState.accessToken) {
         await replyTextMessage(
@@ -61,6 +56,12 @@ app.post("/webhook", async (req, res) => {
         return res.sendStatus(204);
       } else {
         await handleMusicManagement(token as string, appState.accessToken, phone_number_id, from, messageBody, trackId);
+        if (messageType === 'interactive') {
+          trackId = message?.interactive.id;
+          await handleQueueSong(token as string, appState.accessToken, phone_number_id, from, trackId)
+        } else {
+          await handleMusicSearchViaWhatsappMessage(token as string, appState.accessToken, phone_number_id, from, messageBody);
+        }
       }
     }
     res.sendStatus(200);
