@@ -1,4 +1,5 @@
 import { queueSong, searchTracks } from "./spotify";
+import { store } from "./store";
 import { APIParams } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
@@ -27,11 +28,23 @@ async function handleQueueSong(
   trackId: string,
 ) {
   try {
-    await queueSong(apiParams.spotifyToken, trackId);
-    await replyTextMessage(
-      apiParams,
-      "tu cancion esta en la cola"
-    );
+    if (store.users[apiParams.toPhoneNumber]?.nextAvailableSongTimestamp > Date.now()) {
+      await replyTextMessage(
+        apiParams,
+        "solo puedes pedir una cancion cada 5 minutos"
+      );
+    } else {
+      await queueSong(apiParams.spotifyToken, trackId);
+      await replyTextMessage(
+        apiParams,
+        "tu cancion esta en la cola"
+      );
+      store.users[apiParams.toPhoneNumber] = {
+        name: '',
+        phoneNumber: apiParams.toPhoneNumber,
+        nextAvailableSongTimestamp: Date.now() + 5000,
+      };
+    }
   } catch (err) {
     console.log(err);
     await replyTextMessage(

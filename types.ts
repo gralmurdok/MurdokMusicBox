@@ -50,4 +50,10 @@ interface InteractiveMessage extends WhatsappMessage {
   };
 }
 
-export type { APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton };
+interface CrossRoadsUser {
+  name: string;
+  phoneNumber: string;
+  nextAvailableSongTimestamp: number;
+}
+
+export type { APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, CrossRoadsUser };
