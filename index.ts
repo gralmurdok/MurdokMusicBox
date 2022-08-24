@@ -40,7 +40,7 @@ app.post("/webhook", async (req, res) => {
       const phoneNumberId =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       
-      const contact = req.body.entry[0].changes[0].value.contact[0];
+      const contact = req.body.entry[0].changes[0].value.contacts[0];
       const message = req.body.entry[0].changes[0].value.messages[0];
       const messageType = message?.type;
       const messageBody = message?.text?.body;
