@@ -33,6 +33,7 @@ async function handleQueueSong(
         apiParams,
         "solo puedes pedir una cancion cada 5 minutos"
       );
+      console.log(store.users);
     } else {
       await queueSong(apiParams.spotifyToken, trackId);
       await replyTextMessage(
@@ -40,9 +41,9 @@ async function handleQueueSong(
         "tu cancion esta en la cola"
       );
       store.users[apiParams.toPhoneNumber] = {
-        name: '',
+        name: apiParams.requesterName,
         phoneNumber: apiParams.toPhoneNumber,
-        nextAvailableSongTimestamp: Date.now() + 5000,
+        nextAvailableSongTimestamp: Date.now() + 300 * 1000,
       };
     }
   } catch (err) {

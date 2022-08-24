@@ -1,4 +1,5 @@
 interface APIParams {
+  requesterName: string,
   whatsappToken: string,
   spotifyToken: string,
   phoneNumberId: string,

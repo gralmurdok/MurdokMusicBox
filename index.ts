@@ -39,11 +39,14 @@ app.post("/webhook", async (req, res) => {
       console.log(JSON.stringify(req.body.entry, null, 2));
       const phoneNumberId =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
-      const toPhoneNumber = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+      
+      const contact = req.body.entry[0].changes[0].value.contact[0];
       const message = req.body.entry[0].changes[0].value.messages[0];
       const messageType = message?.type;
       const messageBody = message?.text?.body;
       const whatsappToken = process.env.WHATSAPP_TOKEN as string;
+      const toPhoneNumber = message.from; // extract the phone number from the webhook payload
+      const requesterName = contact.profile.name;
       
       let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
 
@@ -52,6 +55,7 @@ app.post("/webhook", async (req, res) => {
         spotifyToken: appState.accessToken,
         phoneNumberId,
         toPhoneNumber,
+        requesterName,
       }
 
       if (!apiParams.spotifyToken) {
