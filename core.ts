@@ -5,10 +5,9 @@ import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleMusicSearchViaWhatsappMessage(
   apiParams: APIParams,
-  whatsappMessage: string,
 ) {
   try {
-    const search = await searchTracks(apiParams.spotifyToken, whatsappMessage);
+    const search = await searchTracks(apiParams.spotifyToken, apiParams.messageBody);
     console.log(JSON.stringify(search.data.tracks.items[0], null, 2));
     await replyMusicBackToUser(
       apiParams,

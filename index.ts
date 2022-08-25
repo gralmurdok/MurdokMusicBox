@@ -51,6 +51,7 @@ app.post("/webhook", async (req, res) => {
       let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
 
       const apiParams: APIParams = {
+        messageBody,
         whatsappToken,
         spotifyToken: appState.accessToken,
         phoneNumberId,

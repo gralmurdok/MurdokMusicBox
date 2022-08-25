@@ -68,7 +68,7 @@ function interactiveListMessage(from: string, title: string, message: string, ac
         text: message,
       },
       action: {
-        button: "Lista de canciones",
+        button: "Ver resultados",
         sections
       },
     },

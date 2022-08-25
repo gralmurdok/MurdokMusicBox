@@ -10,12 +10,12 @@ function replyMusicBackToUser(
     trackId: track.id,
     name: track.name.substring(0, 24),
     artist: track.artists[0].name
-  })).slice(0, 3);
+  })).slice(0, 5);
 
   return replyMessageBackToUser(apiParams, interactiveListMessage(
     apiParams.toPhoneNumber,
     'Resultados de tu busqueda',
-    songsList.map(song => song.name).join(','),
+    `hemos encontrado ${songsList.length} canciones que coinciden con: ${apiParams.messageBody}`,
     songsList,
   ));
 }
