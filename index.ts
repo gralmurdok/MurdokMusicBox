@@ -73,7 +73,7 @@ app.post("/webhook", async (req, res) => {
           
           await handleQueueSong(apiParams, trackId)
         } else {
-          await handleMusicSearchViaWhatsappMessage(apiParams, messageBody);
+          await handleMusicSearchViaWhatsappMessage(apiParams);
         }
       }
     }
