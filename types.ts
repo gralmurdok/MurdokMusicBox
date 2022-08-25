@@ -9,6 +9,7 @@ interface APIParams {
 interface Song {
   name: string;
   trackId: string;
+  artist: string;
 }
 
 interface ReplyButton {
@@ -17,6 +18,17 @@ interface ReplyButton {
     id: string;
     title: string;
   };
+}
+
+interface SectionRow {
+  id: string,
+  title: string,
+  description: string,
+}
+
+interface Section {
+  title: string,
+  rows: SectionRow[]
 }
 
 interface WhatsappMessage {
@@ -34,19 +46,21 @@ interface InteractiveMessage extends WhatsappMessage {
   recipient_type: "individual";
   type: "interactive";
   interactive: {
-    type: "button";
-    header: {
+    type: "button" | "list";
+    header?: {
       type: "text";
       text: string;
     };
     body: {
       text: string;
     };
-    footer: {
+    footer?: {
       text: "The Crossroads Loja";
     };
     action: {
-      buttons: ReplyButton[]
+      button?: string,
+      buttons?: ReplyButton[],
+      sections?: Section[]
     };
   };
 }
@@ -57,4 +71,4 @@ interface CrossRoadsUser {
   nextAvailableSongTimestamp: number;
 }
 
-export type { APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, CrossRoadsUser };
+export type { APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser };

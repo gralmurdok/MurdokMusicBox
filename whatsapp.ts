@@ -1,20 +1,21 @@
 import axios from "axios";
 import { APIParams, Song, WhatsappMessage } from "./types";
-import { interactiveMessage, simpleMessage } from "./whatsappMessageBuilder";
+import { interactiveListMessage, simpleMessage } from "./whatsappMessageBuilder";
 
 function replyMusicBackToUser(
   apiParams: APIParams,
   tracks: any[],
 ) {
-  const songsList: Song[] = tracks.map((track, index) => ({
+  const songsList: Song[] = tracks.map((track, index): Song => ({
     trackId: track.id,
-    name: `${index}. ${track.name}`.substring(0, 20),
+    name: track.name.substring(0, 24),
+    artist: track.artists[0].name
   })).slice(0, 3);
 
-  return replyMessageBackToUser(apiParams, interactiveMessage(
+  return replyMessageBackToUser(apiParams, interactiveListMessage(
     apiParams.toPhoneNumber,
-    'elige una cancion',
-    'resultados',
+    'Resultados de tu busqueda',
+    songsList.map(song => song.name).join(','),
     songsList,
   ));
 }

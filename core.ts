@@ -9,7 +9,7 @@ async function handleMusicSearchViaWhatsappMessage(
 ) {
   try {
     const search = await searchTracks(apiParams.spotifyToken, whatsappMessage);
-    console.log(search.data.tracks.items);
+    console.log(JSON.stringify(search.data.tracks.items[0], null, 2));
     await replyMusicBackToUser(
       apiParams,
       search.data.tracks.items
