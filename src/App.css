@@ -3,8 +3,12 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 100%;
   pointer-events: none;
+  position: absolute;
+  opacity: 0.4;
+  height: 100%;
+  z-index: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -35,4 +39,58 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.App-content {
+  z-index: 1;
+}
+
+.SongRow {
+  display: flex;
+  border-radius: 5px;
+  background-color: #181818;
+  padding: 25px;
+  min-width: 600px;
+}
+
+.SongRow-song-info {
+  align-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 30px;
+}
+
+.song-name {
+  font-size: calc(25px + 2vmin);
+}
+
+.song-artist {
+  font-size: calc(20px + 2vmin);
+}
+
+.song-requester {
+  margin-bottom: 50px;
+  font-size: calc(15px + 2vmin);
+}
+
+.SongRow-image {
+  height: 200px;
+  width: 200px;
+}
+
+.playing-now {
+  
+}
+
+.code-container {
+  display: flex;
+  justify-content: center;
+}
+
+.code-text {
+  width: 200px;
+  margin-top: 50px;
+  border-radius: 5px;
+  background-color: #181818;
 }

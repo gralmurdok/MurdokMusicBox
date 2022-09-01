@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -14,6 +14,8 @@ function App() {
     currentSong: {
       name: '',
       artist: '',
+      imgUrl: '',
+      requesterName: '',
     }
   };
   const refreshTimeInMiliseconds = 5000;
@@ -57,14 +59,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <div>
-          <span>Sonando ahora:</span>
-          <SongRow name={appStatus.currentSong.name} artist={appStatus.currentSong.artist} />
+        <div className='App-content'>
+          <div>
+            <div className='playing-now'>Sonando ahora:</div>
+            <div className='song-requester'>by {appStatus.currentSong.requesterName}</div>
+            <SongRow name={appStatus.currentSong.name} artist={appStatus.currentSong.artist} imgUrl={appStatus.currentSong.imgUrl} />
+          </div>
+          <div className='code-container'>
+            <div className='code-text'>{appStatus.permitToken.token}</div>
+          </div>
+          {renderAuthLink()}
         </div>
-        <p>
-          {appStatus.permitToken.token}
-        </p>
-        {renderAuthLink()}
       </header>
     </div>
   );

@@ -79,6 +79,8 @@ interface PermitToken {
 }
 
 interface PlayingSong extends Song {
+  requesterName: string;
+  imgUrl: string;
   endsAt: number;
 }
 

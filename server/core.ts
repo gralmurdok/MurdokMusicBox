@@ -1,6 +1,6 @@
 import { getCurrentSong, queueSong, refreshToken, searchTracks } from "./spotify";
 import { store } from "./store";
-import { APIParams } from "./types";
+import { APIParams, PlayingSong } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
@@ -13,6 +13,8 @@ async function handleGetCurrentSong() {
       name: currentSong.data.item.name,
       artist: currentSong.data.item.artists[0].name,
       endsAt: Date.now() + remainingTime,
+      imgUrl: currentSong.data.item.album.images[0].url,
+      requesterName: 'Silvana Robles',
     }
   } catch(err) {
     console.log(err);
@@ -21,10 +23,12 @@ async function handleGetCurrentSong() {
       readyToFetchCurrentSong: false,
     }
     return {
-      trackId: 'error',
-      name: 'error',
-      artist: 'error',
-      endsAt: 0
+      trackId: 'Not playing',
+      name: 'Not playing',
+      artist: 'Not playing',
+      endsAt: 0,
+      requesterName: '',
+      imgUrl: '',
     }
   }
 }

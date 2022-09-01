@@ -23,6 +23,8 @@ class Store {
         trackId: '',
         artist: '',
         endsAt: 0,
+        requesterName: '',
+        imgUrl: ''
       },
       readyToFetchCurrentSong: true,
     }
