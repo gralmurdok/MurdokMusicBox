@@ -130,7 +130,7 @@ app.get("/webhook", (req, res) => {
 const redirect_uri = `${process.env.HOST}/callback`;
 
 app.get("/spotify-login", (req, res) => {
-  const scope = ["user-modify-playback-state", "user-read-private"];
+  const scope = ["user-modify-playback-state", "user-read-private", "user-read-currently-playing"];
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.CLIENT_ID as string,
