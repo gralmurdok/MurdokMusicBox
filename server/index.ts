@@ -24,7 +24,9 @@ app.get("/", (req, res) => {
 });
 
 app.get(Routes.APP_STATUS, (req, res) => {
-  updateAppStatus();
+  if (store.auth.accessToken) {
+    updateAppStatus();
+  }
   res.json(store.status);
 });
 
