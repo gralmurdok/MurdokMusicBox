@@ -4,27 +4,28 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
-import { queueSong } from "./spotify";
 import { replyTextMessage } from "./whatsapp";
-import { ErrorMessages } from "./constants";
-import { handleMusicSearchViaWhatsappMessage, handleQueueSong } from "./core";
+import { ErrorMessages, Routes } from "./constants";
+import { authorizeUser, determineOperation, getCurrentUser, handleMusicSearchViaWhatsappMessage, handleQueueSong, registerUser, updateAppStatus } from "./core";
 import { APIParams } from "./types";
+import path from "path";
+import { store } from "./store";
 
 dotenv.config();
-const app = express().use(bodyParser.json());
-
-let appState = {
-  accessToken: "",
-  refreshToken: "",
-  expiresIn: 0,
-};
+console.log(path.join(__dirname, 'build'));
+const app = express().use(bodyParser.json()).use(express.static(path.join(__dirname, 'build')));
 
 // Sets server port and logs message on success
 
-app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
+app.listen(process.env.PORT || 1337, () => console.log("webhook is listening ", process.env.PORT));
 
 app.get("/", (req, res) => {
-  res.send("hey");
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+app.get(Routes.APP_STATUS, (req, res) => {
+  updateAppStatus();
+  res.json(store.status);
 });
 
 app.post("/webhook", async (req, res) => {
@@ -53,29 +54,41 @@ app.post("/webhook", async (req, res) => {
       const apiParams: APIParams = {
         messageBody,
         whatsappToken,
-        spotifyToken: appState.accessToken,
+        spotifyToken: store.auth.accessToken,
         phoneNumberId,
         toPhoneNumber,
         requesterName,
       }
 
-      if (!apiParams.spotifyToken) {
-        await replyTextMessage(
-          apiParams,
-          ErrorMessages.NOT_READY
-        );
-        return res.sendStatus(204);
-      } else {
-        if (messageType === 'interactive' || trackId) {
-          if (message?.interactive?.type) {
-            trackId = message?.interactive[message?.interactive.type].id;
+      const operation = determineOperation(apiParams);
+
+      switch(operation) {
+        case 'register':
+          registerUser(apiParams);
+          break;
+        case 'authorizeUser':
+          authorizeUser(apiParams);
+          break;
+        case 'receiptSongs':
+          if (!apiParams.spotifyToken) {
+            await replyTextMessage(
+              apiParams,
+              ErrorMessages.NOT_READY
+            );
+            return res.sendStatus(204);
+          } else {
+            if (messageType === 'interactive' || trackId) {
+              if (message?.interactive?.type) {
+                trackId = message?.interactive[message?.interactive.type].id;
+              }
+              await handleQueueSong(apiParams, trackId)
+            } else {
+              await handleMusicSearchViaWhatsappMessage(apiParams);
+            }
           }
-          
-          await handleQueueSong(apiParams, trackId)
-        } else {
-          await handleMusicSearchViaWhatsappMessage(apiParams);
-        }
       }
+
+      console.log(operation, getCurrentUser(apiParams))
     }
     res.sendStatus(200);
   } else {
@@ -114,7 +127,7 @@ app.get("/webhook", (req, res) => {
 
 const redirect_uri = `${process.env.HOST}/callback`;
 
-app.get("/spotifyLogin", (req, res) => {
+app.get("/spotify-login", (req, res) => {
   const scope = ["user-modify-playback-state", "user-read-private"];
   const params = new URLSearchParams({
     response_type: "code",
@@ -145,22 +158,11 @@ app.get("/callback", async (req, res) => {
     },
   });
 
-  appState = {
+  store.auth = {
     accessToken: authResponse.data.access_token,
     refreshToken: authResponse.data.refresh_token,
     expiresIn: authResponse.data.expires_in,
   };
 
-  res.send("success " + JSON.stringify(authResponse.data, null, 2));
+  res.redirect('/');
 });
-
-app.get("/queue", async (req, res) => {
-  await queueSong(appState.accessToken, req.query.trackId as string);
-  res.send("DONE!");
-});
-
-// app.get("/search", async (req, res) => {
-//   const search = await searchTracks(appState.accessToken, req.query.searchString as string);
-//   console.log(JSON.stringify(search.data.tracks.items, null, 2));
-//   res.json(search.data.tracks.items);
-// })

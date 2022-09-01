@@ -70,6 +70,23 @@ interface CrossRoadsUser {
   name: string;
   phoneNumber: string;
   nextAvailableSongTimestamp: number;
+  authorizedUntil: number;
 }
 
-export type { APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser };
+interface PermitToken {
+  token: string;
+  validUntil: number;
+}
+
+interface AppStatus {
+  isReady: boolean;
+  permitToken: PermitToken;
+}
+
+interface AuthObject {
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number,
+}
+
+export type { AuthObject, AppStatus, APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser, PermitToken };
