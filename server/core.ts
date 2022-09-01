@@ -144,7 +144,11 @@ async function updateAppStatus() {
       token: generateRandomPermitToken(),
       validUntil: permitTokenInMiliseconds,
     } : store.status.permitToken,
-    currentSong: store.status.readyToFetchCurrentSong || shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong
+    currentSong: store.status.readyToFetchCurrentSong || shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong,
+    songQueue: {
+      ...store.status.songQueue,
+      [store.status.currentSong.trackId]: undefined,
+    }
   };
 }
 

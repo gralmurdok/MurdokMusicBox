@@ -94,7 +94,7 @@ interface AppStatus {
   permitToken: PermitToken;
   currentSong: PlayingSong;
   readyToFetchCurrentSong: boolean;
-  songQueue: Record<string, QueuedSong>
+  songQueue: Record<string, QueuedSong | undefined>
 }
 
 interface AuthObject {
