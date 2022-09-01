@@ -1,6 +1,6 @@
 import { getCurrentSong, queueSong, refreshToken, searchTracks } from "./spotify";
 import { store } from "./store";
-import { APIParams, PlayingSong } from "./types";
+import { APIParams } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
@@ -8,13 +8,21 @@ async function handleGetCurrentSong() {
     console.log('fetching current song...')
     const currentSong = await getCurrentSong(store.auth.accessToken);
     const remainingTime = currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
+    
+    store.status = {
+      ...store.status,
+      readyToFetchCurrentSong: false,
+    }
+
+    const trackId = currentSong.data.item.id;
+    
     return {
-      trackId: currentSong.data.item.id,
+      trackId,
       name: currentSong.data.item.name,
       artist: currentSong.data.item.artists[0].name,
       endsAt: Date.now() + remainingTime,
       imgUrl: currentSong.data.item.album.images[0].url,
-      requesterName: 'Silvana Robles',
+      requesterName: store.status.songQueue[trackId]?.requesterName ?? 'The Crossroads Loja',
     }
   } catch(err) {
     console.log(err);
@@ -23,9 +31,9 @@ async function handleGetCurrentSong() {
       readyToFetchCurrentSong: false,
     }
     return {
-      trackId: 'Not playing',
-      name: 'Not playing',
-      artist: 'Not playing',
+      trackId: '',
+      name: '',
+      artist: '',
       endsAt: 0,
       requesterName: '',
       imgUrl: '',
@@ -49,7 +57,6 @@ async function handleMusicSearchViaWhatsappMessage(
         requesterName: apiParams.requesterName,
       })).slice(0, 5),
     }
-    
     await replyMusicBackToUser(apiParams);
   } catch (err) {
     console.log(err);
@@ -65,36 +72,45 @@ async function handleQueueSong(
   trackId: string,
 ) {
   try {
-    if (store.users[apiParams.toPhoneNumber]?.nextAvailableSongTimestamp > Date.now()) {
+    if (getCurrentUser(apiParams).nextAvailableSongTimestamp > Date.now()) {
       await replyTextMessage(
         apiParams,
         "solo puedes pedir una cancion cada 5 minutos"
       );
       console.log(store.users);
     } else {
-      await queueSong(apiParams.spotifyToken, trackId);
+      const queuedSong = getCurrentUser(apiParams).searchResults.find(song => song.trackId === trackId);
+      if (queuedSong) {
+        store.status.songQueue = {
+          ...store.status.songQueue,
+          [queuedSong.trackId]: {
+            ...queuedSong,
+            requestedAt: Date.now(),
+          }
+        }
 
-      // store.songQueue = {
-      //   ...store.songQueue,
-      //   {
-      //     requestedAt: Date.now(),
+        console.log(store.status.songQueue);
 
-      //   }
-      // }
-
-      await replyTextMessage(
-        apiParams,
-        "tu cancion esta en la cola"
-      );
-      store.users[apiParams.toPhoneNumber] = {
-        ...store.users[apiParams.toPhoneNumber],
-        name: apiParams.requesterName,
-        phoneNumber: apiParams.toPhoneNumber,
-        nextAvailableSongTimestamp: Date.now() + 300 * 1000,
-      };
-      store.status = {
-        ...store.status,
-        readyToFetchCurrentSong: true,
+        await queueSong(apiParams.spotifyToken, trackId);
+        await replyTextMessage(
+          apiParams,
+          "tu cancion esta en la cola"
+        );
+        store.users[apiParams.toPhoneNumber] = {
+          ...store.users[apiParams.toPhoneNumber],
+          name: apiParams.requesterName,
+          phoneNumber: apiParams.toPhoneNumber,
+          nextAvailableSongTimestamp: Date.now() + 300 * 1000,
+        };
+        store.status = {
+          ...store.status,
+          readyToFetchCurrentSong: true,
+        }
+      } else {
+        await replyTextMessage(
+          apiParams,
+          "asegurate que escogiste una cancion de tu busqueda reciente"
+        );
       }
     }
   } catch (err) {
@@ -128,7 +144,7 @@ async function updateAppStatus() {
       token: generateRandomPermitToken(),
       validUntil: permitTokenInMiliseconds,
     } : store.status.permitToken,
-    currentSong: store.status.readyToFetchCurrentSong && shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong
+    currentSong: store.status.readyToFetchCurrentSong || shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong
   };
 }
 

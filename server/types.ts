@@ -85,11 +85,16 @@ interface PlayingSong extends Song {
   endsAt: number;
 }
 
+interface QueuedSong extends Song {
+  requestedAt: number;
+}
+
 interface AppStatus {
   isReady: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
   readyToFetchCurrentSong: boolean;
+  songQueue: Record<string, QueuedSong>
 }
 
 interface AuthObject {

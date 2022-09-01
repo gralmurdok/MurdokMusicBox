@@ -26,7 +26,8 @@ class Store {
         requesterName: '',
         imgUrl: ''
       },
-      readyToFetchCurrentSong: true,
+      readyToFetchCurrentSong: false,
+      songQueue: {}
     }
   }
 }

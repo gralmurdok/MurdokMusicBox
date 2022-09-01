@@ -23,9 +23,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.get(Routes.APP_STATUS, (req, res) => {
+app.get(Routes.APP_STATUS, async (req, res) => {
   if (store.auth.accessToken) {
-    updateAppStatus();
+    await updateAppStatus();
   }
   res.json(store.status);
 });
