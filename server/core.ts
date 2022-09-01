@@ -1,7 +1,28 @@
-import { queueSong, searchTracks } from "./spotify";
+import { getCurrentSong, queueSong, searchTracks } from "./spotify";
 import { store } from "./store";
 import { APIParams } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
+
+async function handleGetCurrentSong() {
+  try {
+    const currentSong = await getCurrentSong(store.auth.accessToken);
+    const remainingTime = currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
+    return {
+      trackId: currentSong.data.item.id,
+      name: currentSong.data.item.name,
+      artist: currentSong.data.item.artists[0].name,
+      endsAt: Date.now() + remainingTime,
+    }
+  } catch(err) {
+    console.log(err);
+    return {
+      trackId: 'error',
+      name: 'error',
+      artist: 'error',
+      endsAt: 0
+    }
+  }
+}
 
 async function handleMusicSearchViaWhatsappMessage(
   apiParams: APIParams,
@@ -59,16 +80,18 @@ function generateRandomPermitToken() {
   return (Math.floor(Math.random() * 9000) + 1000).toString();
 }
 
-function updateAppStatus() {
+async function updateAppStatus() {
   const permitTokenTimeInMinutes = 60;
   const permitTokenInMiliseconds = Date.now() + permitTokenTimeInMinutes * 60 * 1000;
 
   store.status = {
+    ...store.status,
     isReady: !!store.auth.accessToken,
     permitToken: store.status.permitToken.validUntil < Date.now() ? {
       token: generateRandomPermitToken(),
       validUntil: permitTokenInMiliseconds,
-    } : store.status.permitToken
+    } : store.status.permitToken,
+    currentSong: store.status.currentSong.endsAt < Date.now() ? await handleGetCurrentSong() : store.status.currentSong
   };
 }
 

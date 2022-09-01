@@ -78,9 +78,14 @@ interface PermitToken {
   validUntil: number;
 }
 
+interface PlayingSong extends Song {
+  endsAt: number;
+}
+
 interface AppStatus {
   isReady: boolean;
   permitToken: PermitToken;
+  currentSong: PlayingSong;
 }
 
 interface AuthObject {
@@ -89,4 +94,4 @@ interface AuthObject {
   expiresIn: number,
 }
 
-export type { AuthObject, AppStatus, APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser, PermitToken };
+export type { PlayingSong, AuthObject, AppStatus, APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser, PermitToken };

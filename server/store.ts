@@ -17,6 +17,12 @@ class Store {
       permitToken: {
         token: '',
         validUntil: 0
+      },
+      currentSong: {
+        name: '',
+        trackId: '',
+        artist: '',
+        endsAt: 0,
       }
     }
   }

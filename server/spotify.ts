@@ -37,4 +37,15 @@ function searchTracks(token: string, searchString: string) {
   });
 }
 
-export { play, queueSong, searchTracks };
+function getCurrentSong(token: string) {
+  return axios({
+    method: "GET",
+    url: 'https://api.spotify.com/v1/me/player/currently-playing',
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export { play, queueSong, searchTracks, getCurrentSong };
