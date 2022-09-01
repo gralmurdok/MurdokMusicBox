@@ -45,7 +45,7 @@ async function handleMusicSearchViaWhatsappMessage(
         trackId: track.id,
         name: track.name,
         artist: track.artists[0].name,
-        imgUrl: track.data.item.album.images[0].url,
+        imgUrl: track.album.images[0].url,
         requesterName: apiParams.requesterName,
       })).slice(0, 5),
     }
