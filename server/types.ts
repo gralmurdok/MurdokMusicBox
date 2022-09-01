@@ -11,6 +11,8 @@ interface Song {
   name: string;
   trackId: string;
   artist: string;
+  requesterName: string;
+  imgUrl: string;
 }
 
 interface ReplyButton {
@@ -71,6 +73,7 @@ interface CrossRoadsUser {
   phoneNumber: string;
   nextAvailableSongTimestamp: number;
   authorizedUntil: number;
+  searchResults: Song[];
 }
 
 interface PermitToken {
@@ -79,8 +82,6 @@ interface PermitToken {
 }
 
 interface PlayingSong extends Song {
-  requesterName: string;
-  imgUrl: string;
   endsAt: number;
 }
 

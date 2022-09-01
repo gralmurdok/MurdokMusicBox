@@ -39,10 +39,18 @@ async function handleMusicSearchViaWhatsappMessage(
   try {
     const search = await searchTracks(apiParams.spotifyToken, apiParams.messageBody);
     console.log(JSON.stringify(search.data.tracks.items[0], null, 2));
-    await replyMusicBackToUser(
-      apiParams,
-      search.data.tracks.items
-    );
+    store.users[apiParams.toPhoneNumber] = {
+      ...store.users[apiParams.toPhoneNumber],
+      searchResults: search.data.tracks.items.map((track: any) => ({
+        trackId: track.id,
+        name: track.name,
+        artist: track.artists[0].name,
+        imgUrl: track.data.item.album.images[0].url,
+        requesterName: apiParams.requesterName,
+      })).slice(0, 5),
+    }
+    
+    await replyMusicBackToUser(apiParams);
   } catch (err) {
     console.log(err);
     await replyTextMessage(
@@ -65,6 +73,15 @@ async function handleQueueSong(
       console.log(store.users);
     } else {
       await queueSong(apiParams.spotifyToken, trackId);
+
+      // store.songQueue = {
+      //   ...store.songQueue,
+      //   {
+      //     requestedAt: Date.now(),
+
+      //   }
+      // }
+
       await replyTextMessage(
         apiParams,
         "tu cancion esta en la cola"
@@ -121,6 +138,7 @@ async function registerUser(apiParams: APIParams) {
     phoneNumber: apiParams.toPhoneNumber,
     nextAvailableSongTimestamp: Date.now(),
     authorizedUntil: Date.now(),
+    searchResults: [],
   };
   store.users[apiParams.toPhoneNumber] = newUser;
   await replyTextMessage(
