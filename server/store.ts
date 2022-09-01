@@ -23,7 +23,8 @@ class Store {
         trackId: '',
         artist: '',
         endsAt: 0,
-      }
+      },
+      readyToFetchCurrentSong: true,
     }
   }
 }

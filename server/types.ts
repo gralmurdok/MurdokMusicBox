@@ -86,6 +86,7 @@ interface AppStatus {
   isReady: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
+  readyToFetchCurrentSong: boolean;
 }
 
 interface AuthObject {

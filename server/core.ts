@@ -16,6 +16,10 @@ async function handleGetCurrentSong() {
     }
   } catch(err) {
     console.log(err);
+    store.status = {
+      ...store.status,
+      readyToFetchCurrentSong: false,
+    }
     return {
       trackId: 'error',
       name: 'error',
@@ -67,6 +71,10 @@ async function handleQueueSong(
         phoneNumber: apiParams.toPhoneNumber,
         nextAvailableSongTimestamp: Date.now() + 300 * 1000,
       };
+      store.status = {
+        ...store.status,
+        readyToFetchCurrentSong: true,
+      }
     }
   } catch (err) {
     console.log(err);
@@ -84,6 +92,7 @@ function generateRandomPermitToken() {
 async function updateAppStatus() {
   const permitTokenTimeInMinutes = 60;
   const permitTokenInMiliseconds = Date.now() + permitTokenTimeInMinutes * 60 * 1000;
+  const shouldFetchCurrentSong = store.status.currentSong.endsAt < Date.now();
 
   store.status = {
     ...store.status,
@@ -92,7 +101,7 @@ async function updateAppStatus() {
       token: generateRandomPermitToken(),
       validUntil: permitTokenInMiliseconds,
     } : store.status.permitToken,
-    currentSong: store.status.currentSong.endsAt < Date.now() ? await handleGetCurrentSong() : store.status.currentSong
+    currentSong: store.status.readyToFetchCurrentSong && shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong
   };
 }
 
