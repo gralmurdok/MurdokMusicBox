@@ -5,6 +5,7 @@ import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
   try {
+    console.log('fetching current song...')
     const currentSong = await getCurrentSong(store.auth.accessToken);
     const remainingTime = currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
     return {
