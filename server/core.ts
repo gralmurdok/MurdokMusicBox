@@ -1,4 +1,4 @@
-import { getCurrentSong, queueSong, searchTracks } from "./spotify";
+import { getCurrentSong, queueSong, refreshToken, searchTracks } from "./spotify";
 import { store } from "./store";
 import { APIParams } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
@@ -90,14 +90,20 @@ function generateRandomPermitToken() {
 }
 
 async function updateAppStatus() {
+  const now = Date.now();
   const permitTokenTimeInMinutes = 60;
-  const permitTokenInMiliseconds = Date.now() + permitTokenTimeInMinutes * 60 * 1000;
-  const shouldFetchCurrentSong = store.status.currentSong.endsAt < Date.now();
+  const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
+  const shouldFetchCurrentSong = store.status.currentSong.endsAt < now;
+  const shouldRefreshToken = store.auth.expiresAt < now;
+
+  if (shouldRefreshToken) {
+    await refreshToken();
+  }
 
   store.status = {
     ...store.status,
     isReady: !!store.auth.accessToken,
-    permitToken: store.status.permitToken.validUntil < Date.now() ? {
+    permitToken: store.status.permitToken.validUntil < now ? {
       token: generateRandomPermitToken(),
       validUntil: permitTokenInMiliseconds,
     } : store.status.permitToken,

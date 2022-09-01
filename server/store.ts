@@ -9,7 +9,7 @@ class Store {
     this.auth = {
       accessToken: "",
       refreshToken: "",
-      expiresIn: 0,
+      expiresAt: 0,
     };
     this.users = {};
     this.status = {

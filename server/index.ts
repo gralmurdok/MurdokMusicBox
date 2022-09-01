@@ -66,10 +66,10 @@ app.post("/webhook", async (req, res) => {
 
       switch(operation) {
         case 'register':
-          registerUser(apiParams);
+          await registerUser(apiParams);
           break;
         case 'authorizeUser':
-          authorizeUser(apiParams);
+          await authorizeUser(apiParams);
           break;
         case 'receiptSongs':
           if (!apiParams.spotifyToken) {
@@ -163,7 +163,7 @@ app.get("/callback", async (req, res) => {
   store.auth = {
     accessToken: authResponse.data.access_token,
     refreshToken: authResponse.data.refresh_token,
-    expiresIn: authResponse.data.expires_in,
+    expiresAt: Date.now() + (authResponse.data.expires_in * 1000),
   };
 
   res.redirect('/');

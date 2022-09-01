@@ -92,7 +92,7 @@ interface AppStatus {
 interface AuthObject {
   accessToken: string,
   refreshToken: string,
-  expiresIn: number,
+  expiresAt: number,
 }
 
 export type { PlayingSong, AuthObject, AppStatus, APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser, PermitToken };
