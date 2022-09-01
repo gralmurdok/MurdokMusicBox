@@ -70,7 +70,8 @@ async function refreshToken() {
     console.log('REFRESHING TOKEN ', authResponse.data);
     store.auth = {
       ...store.auth,
-      accessToken: authResponse.data.access_token
+      accessToken: authResponse.data.access_token,
+      expiresAt: Date.now() + (authResponse.data.expires_in * 1000)
     }
   } catch(err) {
     console.log(err);
