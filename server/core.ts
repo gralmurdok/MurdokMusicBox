@@ -1,62 +1,72 @@
-import { getCurrentSong, queueSong, refreshToken, searchTracks } from "./spotify";
+import {
+  getCurrentSong,
+  queueSong,
+  refreshToken,
+  searchTracks,
+} from "./spotify";
 import { store } from "./store";
 import { APIParams } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
   try {
-    console.log('fetching current song...')
+    console.log("fetching current song...");
     const currentSong = await getCurrentSong(store.auth.accessToken);
-    const remainingTime = currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
-    
+    const remainingTime =
+      currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
+
     store.status = {
       ...store.status,
       readyToFetchCurrentSong: false,
-    }
+    };
 
     const trackId = currentSong.data.item.id;
-    
+
     return {
       trackId,
       name: currentSong.data.item.name,
       artist: currentSong.data.item.artists[0].name,
       endsAt: Date.now() + remainingTime,
       imgUrl: currentSong.data.item.album.images[0].url,
-      requesterName: store.status.songQueue[trackId]?.requesterName ?? 'The Crossroads Loja',
-    }
-  } catch(err) {
+      requesterName:
+        store.status.songQueue[trackId]?.requesterName ?? "The Crossroads Loja",
+    };
+  } catch (err) {
     console.log(err);
     store.status = {
       ...store.status,
       readyToFetchCurrentSong: false,
-    }
+    };
     return {
-      trackId: '',
-      name: '',
-      artist: '',
+      trackId: "",
+      name: "",
+      artist: "",
       endsAt: 0,
-      requesterName: '',
-      imgUrl: '',
-    }
+      requesterName: "",
+      imgUrl: "",
+    };
   }
 }
 
-async function handleMusicSearchViaWhatsappMessage(
-  apiParams: APIParams,
-) {
+async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
   try {
-    const search = await searchTracks(apiParams.spotifyToken, apiParams.messageBody);
+    const search = await searchTracks(
+      apiParams.spotifyToken,
+      apiParams.messageBody
+    );
     console.log(JSON.stringify(search.data.tracks.items[0], null, 2));
     store.users[apiParams.toPhoneNumber] = {
       ...store.users[apiParams.toPhoneNumber],
-      searchResults: search.data.tracks.items.map((track: any) => ({
-        trackId: track.id,
-        name: track.name,
-        artist: track.artists[0].name,
-        imgUrl: track.album.images[0].url,
-        requesterName: apiParams.requesterName,
-      })).slice(0, 5),
-    }
+      searchResults: search.data.tracks.items
+        .map((track: any) => ({
+          trackId: track.id,
+          name: track.name,
+          artist: track.artists[0].name,
+          imgUrl: track.album.images[0].url,
+          requesterName: apiParams.requesterName,
+        }))
+        .slice(0, 5),
+    };
     await replyMusicBackToUser(apiParams);
   } catch (err) {
     console.log(err);
@@ -67,10 +77,7 @@ async function handleMusicSearchViaWhatsappMessage(
   }
 }
 
-async function handleQueueSong(
-  apiParams: APIParams,
-  trackId: string,
-) {
+async function handleQueueSong(apiParams: APIParams, trackId: string) {
   try {
     if (getCurrentUser(apiParams).nextAvailableSongTimestamp > Date.now()) {
       await replyTextMessage(
@@ -79,23 +86,22 @@ async function handleQueueSong(
       );
       console.log(store.users);
     } else {
-      const queuedSong = getCurrentUser(apiParams).searchResults.find(song => song.trackId === trackId);
+      const queuedSong = getCurrentUser(apiParams).searchResults.find(
+        (song) => song.trackId === trackId
+      );
       if (queuedSong) {
         store.status.songQueue = {
           ...store.status.songQueue,
           [queuedSong.trackId]: {
             ...queuedSong,
             requestedAt: Date.now(),
-          }
-        }
+          },
+        };
 
         console.log(store.status.songQueue);
 
         await queueSong(apiParams.spotifyToken, trackId);
-        await replyTextMessage(
-          apiParams,
-          "tu cancion esta en la cola"
-        );
+        await replyTextMessage(apiParams, "tu cancion esta en la cola");
         store.users[apiParams.toPhoneNumber] = {
           ...store.users[apiParams.toPhoneNumber],
           name: apiParams.requesterName,
@@ -105,7 +111,7 @@ async function handleQueueSong(
         store.status = {
           ...store.status,
           readyToFetchCurrentSong: true,
-        }
+        };
       } else {
         await replyTextMessage(
           apiParams,
@@ -140,15 +146,21 @@ async function updateAppStatus() {
   store.status = {
     ...store.status,
     isReady: !!store.auth.accessToken,
-    permitToken: store.status.permitToken.validUntil < now ? {
-      token: generateRandomPermitToken(),
-      validUntil: permitTokenInMiliseconds,
-    } : store.status.permitToken,
-    currentSong: store.status.readyToFetchCurrentSong || shouldFetchCurrentSong ? await handleGetCurrentSong() : store.status.currentSong,
+    permitToken:
+      store.status.permitToken.validUntil < now
+        ? {
+            token: generateRandomPermitToken(),
+            validUntil: permitTokenInMiliseconds,
+          }
+        : store.status.permitToken,
+    currentSong:
+      store.status.readyToFetchCurrentSong || shouldFetchCurrentSong
+        ? await handleGetCurrentSong()
+        : store.status.currentSong,
     songQueue: {
       ...store.status.songQueue,
       [store.status.currentSong.trackId]: undefined,
-    }
+    },
   };
 }
 
@@ -178,13 +190,16 @@ function isAuthorizedUser(apiParams: APIParams) {
 
 async function authorizeUser(apiParams: APIParams) {
   const now = Date.now();
-  const authorizedUntil = store.status.permitToken.token === apiParams.messageBody ? now + 60 * 60 * 1000 : now;
+  const authorizedUntil =
+    store.status.permitToken.token === apiParams.messageBody
+      ? now + 60 * 60 * 1000
+      : now;
 
   if (authorizedUntil > now) {
     store.users[apiParams.toPhoneNumber] = {
       ...store.users[apiParams.toPhoneNumber],
       authorizedUntil,
-    }
+    };
     await replyTextMessage(
       apiParams,
       "Genial, ahora escribe una cancion o artista y nosotros la agregaremos a la cola de reproduccion para ti."
@@ -200,13 +215,22 @@ async function authorizeUser(apiParams: APIParams) {
 function determineOperation(apiParams: APIParams) {
   let rv;
   if (!getCurrentUser(apiParams)) {
-    rv = 'register';
+    rv = "register";
   } else if (!isAuthorizedUser(apiParams)) {
-    rv = 'authorizeUser'
+    rv = "authorizeUser";
   } else if (isAuthorizedUser(apiParams)) {
-    rv = 'receiptSongs'
+    rv = "receiptSongs";
   }
   return rv;
 }
 
-export { authorizeUser, registerUser, determineOperation, handleMusicSearchViaWhatsappMessage, handleQueueSong, updateAppStatus, getCurrentUser, isAuthorizedUser };
+export {
+  authorizeUser,
+  registerUser,
+  determineOperation,
+  handleMusicSearchViaWhatsappMessage,
+  handleQueueSong,
+  updateAppStatus,
+  getCurrentUser,
+  isAuthorizedUser,
+};

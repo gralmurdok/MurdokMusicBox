@@ -41,7 +41,7 @@ function searchTracks(token: string, searchString: string) {
 function getCurrentSong(token: string) {
   return axios({
     method: "GET",
-    url: 'https://api.spotify.com/v1/me/player/currently-playing',
+    url: "https://api.spotify.com/v1/me/player/currently-playing",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -67,13 +67,13 @@ async function refreshToken() {
         refresh_token: store.auth.refreshToken,
       },
     });
-    console.log('REFRESHING TOKEN ', authResponse.data);
+    console.log("REFRESHING TOKEN ", authResponse.data);
     store.auth = {
       ...store.auth,
       accessToken: authResponse.data.access_token,
-      expiresAt: Date.now() + (authResponse.data.expires_in * 1000)
-    }
-  } catch(err) {
+      expiresAt: Date.now() + authResponse.data.expires_in * 1000,
+    };
+  } catch (err) {
     console.log(err);
   }
 }

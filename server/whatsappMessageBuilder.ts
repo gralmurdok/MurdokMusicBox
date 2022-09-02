@@ -1,4 +1,11 @@
-import { InteractiveMessage, ReplyButton, Section, SectionRow, Song, TextMessage } from "./types";
+import {
+  InteractiveMessage,
+  ReplyButton,
+  Section,
+  SectionRow,
+  Song,
+  TextMessage,
+} from "./types";
 
 function simpleMessage(from: string, message: string): TextMessage {
   return {
@@ -8,7 +15,12 @@ function simpleMessage(from: string, message: string): TextMessage {
   };
 }
 
-function interactiveReplyButtonsMessage(from: string, title: string, message: string, actions: Song[]): InteractiveMessage {
+function interactiveReplyButtonsMessage(
+  from: string,
+  title: string,
+  message: string,
+  actions: Song[]
+): InteractiveMessage {
   const buttons: ReplyButton[] = actions.map((song) => ({
     type: "reply",
     reply: {
@@ -35,23 +47,30 @@ function interactiveReplyButtonsMessage(from: string, title: string, message: st
         text: "The Crossroads Loja",
       },
       action: {
-        buttons
+        buttons,
       },
     },
   };
 }
 
-function interactiveListMessage(from: string, title: string, message: string, actions: Song[]): InteractiveMessage {
+function interactiveListMessage(
+  from: string,
+  title: string,
+  message: string,
+  actions: Song[]
+): InteractiveMessage {
   const sectionRows: SectionRow[] = actions.map((song) => ({
     id: song.trackId,
     title: song.name,
     description: song.artist,
   }));
 
-  const sections: Section[] = [{
-    title: "Musica disponible",
-    rows: sectionRows
-  }];
+  const sections: Section[] = [
+    {
+      title: "Musica disponible",
+      rows: sectionRows,
+    },
+  ];
 
   return {
     messaging_product: "whatsapp",
@@ -69,10 +88,14 @@ function interactiveListMessage(from: string, title: string, message: string, ac
       },
       action: {
         button: "Ver resultados",
-        sections
+        sections,
       },
     },
   };
 }
 
-export { simpleMessage, interactiveReplyButtonsMessage, interactiveListMessage };
+export {
+  simpleMessage,
+  interactiveReplyButtonsMessage,
+  interactiveListMessage,
+};

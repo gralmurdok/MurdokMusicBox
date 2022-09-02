@@ -6,21 +6,33 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages, Routes } from "./constants";
-import { authorizeUser, determineOperation, getCurrentUser, handleMusicSearchViaWhatsappMessage, handleQueueSong, registerUser, updateAppStatus } from "./core";
+import {
+  authorizeUser,
+  determineOperation,
+  getCurrentUser,
+  handleMusicSearchViaWhatsappMessage,
+  handleQueueSong,
+  registerUser,
+  updateAppStatus,
+} from "./core";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
 
 dotenv.config();
-console.log(path.join(__dirname, 'build'));
-const app = express().use(bodyParser.json()).use(express.static(path.join(__dirname, 'build')));
+console.log(path.join(__dirname, "build"));
+const app = express()
+  .use(bodyParser.json())
+  .use(express.static(path.join(__dirname, "build")));
 
 // Sets server port and logs message on success
 
-app.listen(process.env.PORT || 1337, () => console.log("webhook is listening ", process.env.PORT));
+app.listen(process.env.PORT || 1337, () =>
+  console.log("webhook is listening ", process.env.PORT)
+);
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.get(Routes.APP_STATUS, async (req, res) => {
@@ -42,7 +54,7 @@ app.post("/webhook", async (req, res) => {
       console.log(JSON.stringify(req.body.entry, null, 2));
       const phoneNumberId =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
-      
+
       const contact = req.body.entry[0].changes[0].value.contacts[0];
       const message = req.body.entry[0].changes[0].value.messages[0];
       const messageType = message?.type;
@@ -50,7 +62,7 @@ app.post("/webhook", async (req, res) => {
       const whatsappToken = process.env.WHATSAPP_TOKEN as string;
       const toPhoneNumber = message.from; // extract the phone number from the webhook payload
       const requesterName = contact.profile.name;
-      
+
       let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
 
       const apiParams: APIParams = {
@@ -60,37 +72,34 @@ app.post("/webhook", async (req, res) => {
         phoneNumberId,
         toPhoneNumber,
         requesterName,
-      }
+      };
 
       const operation = determineOperation(apiParams);
 
-      switch(operation) {
-        case 'register':
+      switch (operation) {
+        case "register":
           await registerUser(apiParams);
           break;
-        case 'authorizeUser':
+        case "authorizeUser":
           await authorizeUser(apiParams);
           break;
-        case 'receiptSongs':
+        case "receiptSongs":
           if (!apiParams.spotifyToken) {
-            await replyTextMessage(
-              apiParams,
-              ErrorMessages.NOT_READY
-            );
+            await replyTextMessage(apiParams, ErrorMessages.NOT_READY);
             return res.sendStatus(204);
           } else {
-            if (messageType === 'interactive' || trackId) {
+            if (messageType === "interactive" || trackId) {
               if (message?.interactive?.type) {
                 trackId = message?.interactive[message?.interactive.type].id;
               }
-              await handleQueueSong(apiParams, trackId)
+              await handleQueueSong(apiParams, trackId);
             } else {
               await handleMusicSearchViaWhatsappMessage(apiParams);
             }
           }
       }
 
-      console.log(operation, getCurrentUser(apiParams))
+      console.log(operation, getCurrentUser(apiParams));
     }
     res.sendStatus(200);
   } else {
@@ -130,7 +139,11 @@ app.get("/webhook", (req, res) => {
 const redirect_uri = `${process.env.HOST}/callback`;
 
 app.get("/spotify-login", (req, res) => {
-  const scope = ["user-modify-playback-state", "user-read-private", "user-read-currently-playing"];
+  const scope = [
+    "user-modify-playback-state",
+    "user-read-private",
+    "user-read-currently-playing",
+  ];
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.CLIENT_ID as string,
@@ -163,8 +176,8 @@ app.get("/callback", async (req, res) => {
   store.auth = {
     accessToken: authResponse.data.access_token,
     refreshToken: authResponse.data.refresh_token,
-    expiresAt: Date.now() + (authResponse.data.expires_in * 1000),
+    expiresAt: Date.now() + authResponse.data.expires_in * 1000,
   };
 
-  res.redirect('/');
+  res.redirect("/");
 });

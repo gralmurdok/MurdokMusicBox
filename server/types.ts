@@ -1,10 +1,10 @@
 interface APIParams {
-  messageBody: string,
-  requesterName: string,
-  whatsappToken: string,
-  spotifyToken: string,
-  phoneNumberId: string,
-  toPhoneNumber: string,
+  messageBody: string;
+  requesterName: string;
+  whatsappToken: string;
+  spotifyToken: string;
+  phoneNumberId: string;
+  toPhoneNumber: string;
 }
 
 interface Song {
@@ -24,14 +24,14 @@ interface ReplyButton {
 }
 
 interface SectionRow {
-  id: string,
-  title: string,
-  description: string,
+  id: string;
+  title: string;
+  description: string;
 }
 
 interface Section {
-  title: string,
-  rows: SectionRow[]
+  title: string;
+  rows: SectionRow[];
 }
 
 interface WhatsappMessage {
@@ -61,9 +61,9 @@ interface InteractiveMessage extends WhatsappMessage {
       text: "The Crossroads Loja";
     };
     action: {
-      button?: string,
-      buttons?: ReplyButton[],
-      sections?: Section[]
+      button?: string;
+      buttons?: ReplyButton[];
+      sections?: Section[];
     };
   };
 }
@@ -94,13 +94,27 @@ interface AppStatus {
   permitToken: PermitToken;
   currentSong: PlayingSong;
   readyToFetchCurrentSong: boolean;
-  songQueue: Record<string, QueuedSong | undefined>
+  songQueue: Record<string, QueuedSong | undefined>;
 }
 
 interface AuthObject {
-  accessToken: string,
-  refreshToken: string,
-  expiresAt: number,
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
 }
 
-export type { PlayingSong, AuthObject, AppStatus, APIParams, TextMessage, WhatsappMessage, Song, InteractiveMessage, ReplyButton, Section, SectionRow, CrossRoadsUser, PermitToken };
+export type {
+  PlayingSong,
+  AuthObject,
+  AppStatus,
+  APIParams,
+  TextMessage,
+  WhatsappMessage,
+  Song,
+  InteractiveMessage,
+  ReplyButton,
+  Section,
+  SectionRow,
+  CrossRoadsUser,
+  PermitToken,
+};

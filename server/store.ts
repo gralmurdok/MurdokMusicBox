@@ -4,7 +4,7 @@ class Store {
   auth: AuthObject;
   users: Record<string, CrossRoadsUser>;
   status: AppStatus;
-  
+
   constructor() {
     this.auth = {
       accessToken: "",
@@ -15,20 +15,20 @@ class Store {
     this.status = {
       isReady: false,
       permitToken: {
-        token: '',
-        validUntil: 0
+        token: "",
+        validUntil: 0,
       },
       currentSong: {
-        name: '',
-        trackId: '',
-        artist: '',
+        name: "",
+        trackId: "",
+        artist: "",
         endsAt: 0,
-        requesterName: '',
-        imgUrl: ''
+        requesterName: "",
+        imgUrl: "",
       },
       readyToFetchCurrentSong: false,
-      songQueue: {}
-    }
+      songQueue: {},
+    };
   }
 }
 
