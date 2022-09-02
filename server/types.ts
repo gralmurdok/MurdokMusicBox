@@ -93,7 +93,6 @@ interface AppStatus {
   isReady: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
-  readyToFetchCurrentSong: boolean;
   songQueue: Record<string, QueuedSong | undefined>;
 }
 
@@ -117,4 +116,5 @@ export type {
   SectionRow,
   CrossRoadsUser,
   PermitToken,
+  QueuedSong,
 };

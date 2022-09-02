@@ -5,7 +5,7 @@ import {
   searchTracks,
 } from "./spotify";
 import { store } from "./store";
-import { APIParams } from "./types";
+import { APIParams, QueuedSong } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
@@ -15,12 +15,29 @@ async function handleGetCurrentSong() {
     const remainingTime =
       currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
 
+    const trackId = currentSong.data.item.id;
+
+    let requesterName: string;
+
+    if (trackId === store.status.currentSong.trackId) {
+      requesterName = store.status.currentSong.requesterName;
+    } else if (store.status.songQueue[trackId]) {
+      requesterName = (store.status.songQueue[trackId] as QueuedSong).requesterName;
+    } else {
+      requesterName = "The Crossroads Loja";
+    }
+
+    console.log(store.status);
+
     store.status = {
       ...store.status,
-      readyToFetchCurrentSong: false,
+      songQueue: {
+        ...store.status.songQueue,
+        [trackId]: undefined,
+      },
     };
 
-    const trackId = currentSong.data.item.id;
+    console.log(store.status);
 
     return {
       trackId,
@@ -28,15 +45,10 @@ async function handleGetCurrentSong() {
       artist: currentSong.data.item.artists[0].name,
       endsAt: Date.now() + remainingTime,
       imgUrl: currentSong.data.item.album.images[0].url,
-      requesterName:
-        store.status.songQueue[trackId]?.requesterName ?? "The Crossroads Loja",
+      requesterName,
     };
   } catch (err) {
     console.log(err);
-    store.status = {
-      ...store.status,
-      readyToFetchCurrentSong: false,
-    };
     return {
       trackId: "",
       name: "",
@@ -84,7 +96,11 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
         apiParams,
         "solo puedes pedir una cancion cada 5 minutos"
       );
-      console.log(store.users);
+    } else if (store.status.songQueue[trackId]) {
+      await replyTextMessage(
+        apiParams,
+        "oh, aquella cancion ya esta en cola"
+      );
     } else {
       const queuedSong = getCurrentUser(apiParams).searchResults.find(
         (song) => song.trackId === trackId
@@ -97,9 +113,6 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
             requestedAt: Date.now(),
           },
         };
-
-        console.log(store.status.songQueue);
-
         await queueSong(apiParams.spotifyToken, trackId);
         await replyTextMessage(apiParams, "tu cancion esta en la cola");
         store.users[apiParams.toPhoneNumber] = {
@@ -107,10 +120,6 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           name: apiParams.requesterName,
           phoneNumber: apiParams.toPhoneNumber,
           nextAvailableSongTimestamp: Date.now() + 300 * 1000,
-        };
-        store.status = {
-          ...store.status,
-          readyToFetchCurrentSong: true,
         };
       } else {
         await replyTextMessage(
@@ -136,7 +145,6 @@ async function updateAppStatus() {
   const now = Date.now();
   const permitTokenTimeInMinutes = 60;
   const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
-  const shouldFetchCurrentSong = store.status.currentSong.endsAt < now;
   const shouldRefreshToken = store.auth.expiresAt < now;
 
   if (shouldRefreshToken) {
@@ -153,10 +161,7 @@ async function updateAppStatus() {
             validUntil: permitTokenInMiliseconds,
           }
         : store.status.permitToken,
-    currentSong:
-      store.status.readyToFetchCurrentSong || shouldFetchCurrentSong
-        ? await handleGetCurrentSong()
-        : store.status.currentSong,
+    currentSong: await handleGetCurrentSong(),
     songQueue: {
       ...store.status.songQueue,
       [store.status.currentSong.trackId]: undefined,
