@@ -27,6 +27,9 @@ const app = express()
 
 // Sets server port and logs message on success
 
+let retryNumber = 100;
+let timeout: any;
+
 app.listen(process.env.PORT || 1337, () =>
   console.log("webhook is listening ", process.env.PORT)
 );
@@ -35,11 +38,32 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-app.get(Routes.APP_STATUS, async (req, res) => {
+app.get(Routes.APP_STATUS, (req, res) => {
+  retryNumber = 100;
+  res.json(store.status);
+});
+
+app.get("/internal-update", async (req, res) => {
   if (store.auth.accessToken) {
     await updateAppStatus();
+
+    res.status(200).json(store.status);
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(() => {
+      if (retryNumber > 0) {
+        axios
+          .get(`${process.env.HOST}/internal-update`)
+          .catch((err) => console.log(err));
+        retryNumber--;
+      } else {
+        clearTimeout(timeout);
+      }
+    }, 5000);
   }
-  res.json(store.status);
 });
 
 app.post("/webhook", async (req, res) => {

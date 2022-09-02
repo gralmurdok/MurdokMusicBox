@@ -20,12 +20,12 @@ function App() {
     },
     songQueue: {},
   };
-  const refreshTimeInMiliseconds = 5000;
+  const refreshTimeInMiliseconds = 3000;
   const [appStatus, setAppStatus] = useState(defaultAppStatus);
 
   useEffect(() => {
     axios
-      .get("/app-status")
+      .get("/internal-update")
       .then((permit) => {
         setAppStatus(permit.data);
       })

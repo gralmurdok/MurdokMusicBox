@@ -22,22 +22,21 @@ async function handleGetCurrentSong() {
     if (trackId === store.status.currentSong.trackId) {
       requesterName = store.status.currentSong.requesterName;
     } else if (store.status.songQueue[trackId]) {
-      requesterName = (store.status.songQueue[trackId] as QueuedSong).requesterName;
+      requesterName = (store.status.songQueue[trackId] as QueuedSong)
+        .requesterName;
     } else {
       requesterName = "The Crossroads Loja";
     }
 
-    console.log(store.status);
-
-    store.status = {
-      ...store.status,
-      songQueue: {
-        ...store.status.songQueue,
-        [trackId]: undefined,
-      },
-    };
-
-    console.log(store.status);
+    if (store.status.songQueue[trackId]) {
+      store.status = {
+        ...store.status,
+        songQueue: {
+          ...store.status.songQueue,
+          [trackId]: undefined,
+        },
+      };
+    }
 
     return {
       trackId,
@@ -90,17 +89,20 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
 }
 
 async function handleQueueSong(apiParams: APIParams, trackId: string) {
+  const now = Date.now();
   try {
-    if (getCurrentUser(apiParams).nextAvailableSongTimestamp > Date.now()) {
+    if (getCurrentUser(apiParams).nextAvailableSongTimestamp > now) {
+      const remainingMiliseconds =
+        getCurrentUser(apiParams).nextAvailableSongTimestamp - now;
+      const remainingSeconds = remainingMiliseconds / 1000;
       await replyTextMessage(
         apiParams,
-        "solo puedes pedir una cancion cada 5 minutos"
+        `puedes pedir tu siguiente cancion en ${Math.floor(remainingSeconds / 60)}:${
+          remainingMiliseconds % 60
+        } minutos`
       );
     } else if (store.status.songQueue[trackId]) {
-      await replyTextMessage(
-        apiParams,
-        "oh, aquella cancion ya esta en cola"
-      );
+      await replyTextMessage(apiParams, "oh, aquella cancion ya esta en cola");
     } else {
       const queuedSong = getCurrentUser(apiParams).searchResults.find(
         (song) => song.trackId === trackId
@@ -110,7 +112,7 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           ...store.status.songQueue,
           [queuedSong.trackId]: {
             ...queuedSong,
-            requestedAt: Date.now(),
+            requestedAt: now,
           },
         };
         await queueSong(apiParams.spotifyToken, trackId);
@@ -119,12 +121,12 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           ...store.users[apiParams.toPhoneNumber],
           name: apiParams.requesterName,
           phoneNumber: apiParams.toPhoneNumber,
-          nextAvailableSongTimestamp: Date.now() + 300 * 1000,
+          nextAvailableSongTimestamp: now + 300 * 1000,
         };
       } else {
         await replyTextMessage(
           apiParams,
-          "asegurate que escogiste una cancion de tu busqueda reciente"
+          "asegurate de escoger una cancion de tu busqueda reciente"
         );
       }
     }
@@ -143,7 +145,7 @@ function generateRandomPermitToken() {
 
 async function updateAppStatus() {
   const now = Date.now();
-  const permitTokenTimeInMinutes = 60;
+  const permitTokenTimeInMinutes = parseFloat(process.env.PERMIT_REFRESH_MINS ?? '60');
   const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
   const shouldRefreshToken = store.auth.expiresAt < now;
 
@@ -178,6 +180,13 @@ async function registerUser(apiParams: APIParams) {
     searchResults: [],
   };
   store.users[apiParams.toPhoneNumber] = newUser;
+
+  const content = `registrado: ${newUser.name}, ${newUser.phoneNumber}`;
+  await replyTextMessage(
+    {...apiParams, toPhoneNumber: '593960521867'},
+    content
+  );
+
   await replyTextMessage(
     apiParams,
     "Bienvenido a Crossroads Loja, por favor ingresa el codigo de 4 digitos que esta en pantalla para usar el servicio de musica."
@@ -197,7 +206,7 @@ async function authorizeUser(apiParams: APIParams) {
   const now = Date.now();
   const authorizedUntil =
     store.status.permitToken.token === apiParams.messageBody
-      ? now + 60 * 60 * 1000
+      ? now + parseFloat(process.env.PERMIT_REFRESH_MINS ?? '60') * 60 * 1000
       : now;
 
   if (authorizedUntil > now) {
