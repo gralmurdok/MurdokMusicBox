@@ -93,19 +93,19 @@ function App() {
       rv = (
         <Fragment>
           <div>
-            <div className="playing-now">Sonando ahora:</div>
             <div className="song-requester">
-              by {appStatus.currentSong.requesterName}
+              By {appStatus.currentSong.requesterName}
             </div>
+            <div className="code-container">
+              <div className="code-text">{appStatus.permitToken.token}</div>
+            </div>
+
             <SongRow
               name={appStatus.currentSong.name}
               artist={appStatus.currentSong.artist}
               imgUrl={appStatus.currentSong.imgUrl}
             />
             {renderQueuedSongs()}
-          </div>
-          <div className="code-container">
-            <div className="code-text">{appStatus.permitToken.token}</div>
           </div>
         </Fragment>
       );
