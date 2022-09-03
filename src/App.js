@@ -103,7 +103,7 @@ function App() {
             </div>
             <div className="code-container">
               <div className="code-text">
-                MUSCIA: {appStatus.permitToken.token}
+                MUSICA: {appStatus.permitToken.token}
               </div>
             </div>
 
