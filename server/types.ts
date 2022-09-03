@@ -74,6 +74,7 @@ interface CrossRoadsUser {
   nextAvailableSongTimestamp: number;
   authorizedUntil: number;
   searchResults: Song[];
+  searchQuery: string;
 }
 
 interface PermitToken {

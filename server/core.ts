@@ -77,6 +77,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
           requesterName: apiParams.requesterName,
         }))
         .slice(0, 5),
+      searchQuery: apiParams.messageBody,
     };
     await replyMusicBackToUser(apiParams);
   } catch (err) {
@@ -178,6 +179,7 @@ async function registerUser(apiParams: APIParams) {
     nextAvailableSongTimestamp: Date.now(),
     authorizedUntil: Date.now(),
     searchResults: [],
+    searchQuery: apiParams.messageBody,
   };
   store.users[apiParams.toPhoneNumber] = newUser;
 
@@ -214,14 +216,18 @@ async function authorizeUser(apiParams: APIParams) {
       ...store.users[apiParams.toPhoneNumber],
       authorizedUntil,
     };
-    await replyTextMessage(
-      apiParams,
-      "Genial, ahora escribe una cancion o artista y nosotros la agregaremos a la cola de reproduccion para ti."
-    );
+    await handleMusicSearchViaWhatsappMessage({
+      ...apiParams,
+      messageBody: apiParams.messageBody,
+    });
   } else {
+    store.users[apiParams.toPhoneNumber] = {
+      ...store.users[apiParams.toPhoneNumber],
+      searchQuery: apiParams.messageBody,
+    };
     await replyTextMessage(
       apiParams,
-      "codigo incorrecto, ingresa nuevamente el codigo que ves en pantalla"
+      "por favor ingresa el codigo que ves en pantalla, para continuar con la busqueda"
     );
   }
 }
