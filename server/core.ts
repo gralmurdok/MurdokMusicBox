@@ -98,9 +98,9 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
       const remainingSeconds = remainingMiliseconds / 1000;
       await replyTextMessage(
         apiParams,
-        `puedes pedir tu siguiente cancion en ${Math.floor(remainingSeconds / 60)}:${
-          remainingMiliseconds % 60
-        } minutos`
+        `puedes pedir tu siguiente cancion en ${Math.floor(
+          remainingSeconds / 60
+        )}:${remainingMiliseconds % 60} minutos`
       );
     } else if (store.status.songQueue[trackId]) {
       await replyTextMessage(apiParams, "oh, aquella cancion ya esta en cola");
@@ -146,7 +146,9 @@ function generateRandomPermitToken() {
 
 async function updateAppStatus() {
   const now = Date.now();
-  const permitTokenTimeInMinutes = parseFloat(process.env.PERMIT_REFRESH_MINS ?? '60');
+  const permitTokenTimeInMinutes = parseFloat(
+    process.env.PERMIT_REFRESH_MINS ?? "60"
+  );
   const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
   const shouldRefreshToken = store.auth.expiresAt < now;
 
@@ -185,7 +187,7 @@ async function registerUser(apiParams: APIParams) {
 
   const content = `registrado: ${newUser.name}, ${newUser.phoneNumber}`;
   await replyTextMessage(
-    {...apiParams, toPhoneNumber: '593960521867'},
+    { ...apiParams, toPhoneNumber: "593960521867" },
     content
   );
 
@@ -208,7 +210,7 @@ async function authorizeUser(apiParams: APIParams) {
   const now = Date.now();
   const authorizedUntil =
     store.status.permitToken.token === apiParams.messageBody
-      ? now + parseFloat(process.env.PERMIT_REFRESH_MINS ?? '60') * 60 * 1000
+      ? now + parseFloat(process.env.PERMIT_REFRESH_MINS ?? "60") * 60 * 1000
       : now;
 
   if (authorizedUntil > now) {

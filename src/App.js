@@ -19,6 +19,7 @@ function App() {
       requesterName: "",
     },
     songQueue: {},
+    wifiKey: "",
   };
   const refreshTimeInMiliseconds = 3000;
   const [appStatus, setAppStatus] = useState(defaultAppStatus);
@@ -89,15 +90,21 @@ function App() {
 
   function renderPlayer() {
     let rv = null;
+    let wifiKeyLabel = appStatus.wifiKey ? ` / WIFI: ${appStatus.wifiKey}` : "";
+
     if (appStatus.isReady) {
       rv = (
         <Fragment>
           <div>
+            <div className="song-requester"></div>
             <div className="song-requester">
               By {appStatus.currentSong.requesterName}
+              {wifiKeyLabel}
             </div>
             <div className="code-container">
-              <div className="code-text">{appStatus.permitToken.token}</div>
+              <div className="code-text">
+                MUSCIA: {appStatus.permitToken.token}
+              </div>
             </div>
 
             <SongRow

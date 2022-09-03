@@ -38,6 +38,17 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+app.get("/set-wifi-key", (req, res) => {
+  const wifiKey = req.query.key;
+  if (wifiKey) {
+    store.status = {
+      ...store.status,
+      wifiKey: wifiKey as string,
+    };
+  }
+  res.json(store.status);
+});
+
 app.get(Routes.APP_STATUS, (req, res) => {
   retryNumber = 100;
   res.json(store.status);

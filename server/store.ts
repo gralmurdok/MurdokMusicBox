@@ -27,6 +27,7 @@ class Store {
         imgUrl: "",
       },
       songQueue: {},
+      wifiKey: "",
     };
   }
 }

@@ -95,6 +95,7 @@ interface AppStatus {
   permitToken: PermitToken;
   currentSong: PlayingSong;
   songQueue: Record<string, QueuedSong | undefined>;
+  wifiKey: string;
 }
 
 interface AuthObject {
