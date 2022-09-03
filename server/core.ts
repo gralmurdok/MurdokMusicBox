@@ -218,7 +218,7 @@ async function authorizeUser(apiParams: APIParams) {
     };
     await handleMusicSearchViaWhatsappMessage({
       ...apiParams,
-      messageBody: apiParams.messageBody,
+      messageBody: store.users[apiParams.toPhoneNumber].searchQuery,
     });
   } else {
     store.users[apiParams.toPhoneNumber] = {
