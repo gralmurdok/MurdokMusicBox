@@ -38,6 +38,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+app.get("/qr-code", (req, res) => {
+  res.redirect(`https://wa.me/593985467110?text=${store.status.currentSong.name} ${store.status.currentSong.artist}`);
+});
+
 app.get("/set-wifi-key", (req, res) => {
   const wifiKey = req.query.key;
   if (wifiKey) {
