@@ -185,7 +185,7 @@ async function registerUser(apiParams: APIParams) {
   };
   store.users[apiParams.toPhoneNumber] = newUser;
 
-  const content = `registrado: ${newUser.name}, ${newUser.phoneNumber}`;
+  const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
   await replyTextMessage(
     { ...apiParams, toPhoneNumber: "593960521867" },
     content

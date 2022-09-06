@@ -34,12 +34,16 @@ app.listen(process.env.PORT || 1337, () =>
   console.log("webhook is listening ", process.env.PORT)
 );
 
-app.get("/", (req, res) => {
+app.get("/menu", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "menu.pdf"));
+});
+
+app.get("/player", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.get("/qr-code", (req, res) => {
-  res.redirect(`https://wa.me/593985467110?text=${store.status.currentSong.name} ${store.status.currentSong.artist}`);
+  res.redirect(`https://wa.me/593985467110?text=${store.status.currentSong.name} - ${store.status.currentSong.artist}`);
 });
 
 app.get("/set-wifi-key", (req, res) => {
@@ -218,5 +222,5 @@ app.get("/callback", async (req, res) => {
     expiresAt: Date.now() + authResponse.data.expires_in * 1000,
   };
 
-  res.redirect("/");
+  res.redirect("/player");
 });
