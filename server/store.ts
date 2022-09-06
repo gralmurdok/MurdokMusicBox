@@ -1,4 +1,12 @@
 import { CrossRoadsUser, AuthObject, AppStatus } from "./types";
+const defaultCurrentSong = {
+  name: "Bienvenidos!",
+  trackId: "",
+  artist: "Reproduce musica en spotify para empezar.",
+  endsAt: 0,
+  requesterName: "The Crossroads",
+  imgUrl: "",
+}
 
 class Store {
   auth: AuthObject;
@@ -18,14 +26,7 @@ class Store {
         token: "",
         validUntil: 0,
       },
-      currentSong: {
-        name: "",
-        trackId: "",
-        artist: "",
-        endsAt: 0,
-        requesterName: "",
-        imgUrl: "",
-      },
+      currentSong: defaultCurrentSong,
       songQueue: {},
       wifiKey: "",
     };
@@ -34,4 +35,4 @@ class Store {
 
 const store = new Store();
 
-export { store };
+export { store, defaultCurrentSong };

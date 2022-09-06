@@ -4,14 +4,14 @@ import {
   refreshToken,
   searchTracks,
 } from "./spotify";
-import { store } from "./store";
+import { defaultCurrentSong, store } from "./store";
 import { APIParams, QueuedSong } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 async function handleGetCurrentSong() {
   try {
-    console.log("fetching current song...");
     const currentSong = await getCurrentSong(store.auth.accessToken);
+    console.log(currentSong.data);
     const remainingTime =
       currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
 
@@ -48,14 +48,7 @@ async function handleGetCurrentSong() {
     };
   } catch (err) {
     console.log(err);
-    return {
-      trackId: "",
-      name: "",
-      artist: "",
-      endsAt: 0,
-      requesterName: "",
-      imgUrl: "",
-    };
+    return defaultCurrentSong;
   }
 }
 

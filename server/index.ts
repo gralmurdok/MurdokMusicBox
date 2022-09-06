@@ -22,8 +22,7 @@ import { store } from "./store";
 dotenv.config();
 console.log(path.join(__dirname, "build"));
 const app = express()
-  .use(bodyParser.json())
-  .use(express.static(path.join(__dirname, "build")));
+  .use(bodyParser.json());
 
 // Sets server port and logs message on success
 
@@ -33,6 +32,12 @@ let timeout: any;
 app.listen(process.env.PORT || 1337, () =>
   console.log("webhook is listening ", process.env.PORT)
 );
+
+app.get(["/", "index.html"], (req, res) => {
+  res.redirect("/menu");
+})
+
+app.use(express.static(path.join(__dirname, "build")));
 
 app.get("/menu", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "menu.pdf"));
