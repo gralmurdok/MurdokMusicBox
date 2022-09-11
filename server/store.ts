@@ -3,6 +3,8 @@ const defaultCurrentSong = {
   name: "Bienvenidos!",
   trackId: "",
   artist: "Reproduce musica en spotify para empezar.",
+  albumId: "",
+  nextDefaultSong: 0,
   endsAt: 0,
   requesterName: "The Crossroads",
   imgUrl: "",
@@ -29,6 +31,8 @@ class Store {
       currentSong: defaultCurrentSong,
       songQueue: {},
       wifiKey: "",
+      isPlayingFromQueue: false,
+      isNextSongDefined: false,
     };
   }
 }

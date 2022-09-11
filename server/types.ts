@@ -51,8 +51,11 @@ interface InteractiveMessage extends WhatsappMessage {
   interactive: {
     type: "button" | "list";
     header?: {
-      type: "text";
-      text: string;
+      type: "text" | "image";
+      text?: string;
+      image?: {
+        link: string;
+      };
     };
     body: {
       text: string;
@@ -83,6 +86,8 @@ interface PermitToken {
 }
 
 interface PlayingSong extends Song {
+  nextDefaultSong: number;
+  albumId: string;
   endsAt: number;
 }
 
@@ -96,6 +101,8 @@ interface AppStatus {
   currentSong: PlayingSong;
   songQueue: Record<string, QueuedSong | undefined>;
   wifiKey: string;
+  isPlayingFromQueue: boolean;
+  isNextSongDefined: boolean;
 }
 
 interface AuthObject {

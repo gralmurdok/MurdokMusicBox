@@ -1,6 +1,7 @@
 import {
   getCurrentSong,
-  queueSong,
+  play,
+  playAlbum,
   refreshToken,
   searchTracks,
 } from "./spotify";
@@ -11,40 +12,19 @@ import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 async function handleGetCurrentSong() {
   try {
     const currentSong = await getCurrentSong(store.auth.accessToken);
-    console.log(currentSong.data);
     const remainingTime =
       currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
-
     const trackId = currentSong.data.item.id;
 
-    let requesterName: string;
-
-    if (trackId === store.status.currentSong.trackId) {
-      requesterName = store.status.currentSong.requesterName;
-    } else if (store.status.songQueue[trackId]) {
-      requesterName = (store.status.songQueue[trackId] as QueuedSong)
-        .requesterName;
-    } else {
-      requesterName = "The Crossroads Loja";
-    }
-
-    if (store.status.songQueue[trackId]) {
-      store.status = {
-        ...store.status,
-        songQueue: {
-          ...store.status.songQueue,
-          [trackId]: undefined,
-        },
-      };
-    }
-
     return {
+      ...store.status.currentSong,
       trackId,
       name: currentSong.data.item.name,
       artist: currentSong.data.item.artists[0].name,
+      albumId: currentSong.data.item.album.id,
+      nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
       endsAt: Date.now() + remainingTime,
       imgUrl: currentSong.data.item.album.images[0].url,
-      requesterName,
     };
   } catch (err) {
     console.log(err);
@@ -58,7 +38,6 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
       apiParams.spotifyToken,
       apiParams.messageBody
     );
-    console.log(JSON.stringify(search.data.tracks.items[0], null, 2));
     store.users[apiParams.toPhoneNumber] = {
       ...store.users[apiParams.toPhoneNumber],
       searchResults: search.data.tracks.items
@@ -69,7 +48,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
           imgUrl: track.album.images[0].url,
           requesterName: apiParams.requesterName,
         }))
-        .slice(0, 5),
+        .slice(0, 10),
       searchQuery: apiParams.messageBody,
     };
     await replyMusicBackToUser(apiParams);
@@ -109,13 +88,14 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
             requestedAt: now,
           },
         };
-        await queueSong(apiParams.spotifyToken, trackId);
+        //await queueSong(apiParams.spotifyToken, trackId);
         await replyTextMessage(apiParams, "tu cancion esta en la cola");
         store.users[apiParams.toPhoneNumber] = {
           ...store.users[apiParams.toPhoneNumber],
           name: apiParams.requesterName,
           phoneNumber: apiParams.toPhoneNumber,
-          nextAvailableSongTimestamp: now + 300 * 1000,
+          //nextAvailableSongTimestamp: now + 300 * 1000,
+          nextAvailableSongTimestamp: now,
         };
       } else {
         await replyTextMessage(
@@ -133,17 +113,31 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
   }
 }
 
+function getRandomInt(limit: number) {
+  return Math.floor(Math.random() * limit);
+}
+
 function generateRandomPermitToken() {
-  return (Math.floor(Math.random() * 9000) + 1000).toString();
+  return (getRandomInt(9000) + 1000).toString();
+}
+
+function getSortedSongQueue() {
+  return Object.keys(store.status.songQueue)
+    .map((trackId) => store.status.songQueue[trackId] as QueuedSong)
+    .sort((a: QueuedSong, b: QueuedSong) => a.requestedAt - b.requestedAt)
+    .filter((x) => !!x);
 }
 
 async function updateAppStatus() {
+  const currentSong = await handleGetCurrentSong();
+  const sortedSongQueue = getSortedSongQueue();
   const now = Date.now();
   const permitTokenTimeInMinutes = parseFloat(
     process.env.PERMIT_REFRESH_MINS ?? "60"
   );
   const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
   const shouldRefreshToken = store.auth.expiresAt < now;
+  const untilNextSong = currentSong.endsAt - now;
 
   if (shouldRefreshToken) {
     await refreshToken();
@@ -159,12 +153,61 @@ async function updateAppStatus() {
             validUntil: permitTokenInMiliseconds,
           }
         : store.status.permitToken,
-    currentSong: await handleGetCurrentSong(),
-    songQueue: {
-      ...store.status.songQueue,
-      [store.status.currentSong.trackId]: undefined,
-    },
+    currentSong,
   };
+
+  if (untilNextSong < 10000 && !store.status.isNextSongDefined) {
+    const shouldPlayNextQueuedSong =
+      sortedSongQueue.length > 0 &&
+      sortedSongQueue[0].trackId !== currentSong.trackId;
+    setTimeout(() => {
+      try {
+        if (shouldPlayNextQueuedSong) {
+          play(store.auth.accessToken, sortedSongQueue[0].trackId);
+          store.status = {
+            ...store.status,
+            currentSong: {
+              ...store.status.currentSong,
+              requesterName: sortedSongQueue[0].requesterName,
+            },
+            songQueue: {
+              ...store.status.songQueue,
+              [sortedSongQueue[0].trackId]: undefined,
+            },
+            isPlayingFromQueue: true,
+          };
+          console.log("PLAYING NEXT FROM QUEUE: " + sortedSongQueue[0].artist);
+        } else if (store.status.isPlayingFromQueue) {
+          playAlbum(
+            store.auth.accessToken,
+            currentSong.albumId,
+            currentSong.nextDefaultSong
+          );
+          store.status = {
+            ...store.status,
+            currentSong: {
+              ...store.status.currentSong,
+              requesterName: "The Crossroads Loja",
+            },
+            isPlayingFromQueue: false,
+          };
+          console.log("PLAYING NEXT FROM ALBUM: " + currentSong.artist);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }, untilNextSong - 1000);
+
+    store.status = {
+      ...store.status,
+      isNextSongDefined: true,
+    };
+  } else {
+    store.status = {
+      ...store.status,
+      isNextSongDefined: false,
+    };
+  }
 }
 
 async function registerUser(apiParams: APIParams) {
@@ -176,7 +219,10 @@ async function registerUser(apiParams: APIParams) {
     searchResults: [],
     searchQuery: apiParams.messageBody,
   };
-  store.users[apiParams.toPhoneNumber] = newUser;
+  store.users = {
+    ...store.users,
+    [apiParams.toPhoneNumber]: newUser,
+  };
 
   const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
   await replyTextMessage(

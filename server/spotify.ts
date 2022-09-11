@@ -1,13 +1,36 @@
 import axios from "axios";
 import { store } from "./store";
 
-function play(token: string) {
+function play(token: string, trackId: string) {
   return axios({
     method: "PUT", // Required, HTTP method, a string, e.g. POST, GET
-    url: "https://api.spotify.com/v1/me/player/play?device_id=7e3b778fefb21987775df97c7d5a5531e55b0b92",
+    url: "https://api.spotify.com/v1/me/player/play",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+    },
+    data: {
+      uris: [`spotify:track:${trackId}`],
+      offset: {
+        position: 0,
+      },
+      position_ms: 0,
+    },
+  });
+}
+
+function playAlbum(token: string, albumId: string, positionOffset: number) {
+  return axios({
+    method: "PUT", // Required, HTTP method, a string, e.g. POST, GET
+    url: "https://api.spotify.com/v1/me/player/play",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      context_uri: `spotify:album:${albumId}`,
+      offset: { position: positionOffset },
+      position_ms: 0,
     },
   });
 }
@@ -78,4 +101,11 @@ async function refreshToken() {
   }
 }
 
-export { play, queueSong, searchTracks, getCurrentSong, refreshToken };
+export {
+  play,
+  queueSong,
+  searchTracks,
+  getCurrentSong,
+  refreshToken,
+  playAlbum,
+};

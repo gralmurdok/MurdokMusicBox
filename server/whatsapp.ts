@@ -10,7 +10,7 @@ function replyMusicBackToUser(apiParams: APIParams) {
   const songsList: Song[] = getCurrentUser(apiParams).searchResults.map(
     (song) => ({
       ...song,
-      name: song.name.substring(0, 24),
+      name: song.name,
     })
   );
 

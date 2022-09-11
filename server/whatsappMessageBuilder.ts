@@ -17,17 +17,16 @@ function simpleMessage(from: string, message: string): TextMessage {
 
 function interactiveReplyButtonsMessage(
   from: string,
-  title: string,
   message: string,
-  actions: Song[]
+  song: Song
 ): InteractiveMessage {
-  const buttons: ReplyButton[] = actions.map((song) => ({
+  const button: ReplyButton = {
     type: "reply",
     reply: {
       id: song.trackId,
-      title: song.name,
+      title: "Play",
     },
-  }));
+  };
 
   return {
     messaging_product: "whatsapp",
@@ -37,8 +36,10 @@ function interactiveReplyButtonsMessage(
     interactive: {
       type: "button",
       header: {
-        type: "text",
-        text: title,
+        type: "image",
+        image: {
+          link: song.imgUrl,
+        },
       },
       body: {
         text: message,
@@ -47,7 +48,7 @@ function interactiveReplyButtonsMessage(
         text: "The Crossroads Loja",
       },
       action: {
-        buttons,
+        buttons: [button],
       },
     },
   };
@@ -61,8 +62,8 @@ function interactiveListMessage(
 ): InteractiveMessage {
   const sectionRows: SectionRow[] = actions.map((song) => ({
     id: song.trackId,
-    title: song.name,
-    description: song.artist,
+    title: song.artist.substring(0, 24),
+    description: song.name.substring(0, 100),
   }));
 
   const sections: Section[] = [
@@ -87,7 +88,7 @@ function interactiveListMessage(
         text: message,
       },
       action: {
-        button: "Ver resultados",
+        button: "SELECCIONAR MUSICA",
         sections,
       },
     },
