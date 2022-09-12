@@ -63,7 +63,7 @@ function interactiveListMessage(
   const sectionRows: SectionRow[] = actions.map((song) => ({
     id: song.trackId,
     title: song.artist.substring(0, 24),
-    description: song.name.substring(0, 100),
+    description: song.name.substring(0, 72),
   }));
 
   const sections: Section[] = [

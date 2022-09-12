@@ -56,7 +56,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
     console.log(err);
     await replyTextMessage(
       apiParams,
-      "algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
+      "Algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
     );
   }
 }
@@ -70,12 +70,12 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
       const remainingSeconds = remainingMiliseconds / 1000;
       await replyTextMessage(
         apiParams,
-        `puedes pedir tu siguiente cancion en ${Math.floor(
+        `Puedes pedir tu siguiente cancion en ${Math.floor(
           remainingSeconds / 60
         )}:${remainingMiliseconds % 60} minutos`
       );
     } else if (store.status.songQueue[trackId]) {
-      await replyTextMessage(apiParams, "oh, aquella cancion ya esta en cola");
+      await replyTextMessage(apiParams, "Oh, aquella cancion ya esta en cola");
     } else {
       const queuedSong = getCurrentUser(apiParams).searchResults.find(
         (song) => song.trackId === trackId
@@ -88,19 +88,17 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
             requestedAt: now,
           },
         };
-        //await queueSong(apiParams.spotifyToken, trackId);
-        await replyTextMessage(apiParams, "tu cancion esta en la cola");
+        await replyTextMessage(apiParams, "Tu cancion esta en la cola");
         store.users[apiParams.toPhoneNumber] = {
           ...store.users[apiParams.toPhoneNumber],
           name: apiParams.requesterName,
           phoneNumber: apiParams.toPhoneNumber,
-          //nextAvailableSongTimestamp: now + 300 * 1000,
-          nextAvailableSongTimestamp: now,
+          nextAvailableSongTimestamp: now + 180 * 1000,
         };
       } else {
         await replyTextMessage(
           apiParams,
-          "asegurate de escoger una cancion de tu busqueda reciente"
+          "Asegurate de escoger una cancion de tu busqueda reciente"
         );
       }
     }
@@ -108,7 +106,7 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
     console.log(err);
     await replyTextMessage(
       apiParams,
-      "algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
+      "Algo salio mal, acercate a la barra para reportarlo, nosotros lo arreglaremos"
     );
   }
 }
