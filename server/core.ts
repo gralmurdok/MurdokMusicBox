@@ -158,10 +158,10 @@ async function updateAppStatus() {
     const shouldPlayNextQueuedSong =
       sortedSongQueue.length > 0 &&
       sortedSongQueue[0].trackId !== currentSong.trackId;
-    setTimeout(() => {
+    setTimeout(async() => {
       try {
         if (shouldPlayNextQueuedSong) {
-          play(store.auth.accessToken, sortedSongQueue[0].trackId);
+          await play(store.auth.accessToken, sortedSongQueue[0].trackId);
           store.status = {
             ...store.status,
             currentSong: {
@@ -176,7 +176,7 @@ async function updateAppStatus() {
           };
           console.log("PLAYING NEXT FROM QUEUE: " + sortedSongQueue[0].artist);
         } else if (store.status.isPlayingFromQueue) {
-          playAlbum(
+          await playAlbum(
             store.auth.accessToken,
             currentSong.albumId,
             currentSong.nextDefaultSong

@@ -67,12 +67,15 @@ function App() {
     const sortedSongQueue = Object.keys(appStatus.songQueue)
       .map((trackId) => appStatus.songQueue[trackId])
       .sort((a, b) => a.requestedAt - b.requestedAt)
-      .slice(0, 2)
+      .slice(0, 5)
       .filter((x) => !!x);
 
+
+    let rv = null;
+
     if (sortedSongQueue.length) {
-      return (
-        <Fragment>
+      rv = (
+        <div className="Queued-songs-container">
           <div className="Queue-next">En cola:</div>
           <div className="Queued-songs-list">
             {sortedSongQueue.map((song) => (
@@ -83,36 +86,27 @@ function App() {
               />
             ))}
           </div>
-        </Fragment>
+        </div>
       );
     }
+
+    return rv;
   }
 
   function renderPlayer() {
     let rv = null;
-    let wifiKeyLabel = appStatus.wifiKey ? ` / WIFI: ${appStatus.wifiKey}` : "";
-
     if (appStatus.isReady) {
       rv = (
         <Fragment>
           <div>
-            <div className="song-requester"></div>
-            <div className="song-requester">
-              By {appStatus.currentSong.requesterName}
-              {wifiKeyLabel}
+            <div className="songs-container">
+              <SongRow
+                name={appStatus.currentSong.name}
+                artist={appStatus.currentSong.artist}
+                imgUrl={appStatus.currentSong.imgUrl}
+              />
+              {renderQueuedSongs()}
             </div>
-            <div className="code-container">
-              <div className="code-text">
-                MUSICA: {appStatus.permitToken.token}
-              </div>
-            </div>
-
-            <SongRow
-              name={appStatus.currentSong.name}
-              artist={appStatus.currentSong.artist}
-              imgUrl={appStatus.currentSong.imgUrl}
-            />
-            {renderQueuedSongs()}
           </div>
         </Fragment>
       );
@@ -120,15 +114,36 @@ function App() {
     return rv;
   }
 
+  function renderHeader() {
+    let wifiKeyLabel = appStatus.wifiKey ? ` / WIFI: ${appStatus.wifiKey}` : "";
+
+    let rv = null;
+    if (appStatus.isReady) {
+      rv = (
+        <Fragment>
+          <div className="song-requester">
+            By {appStatus.currentSong.requesterName}
+            {wifiKeyLabel}
+          </div>
+          <div className="code-container">
+            <div className="code-text">
+              MUSICA: {appStatus.permitToken.token}
+            </div>
+          </div>
+        </Fragment>
+      );
+    }
+
+    return rv;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div className="App-content">
-          {renderPlayer()}
-          {renderAuthLink()}
-        </div>
-      </header>
+      <div className="App-header">{renderHeader()}</div>
+      <div className="App-content">
+        {renderPlayer()}
+        {renderAuthLink()}
+      </div>
     </div>
   );
 }
