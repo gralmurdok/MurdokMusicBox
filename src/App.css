@@ -1,32 +1,45 @@
+.current-song {
+  grid-area: current-song;
+}
+
+.music-code {
+  grid-area: music-code;
+  background-color: #181818;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  font-size: 15vh;
+}
+
+.song-queue {
+  grid-area: song-queue;
+}
+
+.container {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 20%;
+  grid-template-areas: 
+    "current-song music-code"
+    "current-song song-queue"
+    "current-song song-queue"
+    "current-song song-queue"
+    "current-song song-queue";
+}
+
 .App {
   text-align: center;
   background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(50px + 2vmin);
   color: white;
 }
 
-.App-logo {
-  height: 100%;
-  pointer-events: none;
-  position: absolute;
-  opacity: 0.4;
-  height: 100%;
-  z-index: 0;
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
+  .SongRow-image {
     animation: App-logo-spin infinite 20s linear;
   }
-}
-
-.App-header {
-
 }
 
 .App-link {
@@ -47,12 +60,11 @@
 }
 
 .SongRow {
-  display: flex;
   border-radius: 5px;
   background-color: #181818;
   padding: 20px;
-  width: 480px;
-  height: 600px;
+  min-height: inherit;
+  display: flex;
   flex-direction: column;
 }
 
@@ -66,46 +78,40 @@
 }
 
 .song-name {
-  font-size: calc(15px + 2vmin);
+  font-size: 4vh;
 }
 
 .song-artist {
-  font-size: calc(10px + 2vmin);
+  margin-top: 1vh;
+  font-size: 3.5vh;
+}
+
+.song-requester {
+  margin-top: 2vh;
+  font-size: 2vh;
 }
 
 .song-requester {
   margin-bottom: 10px;
   font-size: calc(10px + 2vmin);
+  display: flex;
+  justify-content: center;
+  border-radius: 5px;
+  padding: 0px 5px 5px 5px;
+  margin-bottom: 10px;
 }
 
 .SongRow-image {
+  border-radius: 100%;
   width: 100%;
-}
-
-.playing-now {
-  
-}
-
-.code-container {
-  display: flex;
-  justify-content: center;
-}
-
-.code-text {
-  border-radius: 5px;
-  background-color: #181818;
-  padding: 0px 5px 5px 5px;
-  margin-bottom: 10px;
 }
 
 .Queued-song {
   display: flex;
   border-radius: 5px;
   background-color: #181818;
-  padding: 10px;
-  width: 480px;
-  height: 120px;
-  margin-bottom: 10px;
+  padding: 2vh;
+  margin: 2vh 0 2vh 2vh;
 }
 
 .Queued-song-info {
@@ -118,15 +124,21 @@
 }
 
 .Queued-song-name {
-  font-size: 18px;
+  font-size: 4vh;
 }
 
 .Queued-song-artist {
-  font-size: 12px;
+  margin-top: 1vh;
+  font-size: 3.5vh;
+}
+
+.Queued-song-requester {
+  margin-top: 1.5vh;
+  font-size: 2vh;
 }
 
 .Queued-song-image {
-  height: 100%;
+  height: 20vh;
 }
 
 .Queue-next {
@@ -143,13 +155,15 @@
   flex-direction: column;
 }
 
+.Queued-songs-no-songs {
+  font-size: 10vh;
+}
+
 .Queued-songs-container {
   display: flex;
   flex-direction: column;
 }
 
 .songs-container {
-  display: flex;
-  justify-content: space-evenly;
-  width: 150vh;
+  min-height: 100vh;
 }

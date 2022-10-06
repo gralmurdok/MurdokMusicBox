@@ -75,22 +75,30 @@ function App() {
 
     if (sortedSongQueue.length) {
       rv = (
-        <div className="Queued-songs-container">
-          <div className="Queue-next">En cola:</div>
-          <div className="Queued-songs-list">
-            {sortedSongQueue.map((song) => (
-              <QueuedSong
-                name={song.name}
-                artist={song.artist}
-                imgUrl={song.imgUrl}
-              />
-            ))}
-          </div>
+        <div className="Queued-songs-list">
+          {sortedSongQueue.map((song) => (
+            <QueuedSong
+              name={song.name}
+              artist={song.artist}
+              imgUrl={song.imgUrl}
+              requester={song.requesterName}
+            />
+          ))}
+        </div>
+      );
+    } else {
+      rv = (
+        <div className="Queued-songs-no-songs">
+          Escanea nuestro código QR o escribeme al WS:0985467110 y reproduce tu música!
         </div>
       );
     }
 
-    return rv;
+    return (
+      <div className="Queued-songs-container">
+        {rv}
+      </div>
+    );
   }
 
   function renderPlayer() {
@@ -104,8 +112,8 @@ function App() {
                 name={appStatus.currentSong.name}
                 artist={appStatus.currentSong.artist}
                 imgUrl={appStatus.currentSong.imgUrl}
+                requester={appStatus.currentSong.requesterName}
               />
-              {renderQueuedSongs()}
             </div>
           </div>
         </Fragment>
@@ -115,19 +123,13 @@ function App() {
   }
 
   function renderHeader() {
-    let wifiKeyLabel = appStatus.wifiKey ? ` / WIFI: ${appStatus.wifiKey}` : "";
-
     let rv = null;
     if (appStatus.isReady) {
       rv = (
         <Fragment>
-          <div className="song-requester">
-            By {appStatus.currentSong.requesterName}
-            {wifiKeyLabel}
-          </div>
           <div className="code-container">
             <div className="code-text">
-              MUSICA: {appStatus.permitToken.token}
+              {appStatus.permitToken.token}
             </div>
           </div>
         </Fragment>
@@ -138,11 +140,14 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <div className="App-header">{renderHeader()}</div>
-      <div className="App-content">
+    <div className="App container">
+      <div className="current-song">
         {renderPlayer()}
+      </div>
+      <div className="App-header music-code">{renderHeader()}</div>
+      <div className="App-content song-queue">
         {renderAuthLink()}
+        {renderQueuedSongs()}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import "./App.css";
 
-function QueuedSong({ name, artist, imgUrl }) {
+function QueuedSong({ name, artist, imgUrl, requester }) {
   const formattedName = name.length > 25 ? `${name.substring(0, 22)}...` : name;
 
   return (
@@ -9,6 +9,7 @@ function QueuedSong({ name, artist, imgUrl }) {
       <div className="Queued-song-info">
         <div className="Queued-song-name">{formattedName}</div>
         <div className="Queued-song-artist">{artist}</div>
+        <div className="Queued-song-requester">By {requester}</div>
       </div>
     </div>
   );
