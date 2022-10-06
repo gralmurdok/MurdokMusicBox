@@ -19,7 +19,7 @@
 .container {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 45% 55%;
   grid-template-rows: 20%;
   grid-template-areas: 
     "current-song music-code"
