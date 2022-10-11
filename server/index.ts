@@ -7,7 +7,6 @@ import dotenv from "dotenv";
 import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages, Routes } from "./constants";
 import {
-  authorizeUser,
   determineOperation,
   getCurrentUser,
   handleMusicSearchViaWhatsappMessage,
@@ -127,9 +126,6 @@ app.post("/webhook", async (req, res) => {
       switch (operation) {
         case "register":
           await registerUser(apiParams);
-          break;
-        case "authorizeUser":
-          await authorizeUser(apiParams);
           break;
         case "receiptSongs":
           if (!apiParams.spotifyToken) {

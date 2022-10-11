@@ -213,7 +213,6 @@ async function registerUser(apiParams: APIParams) {
     name: apiParams.requesterName,
     phoneNumber: apiParams.toPhoneNumber,
     nextAvailableSongTimestamp: Date.now(),
-    authorizedUntil: Date.now(),
     searchResults: [],
     searchQuery: apiParams.messageBody,
   };
@@ -237,57 +236,21 @@ function getCurrentUser(apiParams: APIParams) {
   return store.users[apiParams.toPhoneNumber];
 }
 
-function isAuthorizedUser(apiParams: APIParams) {
-  return getCurrentUser(apiParams).authorizedUntil > Date.now();
-}
-
-async function authorizeUser(apiParams: APIParams) {
-  const now = Date.now();
-  const authorizedUntil =
-    store.status.permitToken.token === apiParams.messageBody
-      ? now + parseFloat(process.env.PERMIT_REFRESH_MINS ?? "60") * 60 * 1000
-      : now;
-
-  if (authorizedUntil > now) {
-    store.users[apiParams.toPhoneNumber] = {
-      ...store.users[apiParams.toPhoneNumber],
-      authorizedUntil,
-    };
-    await handleMusicSearchViaWhatsappMessage({
-      ...apiParams,
-      messageBody: store.users[apiParams.toPhoneNumber].searchQuery,
-    });
-  } else {
-    store.users[apiParams.toPhoneNumber] = {
-      ...store.users[apiParams.toPhoneNumber],
-      searchQuery: apiParams.messageBody,
-    };
-    await replyTextMessage(
-      apiParams,
-      "por favor ingresa el codigo que ves en pantalla, para continuar con la busqueda"
-    );
-  }
-}
-
 function determineOperation(apiParams: APIParams) {
   let rv;
   if (!getCurrentUser(apiParams)) {
     rv = "register";
-  } else if (!isAuthorizedUser(apiParams)) {
-    rv = "authorizeUser";
-  } else if (isAuthorizedUser(apiParams)) {
+  } else {
     rv = "receiptSongs";
   }
   return rv;
 }
 
 export {
-  authorizeUser,
   registerUser,
   determineOperation,
   handleMusicSearchViaWhatsappMessage,
   handleQueueSong,
   updateAppStatus,
   getCurrentUser,
-  isAuthorizedUser,
 };

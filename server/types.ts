@@ -75,7 +75,6 @@ interface CrossRoadsUser {
   name: string;
   phoneNumber: string;
   nextAvailableSongTimestamp: number;
-  authorizedUntil: number;
   searchResults: Song[];
   searchQuery: string;
 }
