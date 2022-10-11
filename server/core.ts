@@ -222,16 +222,14 @@ async function registerUser(apiParams: APIParams) {
     [apiParams.toPhoneNumber]: newUser,
   };
 
+  await handleMusicSearchViaWhatsappMessage(apiParams);
+
   const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
   await replyTextMessage(
     { ...apiParams, toPhoneNumber: "593960521867" },
     content
   );
 
-  await replyTextMessage(
-    apiParams,
-    "Bienvenido a Crossroads Loja, por favor ingresa el codigo de 4 digitos que esta en pantalla para usar el servicio de musica."
-  );
   return newUser;
 }
 
