@@ -6,7 +6,7 @@ import { QueuedSong } from "./QueuedSong";
 
 function App() {
   const defaultAppStatus = {
-    isReady: false,
+    isAuth: false,
     permitToken: {
       token: "",
       validUntil: 0,
@@ -51,7 +51,7 @@ function App() {
   function renderAuthLink() {
     let rv = null;
 
-    if (!appStatus.isReady) {
+    if (!appStatus.isAuth) {
       rv = (
         <a className="App-link" href="/spotify-login">
           Autorizar
@@ -93,7 +93,7 @@ function App() {
 
   function renderPlayer() {
     let rv = null;
-    if (appStatus.isReady) {
+    if (appStatus.isAuth) {
       rv = (
         <Fragment>
           <div>
@@ -114,7 +114,7 @@ function App() {
 
   function renderHeader() {
     let rv = null;
-    if (appStatus.isReady) {
+    if (appStatus.isAuth) {
       rv = (
         <Fragment>
           <div className="code-container">

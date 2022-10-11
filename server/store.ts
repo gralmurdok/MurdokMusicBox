@@ -2,7 +2,7 @@ import { Defaults } from "./constants";
 import { CrossRoadsUser, AuthObject, AppStatus } from "./types";
 const defaultCurrentSong = {
   name: "Bienvenidos!",
-  trackId: "",
+  trackId: Defaults.TRACK_ID,
   artist: "Reproduce musica en spotify para empezar.",
   albumId: "",
   nextDefaultSong: 0,
@@ -25,7 +25,9 @@ class Store {
     };
     this.users = {};
     this.status = {
+      isAuth: false,
       isReady: false,
+      isPlayingMusic: false,
       permitToken: {
         token: "",
         validUntil: 0,
@@ -33,8 +35,8 @@ class Store {
       currentSong: defaultCurrentSong,
       songQueue: {},
       wifiKey: "",
-      isPlayingFromQueue: false,
       isNextSongDefined: false,
+      nextSongShouldBeQueuedAt: Date.now(),
     };
   }
 }

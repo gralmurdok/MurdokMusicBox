@@ -98,13 +98,15 @@ interface QueuedSong extends Song {
 }
 
 interface AppStatus {
+  isAuth: boolean;
   isReady: boolean;
+  isPlayingMusic: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
   songQueue: Record<string, QueuedSong | undefined>;
   wifiKey: string;
-  isPlayingFromQueue: boolean;
   isNextSongDefined: boolean;
+  nextSongShouldBeQueuedAt: number;
 }
 
 interface AuthObject {
