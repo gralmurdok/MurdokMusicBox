@@ -69,7 +69,6 @@ function App() {
       .slice(0, 5)
       .filter((x) => !!x);
 
-
     let rv = null;
 
     if (sortedSongQueue.length) {
@@ -89,11 +88,7 @@ function App() {
       rv = null;
     }
 
-    return (
-      <div className="Queued-songs-container">
-        {rv}
-      </div>
-    );
+    return <div className="Queued-songs-container">{rv}</div>;
   }
 
   function renderPlayer() {
@@ -123,9 +118,7 @@ function App() {
       rv = (
         <Fragment>
           <div className="code-container">
-            <div className="code-text">
-              WS:0985467110
-            </div>
+            <div className="code-text">WS:0985467110</div>
           </div>
         </Fragment>
       );
@@ -136,9 +129,7 @@ function App() {
 
   return (
     <div className="App container">
-      <div className="current-song">
-        {renderPlayer()}
-      </div>
+      <div className="current-song">{renderPlayer()}</div>
       <div className="App-header music-code">{renderHeader()}</div>
       <div className="App-content song-queue">
         {renderAuthLink()}

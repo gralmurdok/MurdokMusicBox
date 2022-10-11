@@ -12,9 +12,10 @@ import { APIParams, QueuedSong, Song } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 function getFormattedRemainigTime(remainingSeconds: number) {
-  return `${Math.floor(
-    remainingSeconds / 60
-  )} minutos y ${Math.floor(remainingSeconds % 60)} segundos`;
+  const absRemainingSeconds = Math.abs(remainingSeconds);
+  return `${Math.floor(absRemainingSeconds / 60)} minutos y ${Math.floor(
+    absRemainingSeconds % 60
+  )} segundos`;
 }
 
 async function playNextSong(forcePlaySong?: boolean) {
@@ -99,15 +100,24 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
   const currentUser = getCurrentUser(apiParams);
   const now = Date.now();
   try {
-    if (currentUser.phoneNumber !== Defaults.MASTER_NUMBER && currentUser.nextAvailableSongTimestamp > now) {
+    if (
+      currentUser.phoneNumber !== Defaults.MASTER_NUMBER &&
+      currentUser.nextAvailableSongTimestamp > now
+    ) {
       const remainingMiliseconds =
         getCurrentUser(apiParams).nextAvailableSongTimestamp - now;
       const remainingSeconds = remainingMiliseconds / 1000;
-      await replyTextMessage(apiParams, `Puedes pedir tu siguiente cancion en ${getFormattedRemainigTime(remainingSeconds)}`);
+      await replyTextMessage(
+        apiParams,
+        `Puedes pedir tu siguiente cancion en ${getFormattedRemainigTime(
+          remainingSeconds
+        )}`
+      );
     } else if (store.status.songQueue[trackId]) {
       await replyTextMessage(apiParams, "Oh, aquella cancion ya esta en cola");
     } else {
-      const queuedSong = getCurrentUser(apiParams).searchResults.find(
+      const currentUser = getCurrentUser(apiParams);
+      const queuedSong = currentUser.searchResults.find(
         (song) => song.trackId === trackId
       );
       if (queuedSong) {
@@ -127,10 +137,12 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           await playNextSong(true);
           await replyTextMessage(apiParams, "Tu cancion se reproducira ahora.");
         } else {
-          const remainingMilisecondsOfCurrentSong = store.status.currentSong.endsAt - Date.now();
-          const remainingSeconds = remainingSortedSongQueue.reduce((accum: number, song: Song) => {
-            return accum + song.durationMs;
-          }, remainingMilisecondsOfCurrentSong) / 1000;
+          const remainingMilisecondsOfCurrentSong =
+            store.status.currentSong.endsAt - Date.now();
+          const remainingSeconds =
+            remainingSortedSongQueue.reduce((accum: number, song: Song) => {
+              return accum + song.durationMs;
+            }, remainingMilisecondsOfCurrentSong) / 1000;
 
           await replyTextMessage(
             apiParams,
@@ -146,6 +158,12 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           phoneNumber: apiParams.toPhoneNumber,
           nextAvailableSongTimestamp: now + 180 * 1000,
         };
+
+        const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${queuedSong.name} - ${queuedSong.artist}`;
+        await replyTextMessage(
+          { ...apiParams, toPhoneNumber: "593960521867" },
+          content
+        );
       } else {
         await replyTextMessage(
           apiParams,
@@ -276,7 +294,9 @@ function getCurrentUser(apiParams: APIParams) {
 
 function determineOperation(apiParams: APIParams) {
   let rv;
-  if (!getCurrentUser(apiParams)) {
+  if (!store.auth.accessToken) {
+    rv = "noAuth";
+  } else if (!getCurrentUser(apiParams)) {
     rv = "register";
   } else {
     rv = "receiptSongs";

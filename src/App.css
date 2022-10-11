@@ -32,7 +32,6 @@
 .App {
   text-align: center;
   background-color: #282c34;
-  font-size: calc(50px + 2vmin);
   color: white;
 }
 
@@ -77,27 +76,27 @@
 }
 
 .song-name {
-  font-size: 4vh;
+  font-size: 3.5vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .song-artist {
   margin-top: 1vh;
-  font-size: 3.5vh;
+  font-size: 2.5vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .song-requester {
   margin-top: 2vh;
-  font-size: 2vh;
-}
-
-.song-requester {
-  margin-bottom: 10px;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 2vh;
+  font-size: 2vw;
   display: flex;
   justify-content: center;
-  border-radius: 5px;
-  padding: 0px 5px 5px 5px;
-  margin-bottom: 10px;
+  padding: 0 1vw 1vh 1vw;
 }
 
 .SongRow-image-container {

@@ -142,6 +142,8 @@ app.post("/webhook", async (req, res) => {
               await handleMusicSearchViaWhatsappMessage(apiParams);
             }
           }
+        case "noAuth":
+          break;
       }
 
       console.log(operation, getCurrentUser(apiParams));
