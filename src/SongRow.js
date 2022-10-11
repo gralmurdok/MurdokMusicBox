@@ -7,7 +7,11 @@ function SongRow({ name, artist, imgUrl, requester }) {
     let rv = null;
 
     if (imgUrl) {
-      rv = <img src={imgUrl} className="SongRow-image" alt="logo" />;
+      rv = (
+        <div className="SongRow-image-container">
+          <img src={imgUrl} className="SongRow-image" alt="logo" />
+        </div>
+      );
     }
 
     return rv;
