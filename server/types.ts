@@ -1,3 +1,5 @@
+import { Defaults } from "./constants";
+
 interface APIParams {
   messageBody: string;
   requesterName: string;
@@ -13,6 +15,7 @@ interface Song {
   artist: string;
   requesterName: string;
   imgUrl: string;
+  durationMs: number;
 }
 
 interface ReplyButton {
@@ -61,7 +64,7 @@ interface InteractiveMessage extends WhatsappMessage {
       text: string;
     };
     footer?: {
-      text: "The Crossroads Loja";
+      text: Defaults.REQUESTER_NAME;
     };
     action: {
       button?: string;

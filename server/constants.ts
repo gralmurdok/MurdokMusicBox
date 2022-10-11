@@ -6,4 +6,9 @@ enum Routes {
   APP_STATUS = "/app-status",
 }
 
-export { ErrorMessages, Routes };
+enum Defaults {
+  REQUESTER_NAME = "The Crossroads Loja",
+  MASTER_NUMBER = "593960521867",
+}
+
+export { ErrorMessages, Routes, Defaults };

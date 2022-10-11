@@ -1,13 +1,45 @@
+import { Defaults } from "./constants";
 import {
   getCurrentSong,
   play,
+  queueSong,
   playAlbum,
   refreshToken,
   searchTracks,
 } from "./spotify";
-import { defaultCurrentSong, store } from "./store";
-import { APIParams, QueuedSong } from "./types";
+import { store } from "./store";
+import { APIParams, QueuedSong, Song } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
+
+function getFormattedRemainigTime(remainingSeconds: number) {
+  return `${Math.floor(
+    remainingSeconds / 60
+  )} minutos y ${Math.floor(remainingSeconds % 60)} segundos`;
+}
+
+async function playNextSong(forcePlaySong?: boolean) {
+  const sortedSongQueue = getSortedSongQueue();
+
+  if (!!forcePlaySong) {
+    await play(store.auth.accessToken, sortedSongQueue[0].trackId);
+  } else {
+    await queueSong(store.auth.accessToken, sortedSongQueue[0].trackId);
+  }
+
+  store.status = {
+    ...store.status,
+    currentSong: {
+      ...store.status.currentSong,
+      requesterName: sortedSongQueue[0].requesterName,
+    },
+    songQueue: {
+      ...store.status.songQueue,
+      [sortedSongQueue[0].trackId]: undefined,
+    },
+    isPlayingFromQueue: true,
+  };
+  console.log("PLAYING NEXT FROM QUEUE: " + sortedSongQueue[0].artist);
+}
 
 async function handleGetCurrentSong() {
   try {
@@ -25,10 +57,11 @@ async function handleGetCurrentSong() {
       nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
       endsAt: Date.now() + remainingTime,
       imgUrl: currentSong.data.item.album.images[0].url,
+      durationMs: currentSong.data.duration_ms,
     };
   } catch (err) {
     console.log(err);
-    return defaultCurrentSong;
+    return store.status.currentSong;
   }
 }
 
@@ -47,6 +80,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
           artist: track.artists[0].name,
           imgUrl: track.album.images[0].url,
           requesterName: apiParams.requesterName,
+          durationMs: track.duration_ms,
         }))
         .slice(0, 10),
       searchQuery: apiParams.messageBody,
@@ -62,18 +96,14 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
 }
 
 async function handleQueueSong(apiParams: APIParams, trackId: string) {
+  const currentUser = getCurrentUser(apiParams);
   const now = Date.now();
   try {
-    if (getCurrentUser(apiParams).nextAvailableSongTimestamp > now) {
+    if (currentUser.phoneNumber !== Defaults.MASTER_NUMBER && currentUser.nextAvailableSongTimestamp > now) {
       const remainingMiliseconds =
         getCurrentUser(apiParams).nextAvailableSongTimestamp - now;
       const remainingSeconds = remainingMiliseconds / 1000;
-      await replyTextMessage(
-        apiParams,
-        `Puedes pedir tu siguiente cancion en ${Math.floor(
-          remainingSeconds / 60
-        )}:${remainingMiliseconds % 60} minutos`
-      );
+      await replyTextMessage(apiParams, `Puedes pedir tu siguiente cancion en ${getFormattedRemainigTime(remainingSeconds)}`);
     } else if (store.status.songQueue[trackId]) {
       await replyTextMessage(apiParams, "Oh, aquella cancion ya esta en cola");
     } else {
@@ -81,6 +111,10 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
         (song) => song.trackId === trackId
       );
       if (queuedSong) {
+        const forcePlayNextSong =
+          store.status.currentSong.requesterName === Defaults.REQUESTER_NAME;
+        const remainingSortedSongQueue = getSortedSongQueue();
+
         store.status.songQueue = {
           ...store.status.songQueue,
           [queuedSong.trackId]: {
@@ -88,7 +122,24 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
             requestedAt: now,
           },
         };
-        await replyTextMessage(apiParams, "Tu cancion esta en la cola");
+
+        if (forcePlayNextSong) {
+          await playNextSong(true);
+          await replyTextMessage(apiParams, "Tu cancion se reproducira ahora.");
+        } else {
+          const remainingMilisecondsOfCurrentSong = store.status.currentSong.endsAt - Date.now();
+          const remainingSeconds = remainingSortedSongQueue.reduce((accum: number, song: Song) => {
+            return accum + song.durationMs;
+          }, remainingMilisecondsOfCurrentSong) / 1000;
+
+          await replyTextMessage(
+            apiParams,
+            `Tu cancion esta en la cola, y se reproducira en ${getFormattedRemainigTime(
+              remainingSeconds
+            )}`
+          );
+        }
+
         store.users[apiParams.toPhoneNumber] = {
           ...store.users[apiParams.toPhoneNumber],
           name: apiParams.requesterName,
@@ -158,23 +209,10 @@ async function updateAppStatus() {
     const shouldPlayNextQueuedSong =
       sortedSongQueue.length > 0 &&
       sortedSongQueue[0].trackId !== currentSong.trackId;
-    setTimeout(async() => {
+    setTimeout(async () => {
       try {
         if (shouldPlayNextQueuedSong) {
-          await play(store.auth.accessToken, sortedSongQueue[0].trackId);
-          store.status = {
-            ...store.status,
-            currentSong: {
-              ...store.status.currentSong,
-              requesterName: sortedSongQueue[0].requesterName,
-            },
-            songQueue: {
-              ...store.status.songQueue,
-              [sortedSongQueue[0].trackId]: undefined,
-            },
-            isPlayingFromQueue: true,
-          };
-          console.log("PLAYING NEXT FROM QUEUE: " + sortedSongQueue[0].artist);
+          await playNextSong();
         } else if (store.status.isPlayingFromQueue) {
           await playAlbum(
             store.auth.accessToken,
@@ -185,7 +223,7 @@ async function updateAppStatus() {
             ...store.status,
             currentSong: {
               ...store.status.currentSong,
-              requesterName: "The Crossroads Loja",
+              requesterName: Defaults.REQUESTER_NAME,
             },
             isPlayingFromQueue: false,
           };

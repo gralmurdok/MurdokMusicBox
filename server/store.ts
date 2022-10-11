@@ -1,3 +1,4 @@
+import { Defaults } from "./constants";
 import { CrossRoadsUser, AuthObject, AppStatus } from "./types";
 const defaultCurrentSong = {
   name: "Bienvenidos!",
@@ -6,9 +7,10 @@ const defaultCurrentSong = {
   albumId: "",
   nextDefaultSong: 0,
   endsAt: 0,
-  requesterName: "The Crossroads",
+  requesterName: Defaults.REQUESTER_NAME,
   imgUrl: "",
-}
+  durationMs: 0,
+};
 
 class Store {
   auth: AuthObject;

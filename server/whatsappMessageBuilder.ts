@@ -1,3 +1,4 @@
+import { Defaults } from "./constants";
 import {
   InteractiveMessage,
   ReplyButton,
@@ -45,7 +46,7 @@ function interactiveReplyButtonsMessage(
         text: message,
       },
       footer: {
-        text: "The Crossroads Loja",
+        text: Defaults.REQUESTER_NAME,
       },
       action: {
         buttons: [button],

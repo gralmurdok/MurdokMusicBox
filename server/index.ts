@@ -20,8 +20,7 @@ import { store } from "./store";
 
 dotenv.config();
 console.log(path.join(__dirname, "build"));
-const app = express()
-  .use(bodyParser.json());
+const app = express().use(bodyParser.json());
 
 // Sets server port and logs message on success
 
@@ -34,7 +33,7 @@ app.listen(process.env.PORT || 1337, () =>
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
-})
+});
 
 app.use(express.static(path.join(__dirname, "build")));
 
@@ -47,7 +46,9 @@ app.get("/player", (req, res) => {
 });
 
 app.get("/qr-code", (req, res) => {
-  res.redirect(`https://wa.me/593985467110?text=${store.status.currentSong.name} - ${store.status.currentSong.artist}`);
+  res.redirect(
+    `https://wa.me/593985467110?text=${store.status.currentSong.name} - ${store.status.currentSong.artist}`
+  );
 });
 
 app.get("/set-wifi-key", (req, res) => {

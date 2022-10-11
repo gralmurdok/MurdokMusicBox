@@ -87,11 +87,7 @@ function App() {
         </div>
       );
     } else {
-      rv = (
-        <div className="Queued-songs-no-songs">
-          Escanea nuestro código QR o escribeme al WS:0985467110 y reproduce tu música!
-        </div>
-      );
+      rv = null;
     }
 
     return (
@@ -129,7 +125,7 @@ function App() {
         <Fragment>
           <div className="code-container">
             <div className="code-text">
-              {appStatus.permitToken.token}
+              WS:0985467110
             </div>
           </div>
         </Fragment>
