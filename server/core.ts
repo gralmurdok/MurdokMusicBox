@@ -20,47 +20,46 @@ function getFormattedRemainigTime(remainingSeconds: number) {
 
 async function playNextSong(forcePlaySong?: boolean) {
   const sortedSongQueue = getSortedSongQueue();
+  let nextSongShouldBeQueuedAt = Date.now();
+  let requesterName: string = Defaults.REQUESTER_NAME;
+  let songQueue = store.status.songQueue;
+  const nextSong = sortedSongQueue[0];
 
-  if (store.status.isReady && sortedSongQueue.length > 0) {
-    const nextSong = sortedSongQueue[0];
-
+  if (store.status.isReady && nextSong) {
     if (!!forcePlaySong) {
       await play(store.auth.accessToken, nextSong.trackId);
     } else {
       await queueSong(store.auth.accessToken, nextSong.trackId);
     }
-  
-    store.status = {
-      ...store.status,
-      currentSong: {
-        ...store.status.currentSong,
-        requesterName: nextSong.requesterName,
-      },
-      songQueue: {
-        ...store.status.songQueue,
-        [nextSong.trackId]: undefined,
-      },
-      nextSongShouldBeQueuedAt: Date.now() + nextSong.durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
-    };
-    console.log("PLAYING NEXT FROM QUEUE: " + nextSong.artist);
+
+    requesterName = nextSong.requesterName;
+    songQueue = {
+      ...songQueue,
+      [nextSong.trackId]: undefined,
+    }
+
   } else if (store.status.isReady && !store.status.isPlayingMusic) {
-    console.log(store.status.currentSong);
     await playAlbum(
       store.auth.accessToken,
       store.status.currentSong.albumId,
       store.status.currentSong.nextDefaultSong
     );
-    const updatedCurrentSong = await handleGetCurrentSong();
-    console.log('2nd fetch: ' + store.status.currentSong);
-    store.status = {
-      ...store.status,
-      nextSongShouldBeQueuedAt: Date.now() + updatedCurrentSong.durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
-    };
-    console.log("PLAYING NEXT FROM ALBUM: " + store.status.currentSong.artist);
   }
+
+  await updateCurrentPlayingSong();
+
+  store.status = {
+    ...store.status,
+    currentSong: {
+      ...store.status.currentSong,
+      requesterName,
+    },
+    songQueue,
+    nextSongShouldBeQueuedAt: nextSongShouldBeQueuedAt + store.status.currentSong.durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
+  };
 }
 
-async function handleGetCurrentSong() {
+async function updateCurrentPlayingSong() {
   try {
     const currentSong = await getCurrentSong(store.auth.accessToken);
     const remainingTime =
@@ -73,16 +72,19 @@ async function handleGetCurrentSong() {
       isPlayingMusic: currentSong.data.is_playing,
     }
 
-    return {
-      ...store.status.currentSong,
-      trackId,
-      name: currentSong.data.item.name,
-      artist: currentSong.data.item.artists[0].name,
-      albumId: currentSong.data.item.album.id,
-      nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
-      endsAt: Date.now() + remainingTime,
-      imgUrl: currentSong.data.item.album.images[0].url,
-      durationMs: currentSong.data.item.duration_ms,
+    store.status =  {
+      ...store.status,
+      currentSong: {
+        ...store.status.currentSong,
+        trackId,
+        name: currentSong.data.item.name,
+        artist: currentSong.data.item.artists[0].name,
+        albumId: currentSong.data.item.album.id,
+        nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
+        endsAt: Date.now() + remainingTime,
+        imgUrl: currentSong.data.item.album.images[0].url,
+        durationMs: currentSong.data.item.duration_ms,
+      }
     };
   } catch (err) {
     console.log(err);
@@ -226,7 +228,6 @@ function getSortedSongQueue() {
 }
 
 async function updateAppStatus() {
-  const currentSong = await handleGetCurrentSong();
   const now = Date.now();
   const permitTokenTimeInMinutes = parseFloat(
     process.env.PERMIT_REFRESH_MINS ?? "60"
@@ -258,8 +259,9 @@ async function updateAppStatus() {
             validUntil: permitTokenInMiliseconds,
           }
         : store.status.permitToken,
-    currentSong,
   };
+
+  await updateCurrentPlayingSong();
 
   console.log(getSortedSongQueue());
 }
