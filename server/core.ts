@@ -20,9 +20,6 @@ function getFormattedRemainigTime(remainingSeconds: number) {
 
 async function playNextSong(forcePlaySong?: boolean) {
   const sortedSongQueue = getSortedSongQueue();
-  let nextSongShouldBeQueuedAt = Date.now();
-  let requesterName: string = Defaults.REQUESTER_NAME;
-  let songQueue = store.status.songQueue;
   const nextSong = sortedSongQueue[0];
 
   if (store.status.isReady && nextSong) {
@@ -31,32 +28,20 @@ async function playNextSong(forcePlaySong?: boolean) {
     } else {
       await queueSong(store.auth.accessToken, nextSong.trackId);
     }
-
-    requesterName = nextSong.requesterName;
-    songQueue = {
-      ...songQueue,
-      [nextSong.trackId]: undefined,
-    }
-
+    store.removeSongFromQueue(nextSong.trackId);
+    store.updateCurrentSongRequester(nextSong.requesterName);
+    store.updateWhenNextSongShouldBeQueued(nextSong.durationMs);
   } else if (store.status.isReady && !store.status.isPlayingMusic) {
+    const currentSong = store.getCurrentSong();
     await playAlbum(
       store.auth.accessToken,
-      store.status.currentSong.albumId,
-      store.status.currentSong.nextDefaultSong
+      currentSong.albumId,
+      currentSong.nextDefaultSong
     );
+    await updateCurrentPlayingSong();
+    store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
+    store.updateWhenNextSongShouldBeQueued(store.getCurrentSong().durationMs);
   }
-
-  await updateCurrentPlayingSong();
-
-  store.status = {
-    ...store.status,
-    currentSong: {
-      ...store.status.currentSong,
-      requesterName,
-    },
-    songQueue,
-    nextSongShouldBeQueuedAt: nextSongShouldBeQueuedAt + store.status.currentSong.durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
-  };
 }
 
 async function updateCurrentPlayingSong() {
@@ -66,35 +51,21 @@ async function updateCurrentPlayingSong() {
       currentSong.data.item.duration_ms - (currentSong.data.progress_ms ?? 0);
     const trackId = currentSong.data.item.id;
 
-    store.status = {
-      ...store.status,
-      isReady: true,
-      isPlayingMusic: currentSong.data.is_playing,
-    }
-
-    store.status =  {
-      ...store.status,
-      currentSong: {
-        ...store.status.currentSong,
-        trackId,
-        name: currentSong.data.item.name,
-        artist: currentSong.data.item.artists[0].name,
-        albumId: currentSong.data.item.album.id,
-        nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
-        endsAt: Date.now() + remainingTime,
-        imgUrl: currentSong.data.item.album.images[0].url,
-        durationMs: currentSong.data.item.duration_ms,
-      }
-    };
+    store.setIsSpotifyReady(true);
+    store.setIsPlayingMusic(currentSong.data.is_playing)
+    store.setCurrentSong({
+      trackId,
+      name: currentSong.data.item.name,
+      artist: currentSong.data.item.artists[0].name,
+      albumId: currentSong.data.item.album.id,
+      nextDefaultSong: getRandomInt(currentSong.data.item.album.total_tracks),
+      endsAt: Date.now() + remainingTime,
+      imgUrl: currentSong.data.item.album.images[0].url,
+      durationMs: currentSong.data.item.duration_ms,
+    });
   } catch (err) {
-    console.log(err);
-    store.status = {
-      ...store.status,
-      isReady: false,
-      isPlayingMusic: false,
-    }
-
-    return store.status.currentSong;
+    store.setIsSpotifyReady(false);
+    store.setIsPlayingMusic(false);
   }
 }
 
@@ -104,8 +75,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
       apiParams.spotifyToken,
       apiParams.messageBody
     );
-    store.users[apiParams.toPhoneNumber] = {
-      ...store.users[apiParams.toPhoneNumber],
+    store.updateUser(apiParams.toPhoneNumber, {
       searchResults: search.data.tracks.items
         .map((track: any) => ({
           trackId: track.id,
@@ -117,7 +87,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
         }))
         .slice(0, 10),
       searchQuery: apiParams.messageBody,
-    };
+    })
     await replyMusicBackToUser(apiParams);
   } catch (err) {
     console.log(err);
@@ -129,7 +99,8 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
 }
 
 async function handleQueueSong(apiParams: APIParams, trackId: string) {
-  const currentUser = getCurrentUser(apiParams);
+  const currentUser = store.getUser(apiParams.toPhoneNumber);
+  const currentSong = store.getCurrentSong();
   const now = Date.now();
   try {
     if (
@@ -137,7 +108,7 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
       currentUser.nextAvailableSongTimestamp > now
     ) {
       const remainingMiliseconds =
-        getCurrentUser(apiParams).nextAvailableSongTimestamp - now;
+        store.getUser(apiParams.toPhoneNumber).nextAvailableSongTimestamp - now;
       const remainingSeconds = remainingMiliseconds / 1000;
       await replyTextMessage(
         apiParams,
@@ -148,29 +119,22 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
     } else if (store.status.songQueue[trackId]) {
       await replyTextMessage(apiParams, "Oh, aquella cancion ya esta en cola");
     } else {
-      const currentUser = getCurrentUser(apiParams);
+      const currentUser = store.getUser(apiParams.toPhoneNumber);
       const queuedSong = currentUser.searchResults.find(
         (song) => song.trackId === trackId
       );
       if (queuedSong) {
         const forcePlayNextSong =
-          store.status.currentSong.requesterName === Defaults.REQUESTER_NAME;
+          currentSong.requesterName === Defaults.REQUESTER_NAME;
         const remainingSortedSongQueue = getSortedSongQueue();
-
-        store.status.songQueue = {
-          ...store.status.songQueue,
-          [queuedSong.trackId]: {
-            ...queuedSong,
-            requestedAt: now,
-          },
-        };
+        store.addSongToQueue(queuedSong);
 
         if (forcePlayNextSong) {
           await playNextSong(true);
           await replyTextMessage(apiParams, "Tu cancion se reproducira ahora.");
         } else {
           const remainingMilisecondsOfCurrentSong =
-            store.status.currentSong.endsAt - Date.now();
+            currentSong.endsAt - Date.now();
           const remainingSeconds =
             remainingSortedSongQueue.reduce((accum: number, song: Song) => {
               return accum + song.durationMs;
@@ -184,12 +148,11 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           );
         }
 
-        store.users[apiParams.toPhoneNumber] = {
-          ...store.users[apiParams.toPhoneNumber],
+        store.updateUser(apiParams.toPhoneNumber, {
           name: apiParams.requesterName,
           phoneNumber: apiParams.toPhoneNumber,
           nextAvailableSongTimestamp: now + 180 * 1000,
-        };
+        });
 
         const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${queuedSong.name} - ${queuedSong.artist}`;
         await replyTextMessage(
@@ -229,10 +192,6 @@ function getSortedSongQueue() {
 
 async function updateAppStatus() {
   const now = Date.now();
-  const permitTokenTimeInMinutes = parseFloat(
-    process.env.PERMIT_REFRESH_MINS ?? "60"
-  );
-  const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
   const shouldRefreshToken = store.auth.expiresAt < now;
   console.log(new Date(store.status.nextSongShouldBeQueuedAt).toLocaleTimeString());
   const shouldQueueNextSong = store.status.nextSongShouldBeQueuedAt < now;
@@ -245,24 +204,28 @@ async function updateAppStatus() {
     try {
       await playNextSong();
     } catch(err) {
-      console.log(err);
+      store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
     }
   }
 
-  store.status = {
-    ...store.status,
-    isAuth: !!store.auth.accessToken,
-    permitToken:
-      store.status.permitToken.validUntil < now
-        ? {
-            token: generateRandomPermitToken(),
-            validUntil: permitTokenInMiliseconds,
-          }
-        : store.status.permitToken,
-  };
+  // const permitTokenTimeInMinutes = parseFloat(
+  //   process.env.PERMIT_REFRESH_MINS ?? "60"
+  // );
+  // const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
+  // store.status = {
+  //   ...store.status,
+  //   isAuth: !!store.auth.accessToken,
+  //   permitToken:
+  //     store.status.permitToken.validUntil < now
+  //       ? {
+  //           token: generateRandomPermitToken(),
+  //           validUntil: permitTokenInMiliseconds,
+  //         }
+  //       : store.status.permitToken,
+  // };
 
   await updateCurrentPlayingSong();
-
+  store.updateAuthStatus();
   console.log(getSortedSongQueue());
 }
 
@@ -274,31 +237,21 @@ async function registerUser(apiParams: APIParams) {
     searchResults: [],
     searchQuery: apiParams.messageBody,
   };
-  store.users = {
-    ...store.users,
-    [apiParams.toPhoneNumber]: newUser,
-  };
-
+  store.addUser(newUser);
   await handleMusicSearchViaWhatsappMessage(apiParams);
 
   const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
   await replyTextMessage(
-    { ...apiParams, toPhoneNumber: "593960521867" },
+    { ...apiParams, toPhoneNumber: Defaults.MASTER_NUMBER },
     content
   );
-
-  return newUser;
-}
-
-function getCurrentUser(apiParams: APIParams) {
-  return store.users[apiParams.toPhoneNumber];
 }
 
 function determineOperation(apiParams: APIParams) {
   let rv;
   if (!store.auth.accessToken) {
     rv = "noAuth";
-  } else if (!getCurrentUser(apiParams)) {
+  } else if (!store.getUser(apiParams.toPhoneNumber)) {
     rv = "register";
   } else {
     rv = "receiptSongs";
@@ -312,5 +265,4 @@ export {
   handleMusicSearchViaWhatsappMessage,
   handleQueueSong,
   updateAppStatus,
-  getCurrentUser,
 };

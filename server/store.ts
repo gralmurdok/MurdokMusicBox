@@ -1,5 +1,5 @@
-import { Defaults } from "./constants";
-import { CrossRoadsUser, AuthObject, AppStatus } from "./types";
+import { Defaults, TimeDefaults } from "./constants";
+import { CrossRoadsUser, AuthObject, AppStatus, PlayingSong, Song } from "./types";
 const defaultCurrentSong = {
   name: "Bienvenidos!",
   trackId: Defaults.TRACK_ID,
@@ -38,6 +38,99 @@ class Store {
       isNextSongDefined: false,
       nextSongShouldBeQueuedAt: Date.now(),
     };
+  }
+
+  updateCurrentSongRequester(requesterName: string) {
+    this.status = {
+      ...this.status,
+      currentSong: {
+        ...this.status.currentSong,
+        requesterName,
+      }
+    }
+  }
+
+  updateWhenNextSongShouldBeQueued(songDurationInMs: number) {
+    this.status = {
+      ...this.status,
+      nextSongShouldBeQueuedAt: Date.now() + songDurationInMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
+    };
+  }
+
+  removeSongFromQueue(trackId: string) {
+    this.status = {
+      ...this.status,
+      songQueue: {
+        ...this.status.songQueue,
+        [trackId]: undefined,
+      }
+    }
+  }
+
+  setIsSpotifyReady(isReady: boolean) {
+    this.status = {
+      ...this.status,
+      isReady,
+    }
+  }
+
+  setIsPlayingMusic(isPlayingMusic: boolean) {
+    this.status = {
+      ...this.status,
+      isPlayingMusic,
+    }
+  }
+
+  setCurrentSong(currentSong: Partial<PlayingSong>) {
+    this.status =  {
+      ...this.status,
+      currentSong: {
+        ...this.status.currentSong,
+        ...currentSong,
+      }
+    };
+  }
+
+  addUser(newUser: CrossRoadsUser) {
+    this.users = {
+      ...this.users,
+      [newUser.phoneNumber]: newUser,
+    };
+  }
+
+  updateUser(phoneNumber: string, userInfo: Partial<CrossRoadsUser>) {
+    this.users = {
+      ...this.users,
+      [phoneNumber]: {
+        ...this.users[phoneNumber],
+        ...userInfo,
+      }
+    }
+  }
+
+  addSongToQueue(queuedSong: Song) {
+    this.status.songQueue = {
+      ...this.status.songQueue,
+      [queuedSong.trackId]: {
+        ...queuedSong,
+        requestedAt: Date.now(),
+      },
+    };
+  }
+
+  updateAuthStatus() {
+    this.status = {
+      ...this.status,
+      isAuth: !!this.auth.accessToken
+    }
+  }
+
+  getUser(phoneNumber: string) {
+    return this.users[phoneNumber]
+  }
+
+  getCurrentSong() {
+    return store.status.currentSong;
   }
 }
 

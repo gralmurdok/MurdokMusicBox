@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCurrentUser } from "./core";
+import { store } from "./store";
 import { APIParams, Song, WhatsappMessage } from "./types";
 import {
   interactiveListMessage,
@@ -7,7 +7,7 @@ import {
 } from "./whatsappMessageBuilder";
 
 function replyMusicBackToUser(apiParams: APIParams) {
-  const songsList: Song[] = getCurrentUser(apiParams).searchResults.map(
+  const songsList: Song[] = store.getUser(apiParams.toPhoneNumber).searchResults.map(
     (song) => ({
       ...song,
       name: song.name,

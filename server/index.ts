@@ -8,7 +8,6 @@ import { replyTextMessage } from "./whatsapp";
 import { ErrorMessages, Routes } from "./constants";
 import {
   determineOperation,
-  getCurrentUser,
   handleMusicSearchViaWhatsappMessage,
   handleQueueSong,
   registerUser,
@@ -146,7 +145,7 @@ app.post("/webhook", async (req, res) => {
           break;
       }
 
-      console.log(operation, getCurrentUser(apiParams));
+      console.log(operation, store.getUser(apiParams.toPhoneNumber));
     }
     res.sendStatus(200);
   } else {

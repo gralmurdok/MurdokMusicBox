@@ -97,13 +97,15 @@ interface QueuedSong extends Song {
   requestedAt: number;
 }
 
+type SongQueue = Record<string, QueuedSong | undefined>;
+
 interface AppStatus {
   isAuth: boolean;
   isReady: boolean;
   isPlayingMusic: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
-  songQueue: Record<string, QueuedSong | undefined>;
+  songQueue: SongQueue;
   wifiKey: string;
   isNextSongDefined: boolean;
   nextSongShouldBeQueuedAt: number;
@@ -130,4 +132,5 @@ export type {
   CrossRoadsUser,
   PermitToken,
   QueuedSong,
+  SongQueue,
 };
