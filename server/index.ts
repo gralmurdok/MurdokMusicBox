@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import axios from "axios";
 import dotenv from "dotenv";
 import { replyTextMessage } from "./whatsapp";
-import { ErrorMessages, Routes } from "./constants";
+import { ErrorMessages, Routes, TimeDefaults } from "./constants";
 import {
   determineOperation,
   handleMusicSearchViaWhatsappMessage,
@@ -62,7 +62,7 @@ app.get("/set-wifi-key", (req, res) => {
 });
 
 app.get(Routes.APP_STATUS, (req, res) => {
-  retryNumber = 100;
+  retryNumber = TimeDefaults.INTERNAL_UPDATE_RETRY_NUMBER;
   res.json(store.status);
 });
 
@@ -85,7 +85,7 @@ app.get("/internal-update", async (req, res) => {
       } else {
         clearTimeout(timeout);
       }
-    }, 5000);
+    }, TimeDefaults.INTERNAL_UPDATE_THRESHOLD);
   }
 });
 
@@ -145,7 +145,16 @@ app.post("/webhook", async (req, res) => {
           break;
       }
 
-      console.log(operation, store.getUser(apiParams.toPhoneNumber));
+      console.log(
+        operation,
+        store
+          .getUser(apiParams.toPhoneNumber)
+          .searchResults.slice(0, 3)
+          .map(
+            (x) =>
+              `${x.trackId} | ${x.name} - ${x.artist} by ${x.requesterName}`
+          )
+      );
     }
     res.sendStatus(200);
   } else {

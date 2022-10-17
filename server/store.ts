@@ -65,6 +65,9 @@ class Store {
       nextSongShouldBeQueuedAt:
         Date.now() + songDurationInMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
     };
+    console.log(
+      new Date(this.status.nextSongShouldBeQueuedAt).toLocaleTimeString()
+    );
   }
 
   removeSongFromQueue(trackId: string) {

@@ -20,10 +20,8 @@ function getFormattedRemainigTime(remainingSeconds: number) {
 
 async function fallbackToRecommendedSongs() {
   const recomendedSongs = await getRecomendedSongs();
-  const tracks = recomendedSongs.data.tracks
-  const trackIds = tracks.map(
-    (track: { id: string }) => track.id
-  );
+  const tracks = recomendedSongs.data.tracks;
+  const trackIds = tracks.map((track: { id: string }) => track.id);
   await play(trackIds);
   store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
   store.updateWhenNextSongShouldBeQueued(tracks[0].duration_ms);
@@ -198,9 +196,6 @@ function generateRandomPermitToken() {
 async function updateAppStatus() {
   const now = Date.now();
   const shouldRefreshToken = store.auth.expiresAt < now;
-  console.log(
-    new Date(store.status.nextSongShouldBeQueuedAt).toLocaleTimeString()
-  );
   const shouldQueueNextSong = store.status.nextSongShouldBeQueuedAt < now;
 
   if (shouldRefreshToken) {

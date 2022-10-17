@@ -27,8 +27,9 @@ function getRecomendedSongs() {
       .getSortedLast5Played()
       .map((lasPlayedSong) => lasPlayedSong.trackId)
       .join(","),
+    market: "EC",
+    min_popularity: "80",
   }).toString();
-  console.log(params);
   return axios({
     method: "GET", // Required, HTTP method, a string, e.g. POST, GET
     url: `https://api.spotify.com/v1/recommendations?${params}`,

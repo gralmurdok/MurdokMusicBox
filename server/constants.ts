@@ -14,6 +14,8 @@ enum Defaults {
 
 enum TimeDefaults {
   NEXT_SONG_OFFSET_MS = 5000,
+  INTERNAL_UPDATE_THRESHOLD = 1000,
+  INTERNAL_UPDATE_RETRY_NUMBER = 500,
 }
 
 export { ErrorMessages, Routes, Defaults, TimeDefaults };
