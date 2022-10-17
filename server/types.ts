@@ -106,6 +106,7 @@ interface AppStatus {
   permitToken: PermitToken;
   currentSong: PlayingSong;
   songQueue: SongQueue;
+  last5Played: SongQueue;
   wifiKey: string;
   isNextSongDefined: boolean;
   nextSongShouldBeQueuedAt: number;

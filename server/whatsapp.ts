@@ -7,12 +7,12 @@ import {
 } from "./whatsappMessageBuilder";
 
 function replyMusicBackToUser(apiParams: APIParams) {
-  const songsList: Song[] = store.getUser(apiParams.toPhoneNumber).searchResults.map(
-    (song) => ({
+  const songsList: Song[] = store
+    .getUser(apiParams.toPhoneNumber)
+    .searchResults.map((song) => ({
       ...song,
       name: song.name,
-    })
-  );
+    }));
 
   return replyMessageBackToUser(
     apiParams,

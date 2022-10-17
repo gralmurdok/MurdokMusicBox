@@ -1,20 +1,40 @@
 import axios from "axios";
 import { store } from "./store";
 
-function play(token: string, trackId: string) {
+function play(trackIds: string[]) {
+  const trackIdUris = trackIds.map((trackId) => `spotify:track:${trackId}`);
+
   return axios({
     method: "PUT", // Required, HTTP method, a string, e.g. POST, GET
     url: "https://api.spotify.com/v1/me/player/play",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${store.auth.accessToken}`,
     },
     data: {
-      uris: [`spotify:track:${trackId}`],
+      uris: trackIdUris,
       offset: {
         position: 0,
       },
       position_ms: 0,
+    },
+  });
+}
+
+function getRecomendedSongs() {
+  const params = new URLSearchParams({
+    seed_tracks: store
+      .getSortedLast5Played()
+      .map((lasPlayedSong) => lasPlayedSong.trackId)
+      .join(","),
+  }).toString();
+  console.log(params);
+  return axios({
+    method: "GET", // Required, HTTP method, a string, e.g. POST, GET
+    url: `https://api.spotify.com/v1/recommendations?${params}`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.auth.accessToken}`,
     },
   });
 }
@@ -108,4 +128,5 @@ export {
   getCurrentSong,
   refreshToken,
   playAlbum,
+  getRecomendedSongs,
 };
