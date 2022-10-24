@@ -1,4 +1,5 @@
-import { Defaults, TimeDefaults } from "./constants";
+import { Defaults } from "./constants";
+import { broadcastData } from "./setup";
 import {
   getCurrentSong,
   play,
@@ -164,6 +165,8 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           nextAvailableSongTimestamp: now + 180 * 1000,
         });
 
+        broadcastData(store.status);
+
         const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${queuedSong.name} - ${queuedSong.artist}`;
         await replyTextMessage(
           { ...apiParams, toPhoneNumber: "593960521867" },
@@ -211,24 +214,9 @@ async function updateAppStatus() {
     }
   }
 
-  // const permitTokenTimeInMinutes = parseFloat(
-  //   process.env.PERMIT_REFRESH_MINS ?? "60"
-  // );
-  // const permitTokenInMiliseconds = now + permitTokenTimeInMinutes * 60 * 1000;
-  // store.status = {
-  //   ...store.status,
-  //   isAuth: !!store.auth.accessToken,
-  //   permitToken:
-  //     store.status.permitToken.validUntil < now
-  //       ? {
-  //           token: generateRandomPermitToken(),
-  //           validUntil: permitTokenInMiliseconds,
-  //         }
-  //       : store.status.permitToken,
-  // };
-
   await updateCurrentPlayingSong();
   store.updateAuthStatus();
+  broadcastData(store.status);
 }
 
 async function registerUser(apiParams: APIParams) {

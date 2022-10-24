@@ -1,5 +1,3 @@
-import "./App.css";
-
 function QueuedSong({ name, artist, imgUrl, requester }) {
   const formattedName = name.length > 25 ? `${name.substring(0, 22)}...` : name;
 

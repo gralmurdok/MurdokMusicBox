@@ -1,5 +1,3 @@
-import "./App.css";
-
 function SongRow({ name, artist, imgUrl, requester }) {
   const formattedName = name.length > 50 ? `${name.substring(0, 47)}...` : name;
 

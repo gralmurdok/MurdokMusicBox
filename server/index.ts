@@ -1,47 +1,17 @@
 "use strict";
 //import request from 'request';
-import express from "express";
-import bodyParser from "body-parser";
+import { static as expressStatic } from "express";
 import axios from "axios";
-import dotenv from "dotenv";
-import { replyTextMessage } from "./whatsapp";
+import { fetchMediaObject, fetchMediaURL, replyTextMessage } from "./whatsapp";
 import { ErrorMessages, Routes, TimeDefaults } from "./constants";
-import {
-  determineOperation,
-  handleMusicSearchViaWhatsappMessage,
-  handleQueueSong,
-  registerUser,
-  updateAppStatus,
-} from "./core";
+import { determineOperation, handleMusicSearchViaWhatsappMessage, handleQueueSong, registerUser, updateAppStatus } from "./core";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
-
-dotenv.config();
-console.log(path.join(__dirname, "build"));
-const app = express().use(bodyParser.json());
-
-// Sets server port and logs message on success
-
-let retryNumber = 100;
-let timeout: any;
-
-app.listen(process.env.PORT || 1337, () =>
-  console.log("webhook is listening ", process.env.PORT)
-);
+import { app, broadcastData, webSocketsServer } from "./setup";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
-});
-
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("/menu", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "menu.pdf"));
-});
-
-app.get("/player", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.get("/qr-code", (req, res) => {
@@ -62,31 +32,13 @@ app.get("/set-wifi-key", (req, res) => {
 });
 
 app.get(Routes.APP_STATUS, (req, res) => {
-  retryNumber = TimeDefaults.INTERNAL_UPDATE_RETRY_NUMBER;
   res.json(store.status);
 });
 
-app.get("/internal-update", async (req, res) => {
-  if (store.auth.accessToken) {
-    await updateAppStatus();
+let imageData = {};
 
-    res.status(200).json(store.status);
-
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-
-    timeout = setTimeout(() => {
-      if (retryNumber > 0) {
-        axios
-          .get(`${process.env.HOST}/internal-update`)
-          .catch((err) => console.log(err));
-        retryNumber--;
-      } else {
-        clearTimeout(timeout);
-      }
-    }, TimeDefaults.INTERNAL_UPDATE_THRESHOLD);
-  }
+app.get("/slider-info", (req, res) => {
+  res.json(imageData);
 });
 
 app.post("/webhook", async (req, res) => {
@@ -121,6 +73,19 @@ app.post("/webhook", async (req, res) => {
         requesterName,
       };
 
+      // try {
+      //   const mediaURL = await fetchMediaURL(apiParams, message?.image?.id);
+      //   const media = await fetchMediaObject(apiParams, mediaURL.data.url);
+      //   imageData =
+      //     "data:" +
+      //     media.headers["content-type"] +
+      //     ";base64," +
+      //     Buffer.from(media.data).toString("base64");
+      //   console.log(imageData);
+      // } catch (err) {
+      //   console.log(err);
+      // }
+
       const operation = determineOperation(apiParams);
 
       switch (operation) {
@@ -141,20 +106,10 @@ app.post("/webhook", async (req, res) => {
               await handleMusicSearchViaWhatsappMessage(apiParams);
             }
           }
+          break;
         case "noAuth":
           break;
       }
-
-      console.log(
-        operation,
-        store
-          .getUser(apiParams.toPhoneNumber)
-          .searchResults.slice(0, 3)
-          .map(
-            (x) =>
-              `${x.trackId} | ${x.name} - ${x.artist} by ${x.requesterName}`
-          )
-      );
     }
     res.sendStatus(200);
   } else {
@@ -233,6 +188,17 @@ app.get("/callback", async (req, res) => {
     refreshToken: authResponse.data.refresh_token,
     expiresAt: Date.now() + authResponse.data.expires_in * 1000,
   };
+  store.updateAuthStatus();
 
   res.redirect("/player");
+});
+
+app.use(expressStatic(path.join(__dirname, "build")));
+
+app.get("/menu", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "menu.pdf"));
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });

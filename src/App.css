@@ -41,8 +41,20 @@
   }
 }
 
+.Auth-link-container {
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .App-link {
   color: #61dafb;
+  font-size: 10vw;
+  background-color: #181818;
+  border-radius: 75px;
+  padding: 4vh;
 }
 
 @keyframes App-logo-spin {
