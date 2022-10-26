@@ -17,7 +17,7 @@ function Player() {
       imgUrl: "",
       requesterName: "",
     },
-    songQueue: {},
+    songQueue: [],
     wifiKey: "",
   };
   const [appStatus, setAppStatus] = useState(defaultAppStatus);
@@ -51,18 +51,12 @@ function Player() {
   }
 
   function renderQueuedSongs() {
-    const sortedSongQueue = Object.keys(appStatus.songQueue)
-      .map((trackId) => appStatus.songQueue[trackId])
-      .sort((a, b) => a.requestedAt - b.requestedAt)
-      .slice(0, 5)
-      .filter((x) => !!x);
-
     let rv = null;
 
-    if (sortedSongQueue.length) {
+    if (appStatus.songQueue.length > 0) {
       rv = (
         <div className="Queued-songs-list">
-          {sortedSongQueue.map((song) => (
+          {appStatus.songQueue.map((song) => (
             <QueuedSong
               name={song.name}
               artist={song.artist}

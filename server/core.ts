@@ -1,5 +1,7 @@
 import { Defaults } from "./constants";
 import { broadcastData } from "./setup";
+import { SpotifyCurrentSong, SpotifyQueuedSong } from "./song";
+import { SpotifySongQueueManager } from "./songQueueManager";
 import {
   getCurrentSong,
   play,
@@ -7,10 +9,13 @@ import {
   refreshToken,
   searchTracks,
   getRecomendedSongs,
+  fetchSongByTrackId,
 } from "./spotify";
 import { store } from "./store";
 import { APIParams, QueuedSong, Song } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
+
+const songQueueManager = new SpotifySongQueueManager();
 
 function getFormattedRemainigTime(remainingSeconds: number) {
   const absRemainingSeconds = Math.abs(remainingSeconds);
@@ -28,50 +33,37 @@ async function fallbackToRecommendedSongs() {
   store.updateWhenNextSongShouldBeQueued(tracks[0].duration_ms);
 }
 
-function consumeSongFromQueue(nextSong: QueuedSong) {
+async function consumeSongFromQueue(nextSong: QueuedSong) {
+  await play([nextSong.trackId]);
   store.removeSongFromQueue(nextSong.trackId);
   store.updateCurrentSongRequester(nextSong.requesterName);
   store.updateWhenNextSongShouldBeQueued(nextSong.durationMs);
 }
 
-async function playNextSong(forcePlaySong?: boolean) {
-  const sortedSongQueue = store.getSortedSongQueue();
-  const nextSong = sortedSongQueue[0];
+// async function playNextSong() {
+//   const sortedSongQueue = store.getSortedSongQueue();
+//   const nextSong = sortedSongQueue[0];
 
-  if (store.status.isReady && nextSong) {
-    if (!!forcePlaySong) {
-      await play([nextSong.trackId]);
-    } else {
-      await queueSong(store.auth.accessToken, nextSong.trackId);
-    }
-    consumeSongFromQueue(nextSong);
-  } else if (store.status.isReady && !store.status.isPlayingMusic) {
-    await fallbackToRecommendedSongs();
-  }
-}
+//   if (
+//     store.status.isReady &&
+//     nextSong &&
+//     nextSong.trackId !== store.getCurrentSong().trackId
+//   ) {
+//     await consumeSongFromQueue(nextSong);
+//   } else if (store.status.isReady && !store.status.isPlayingMusic) {
+//     await fallbackToRecommendedSongs();
+//   }
+// }
 
 async function updateCurrentPlayingSong() {
   try {
     const currentRawSong = await getCurrentSong(store.auth.accessToken);
-    const remainingTime =
-      currentRawSong.data.item.duration_ms -
-      (currentRawSong.data.progress_ms ?? 0);
-    const trackId = currentRawSong.data.item.id;
-
+    const currentSong = new SpotifyCurrentSong(
+      currentRawSong.data.item,
+      currentRawSong.data.progress_ms
+    );
     store.setIsSpotifyReady(true);
     store.setIsPlayingMusic(currentRawSong.data.is_playing);
-    const currentSong = {
-      trackId,
-      name: currentRawSong.data.item.name,
-      artist: currentRawSong.data.item.artists[0].name,
-      albumId: currentRawSong.data.item.album.id,
-      nextDefaultSong: getRandomInt(
-        currentRawSong.data.item.album.total_tracks
-      ),
-      endsAt: Date.now() + remainingTime,
-      imgUrl: currentRawSong.data.item.album.images[0].url,
-      durationMs: currentRawSong.data.item.duration_ms,
-    };
     store.setCurrentSong(currentSong);
     store.updateLast5Played();
   } catch (err) {
@@ -127,57 +119,53 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
           remainingSeconds
         )}`
       );
-    } else if (store.status.songQueue[trackId]) {
+    } else if (store.status.songQueue.find((song) => song.trackId === trackId)) {
       await replyTextMessage(apiParams, "Oh, aquella cancion ya esta en cola");
     } else {
       const currentUser = store.getUser(apiParams.toPhoneNumber);
-      const queuedSong = currentUser.searchResults.find(
-        (song) => song.trackId === trackId
+      const newRawSongResponse = await fetchSongByTrackId(trackId);
+      const newSpotifySong = new SpotifyQueuedSong(
+        newRawSongResponse.data,
+        apiParams.requesterName
       );
-      if (queuedSong) {
-        const forcePlayNextSong =
-          currentSong.requesterName === Defaults.REQUESTER_NAME;
-        const remainingSortedSongQueue = store.getSortedSongQueue();
-        store.addSongToQueue(queuedSong);
+      const remainingTimeInMs = songQueueManager
+        .retrieveRemainingSongs()
+        .reduce((accum: number, song: Song) => {
+          return accum + song.durationMs;
+        }, currentSong.remainingTime);
 
-        if (forcePlayNextSong) {
-          await playNextSong(true);
-          await replyTextMessage(apiParams, "Tu cancion se reproducira ahora.");
-        } else {
-          const remainingMilisecondsOfCurrentSong =
-            currentSong.endsAt - Date.now();
-          const remainingSeconds =
-            remainingSortedSongQueue.reduce((accum: number, song: Song) => {
-              return accum + song.durationMs;
-            }, remainingMilisecondsOfCurrentSong) / 1000;
+      const remainingTime =
+        currentSong.requesterName === Defaults.REQUESTER_NAME
+          ? 0
+          : remainingTimeInMs;
+      songQueueManager.addSong(newSpotifySong, remainingTime);
 
-          await replyTextMessage(
-            apiParams,
-            `Tu cancion esta en la cola, y se reproducira en ${getFormattedRemainigTime(
-              remainingSeconds
-            )}`
-          );
-        }
+      await replyTextMessage(
+        apiParams,
+        `Tu cancion esta en la cola, y se reproducira en ${getFormattedRemainigTime(
+          remainingTime / 1000
+        )}`
+      );
 
-        store.updateUser(apiParams.toPhoneNumber, {
-          name: apiParams.requesterName,
-          phoneNumber: apiParams.toPhoneNumber,
-          nextAvailableSongTimestamp: now + 180 * 1000,
-        });
+      console.log(
+        newSpotifySong.name +
+          " will be played in " +
+          getFormattedRemainigTime(remainingTime / 1000)
+      );
 
-        broadcastData(store.status);
+      store.updateUser(apiParams.toPhoneNumber, {
+        name: apiParams.requesterName,
+        phoneNumber: apiParams.toPhoneNumber,
+        nextAvailableSongTimestamp: now + 180 * 1000,
+      });
 
-        const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${queuedSong.name} - ${queuedSong.artist}`;
-        await replyTextMessage(
-          { ...apiParams, toPhoneNumber: "593960521867" },
-          content
-        );
-      } else {
-        await replyTextMessage(
-          apiParams,
-          "Asegurate de escoger una cancion de tu busqueda reciente"
-        );
-      }
+      broadcastData(store.status);
+
+      const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${newSpotifySong.name} - ${newSpotifySong.artist}`;
+      await replyTextMessage(
+        { ...apiParams, toPhoneNumber: "593960521867" },
+        content
+      );
     }
   } catch (err) {
     console.log(err);
@@ -205,14 +193,14 @@ async function updateAppStatus() {
     await refreshToken();
   }
 
-  if (shouldQueueNextSong) {
-    try {
-      await playNextSong();
-    } catch (err) {
-      console.log(err);
-      store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
-    }
-  }
+  // if (shouldQueueNextSong) {
+  //   try {
+  //     await playNextSong();
+  //   } catch (err) {
+  //     console.log(err);
+  //     store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
+  //   }
+  // }
 
   await updateCurrentPlayingSong();
   store.updateAuthStatus();

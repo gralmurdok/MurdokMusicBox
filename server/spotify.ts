@@ -93,6 +93,17 @@ function getCurrentSong(token: string) {
   });
 }
 
+function fetchSongByTrackId(trackId: string) {
+  return axios({
+    method: "GET",
+    url: `https://api.spotify.com/v1/tracks/${trackId}`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.auth.accessToken}`,
+    },
+  });
+}
+
 async function refreshToken() {
   const authCredentials = Buffer.from(
     process.env.CLIENT_ID + ":" + process.env.SECRET_ID
@@ -130,4 +141,5 @@ export {
   refreshToken,
   playAlbum,
   getRecomendedSongs,
+  fetchSongByTrackId,
 };

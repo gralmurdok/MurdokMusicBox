@@ -1,4 +1,5 @@
 import { Defaults } from "./constants";
+import { SpotifyQueuedSong } from "./song";
 
 interface APIParams {
   messageBody: string;
@@ -90,7 +91,7 @@ interface PermitToken {
 interface PlayingSong extends Song {
   nextDefaultSong: number;
   albumId: string;
-  endsAt: number;
+  remainingTime: number;
 }
 
 interface QueuedSong extends Song {
@@ -105,7 +106,7 @@ interface AppStatus {
   isPlayingMusic: boolean;
   permitToken: PermitToken;
   currentSong: PlayingSong;
-  songQueue: SongQueue;
+  songQueue: SpotifyQueuedSong[];
   last5Played: SongQueue;
   wifiKey: string;
   isNextSongDefined: boolean;
@@ -116,6 +117,27 @@ interface AuthObject {
   accessToken: string;
   refreshToken: string;
   expiresAt: number;
+}
+
+interface RawArtist {
+  name: string;
+}
+
+interface RawImage {
+  url: string;
+}
+
+interface RawAlbum {
+  name: string;
+  images: RawImage[];
+}
+
+interface RawSong {
+  id: string;
+  name: string;
+  artists: RawArtist[];
+  album: RawAlbum;
+  duration_ms: number;
 }
 
 export type {
@@ -134,4 +156,5 @@ export type {
   PermitToken,
   QueuedSong,
   SongQueue,
+  RawSong,
 };

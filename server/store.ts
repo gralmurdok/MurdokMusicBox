@@ -1,9 +1,9 @@
 import { Defaults, TimeDefaults } from "./constants";
+import { SpotifyCurrentSong, SpotifyQueuedSong } from "./song";
 import {
   CrossRoadsUser,
   AuthObject,
   AppStatus,
-  PlayingSong,
   Song,
   SongQueue,
   QueuedSong,
@@ -14,7 +14,7 @@ const defaultCurrentSong = {
   artist: "Reproduce musica en spotify para empezar.",
   albumId: "",
   nextDefaultSong: 0,
-  endsAt: 0,
+  remainingTime: 0,
   requesterName: Defaults.REQUESTER_NAME,
   imgUrl: "",
   durationMs: 0,
@@ -41,7 +41,7 @@ class Store {
         validUntil: 0,
       },
       currentSong: defaultCurrentSong,
-      songQueue: {},
+      songQueue: [],
       last5Played: {},
       wifiKey: "",
       isNextSongDefined: false,
@@ -94,7 +94,7 @@ class Store {
     };
   }
 
-  setCurrentSong(currentSong: Partial<PlayingSong>) {
+  setCurrentSong(currentSong: SpotifyCurrentSong | SpotifyQueuedSong) {
     this.status = {
       ...this.status,
       currentSong: {
@@ -176,9 +176,9 @@ class Store {
     return store.status.currentSong;
   }
 
-  getSortedSongQueue() {
-    return getAscendentSortedList(this.status.songQueue);
-  }
+  // getSortedSongQueue() {
+  //   return getAscendentSortedList(this.status.songQueue);
+  // }
 
   getSortedLast5Played() {
     return getAscendentSortedList(this.status.last5Played);
