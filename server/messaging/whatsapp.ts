@@ -1,6 +1,6 @@
 import axios from "axios";
-import { store } from "./store";
-import { APIParams, Song, WhatsappMessage } from "./types";
+import { store } from "../store";
+import { APIParams, Song, WhatsappMessage } from "../types";
 import {
   interactiveListMessage,
   simpleMessage,
@@ -26,6 +26,7 @@ function replyMusicBackToUser(apiParams: APIParams) {
 }
 
 function replyTextMessage(apiParams: APIParams, message: string) {
+  console.log(message);
   return replyMessageBackToUser(
     apiParams,
     simpleMessage(apiParams.toPhoneNumber, message)

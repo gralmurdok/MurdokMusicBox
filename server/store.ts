@@ -1,6 +1,6 @@
-import { Defaults, TimeDefaults } from "./constants";
+import { Defaults } from "./constants";
 import { broadcastData } from "./setup";
-import { SpotifyCurrentSong, SpotifyQueuedSong, SpotifySong } from "./song";
+import { SpotifyQueuedSong, SpotifySong } from "./music/song";
 import {
   CrossRoadsUser,
   AuthObject,
@@ -65,37 +65,6 @@ class Store {
     }
 
     broadcastData(store.status);
-  }
-  
-  updateCurrentSongRequester(requesterName: string) {
-    this.status = {
-      ...this.status,
-      currentSong: {
-        ...this.status.currentSong,
-        requesterName,
-      },
-    };
-  }
-
-  updateWhenNextSongShouldBeQueued(songDurationInMs: number) {
-    this.status = {
-      ...this.status,
-      nextSongShouldBeQueuedAt:
-        Date.now() + songDurationInMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
-    };
-    console.log(
-      new Date(this.status.nextSongShouldBeQueuedAt).toLocaleTimeString()
-    );
-  }
-
-  removeSongFromQueue(trackId: string) {
-    this.status = {
-      ...this.status,
-      songQueue: {
-        ...this.status.songQueue,
-        [trackId]: undefined,
-      },
-    };
   }
 
   setIsSpotifyReady(isReady: boolean) {

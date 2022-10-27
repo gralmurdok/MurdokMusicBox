@@ -1,8 +1,8 @@
-import { TimeDefaults } from "./constants";
+import { TimeDefaults } from "../constants";
 import { SpotifyQueuedSong, SpotifySong } from "./song";
 import { getRecomendedSongs, play } from "./spotify";
-import { store } from "./store";
-import { RawSong } from "./types";
+import { store } from "../store";
+import { RawSong } from "../types";
 
 class SpotifySongQueueManager {
   songQueue: SpotifyQueuedSong[];
@@ -24,7 +24,7 @@ class SpotifySongQueueManager {
         await play(trackIds);
         store.setCurrentSong(new SpotifyQueuedSong(tracks[0]));
       } catch(err) {
-        // do nothing
+        console.log(err);
       }
     }, shouldBePlayedIn);
   }

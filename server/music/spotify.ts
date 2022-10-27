@@ -1,6 +1,6 @@
 import axios from "axios";
-import { store } from "./store";
-import { Song } from "./types";
+import { store } from "../store";
+import { Song } from "../types";
 
 function play(trackIds: string[]) {
   const trackIdUris = trackIds.map((trackId) => `spotify:track:${trackId}`);
@@ -29,8 +29,11 @@ function getRecomendedSongs() {
       .map((song: Song) => song.trackId)
       .join(","),
     market: "EC",
-    min_popularity: "80",
+    //min_popularity: "80",
   }).toString();
+
+  console.log(params);
+
   return axios({
     method: "GET", // Required, HTTP method, a string, e.g. POST, GET
     url: `https://api.spotify.com/v1/recommendations?${params}`,

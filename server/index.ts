@@ -2,18 +2,14 @@
 //import request from 'request';
 import { static as expressStatic } from "express";
 import axios from "axios";
-import { replyTextMessage } from "./whatsapp";
+import { replyTextMessage } from "./messaging/whatsapp";
 import { ErrorMessages, Routes } from "./constants";
-import {
-  determineOperation,
-  handleMusicSearchViaWhatsappMessage,
-  handleQueueSong,
-  registerUser,
-} from "./core";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
-import { app, broadcastData, webSocketsServer } from "./setup";
+import { app } from "./setup";
+import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
+import { handleOperationByMessageType } from "./determineOperation";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -47,80 +43,97 @@ app.get("/slider-info", (req, res) => {
 });
 
 app.post("/webhook", async (req, res) => {
-  if (req.body.object) {
-    if (
-      req.body.entry &&
-      req.body.entry[0].changes &&
-      req.body.entry[0].changes[0] &&
-      req.body.entry[0].changes[0].value.messages &&
-      req.body.entry[0].changes[0].value.messages[0]
-    ) {
-      console.log(JSON.stringify(req.body.entry, null, 2));
-      const phoneNumberId =
-        req.body.entry[0].changes[0].value.metadata.phone_number_id;
 
-      const contact = req.body.entry[0].changes[0].value.contacts[0];
-      const message = req.body.entry[0].changes[0].value.messages[0];
-      const messageType = message?.type;
-      const messageBody = message?.text?.body;
-      const whatsappToken = process.env.WHATSAPP_TOKEN as string;
-      const toPhoneNumber = message.from; // extract the phone number from the webhook payload
-      const requesterName = contact.profile.name;
+  try {
+    const messageData = gatherDataFromMessage(req.body);
+    const apiParams: APIParams = {
+      whatsappToken: process.env.WHATSAPP_TOKEN as string,
+      spotifyToken: store.auth.accessToken,
+      ...messageData
+    };
 
-      let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
-
-      const apiParams: APIParams = {
-        messageBody,
-        whatsappToken,
-        spotifyToken: store.auth.accessToken,
-        phoneNumberId,
-        toPhoneNumber,
-        requesterName,
-      };
-
-      // try {
-      //   const mediaURL = await fetchMediaURL(apiParams, message?.image?.id);
-      //   const media = await fetchMediaObject(apiParams, mediaURL.data.url);
-      //   imageData =
-      //     "data:" +
-      //     media.headers["content-type"] +
-      //     ";base64," +
-      //     Buffer.from(media.data).toString("base64");
-      //   console.log(imageData);
-      // } catch (err) {
-      //   console.log(err);
-      // }
-
-      const operation = determineOperation(apiParams);
-
-      switch (operation) {
-        case "register":
-          await registerUser(apiParams);
-          break;
-        case "receiptSongs":
-          if (!apiParams.spotifyToken) {
-            await replyTextMessage(apiParams, ErrorMessages.NOT_READY);
-            return res.sendStatus(204);
-          } else {
-            if (messageType === "interactive" || trackId) {
-              if (message?.interactive?.type) {
-                trackId = message?.interactive[message?.interactive.type].id;
-              }
-              await handleQueueSong(apiParams, trackId);
-            } else {
-              await handleMusicSearchViaWhatsappMessage(apiParams);
-            }
-          }
-          break;
-        case "noAuth":
-          break;
-      }
-    }
+    await handleOperationByMessageType(apiParams);
     res.sendStatus(200);
-  } else {
-    // Return a '404 Not Found' if event is not from a WhatsApp API
-    res.sendStatus(404);
+  } catch(err) {
+    console.log(err);
+    res.sendStatus(500);
   }
+
+  // if (req.body.object) {
+  //   if (
+  //     req.body.entry &&
+  //     req.body.entry[0].changes &&
+  //     req.body.entry[0].changes[0] &&
+  //     req.body.entry[0].changes[0].value.messages &&
+  //     req.body.entry[0].changes[0].value.messages[0]
+  //   ) {
+  //     console.log(JSON.stringify(req.body.entry, null, 2));
+  //     const phoneNumberId =
+  //       req.body.entry[0].changes[0].value.metadata.phone_number_id;
+
+  //     const contact = req.body.entry[0].changes[0].value.contacts[0];
+  //     const message = req.body.entry[0].changes[0].value.messages[0];
+  //     const messageType = message?.type;
+  //     const messageBody = message?.text?.body;
+  //     const whatsappToken = process.env.WHATSAPP_TOKEN as string;
+  //     const toPhoneNumber = message.from; // extract the phone number from the webhook payload
+  //     const requesterName = contact.profile.name;
+
+  //     let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
+
+  //     const apiParams: APIParams = {
+  //       messageBody,
+  //       messageType,
+  //       whatsappToken,
+  //       spotifyToken: store.auth.accessToken,
+  //       phoneNumberId,
+  //       toPhoneNumber,
+  //       requesterName,
+  //     };
+
+  //     // try {
+  //     //   const mediaURL = await fetchMediaURL(apiParams, message?.image?.id);
+  //     //   const media = await fetchMediaObject(apiParams, mediaURL.data.url);
+  //     //   imageData =
+  //     //     "data:" +
+  //     //     media.headers["content-type"] +
+  //     //     ";base64," +
+  //     //     Buffer.from(media.data).toString("base64");
+  //     //   console.log(imageData);
+  //     // } catch (err) {
+  //     //   console.log(err);
+  //     // }
+
+  //     const operation = determineOperation(apiParams);
+
+  //     switch (operation) {
+  //       case "register":
+  //         await registerUser(apiParams);
+  //         break;
+  //       case "receiptSongs":
+  //         if (!apiParams.spotifyToken) {
+  //           await replyTextMessage(apiParams, ErrorMessages.NOT_READY);
+  //           return res.sendStatus(204);
+  //         } else {
+  //           if (messageType === "interactive" || trackId) {
+  //             if (message?.interactive?.type) {
+  //               trackId = message?.interactive[message?.interactive.type].id;
+  //             }
+  //             await handleQueueSong(apiParams, trackId);
+  //           } else {
+  //             await handleMusicSearchViaWhatsappMessage(apiParams);
+  //           }
+  //         }
+  //         break;
+  //       case "noAuth":
+  //         break;
+  //     }
+  //   }
+  //   res.sendStatus(200);
+  // } else {
+  //   // Return a '404 Not Found' if event is not from a WhatsApp API
+  //   res.sendStatus(404);
+  // }
 });
 
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.

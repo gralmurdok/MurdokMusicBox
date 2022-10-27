@@ -1,16 +1,16 @@
 import { Defaults } from "./constants";
 import { broadcastData } from "./setup";
-import { SpotifyCurrentSong, SpotifyQueuedSong } from "./song";
-import { SpotifySongQueueManager } from "./songQueueManager";
+import { SpotifyCurrentSong, SpotifyQueuedSong } from "./music/song";
+import { SpotifySongQueueManager } from "./music/songQueueManager";
 import {
   getCurrentSong,
   refreshToken,
   searchTracks,
   fetchSongByTrackId,
-} from "./spotify";
+} from "./music/spotify";
 import { store } from "./store";
 import { APIParams, Song } from "./types";
-import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
+import { replyMusicBackToUser, replyTextMessage } from "./messaging/whatsapp";
 
 const songQueueManager = new SpotifySongQueueManager();
 
@@ -151,20 +151,10 @@ function generateRandomPermitToken() {
 async function updateAppStatus() {
   const now = Date.now();
   const shouldRefreshToken = store.auth.expiresAt < now;
-  const shouldQueueNextSong = store.status.nextSongShouldBeQueuedAt < now;
 
   if (shouldRefreshToken) {
     await refreshToken();
   }
-
-  // if (shouldQueueNextSong) {
-  //   try {
-  //     await playNextSong();
-  //   } catch (err) {
-  //     console.log(err);
-  //     store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
-  //   }
-  // }
 
   await updateCurrentPlayingSong();
   store.updateAuthStatus();
@@ -181,7 +171,6 @@ async function registerUser(apiParams: APIParams) {
   };
   store.addUser(newUser);
   await handleMusicSearchViaWhatsappMessage(apiParams);
-
   const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
   await replyTextMessage(
     { ...apiParams, toPhoneNumber: Defaults.MASTER_NUMBER },
@@ -202,7 +191,6 @@ function determineOperation(apiParams: APIParams) {
 }
 
 export {
-  registerUser,
   determineOperation,
   handleMusicSearchViaWhatsappMessage,
   handleQueueSong,

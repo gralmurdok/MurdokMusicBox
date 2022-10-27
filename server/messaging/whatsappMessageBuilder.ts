@@ -1,4 +1,4 @@
-import { Defaults } from "./constants";
+import { Defaults } from "../constants";
 import {
   InteractiveMessage,
   ReplyButton,
@@ -6,7 +6,7 @@ import {
   SectionRow,
   Song,
   TextMessage,
-} from "./types";
+} from "../types";
 
 function simpleMessage(from: string, message: string): TextMessage {
   return {

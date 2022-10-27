@@ -1,13 +1,14 @@
-import { Defaults } from "./constants";
-import { SpotifySong } from "./song";
+import { Defaults, MessageType } from "./constants";
 
 interface APIParams {
   messageBody: string;
+  messageType: MessageType;
   requesterName: string;
   whatsappToken: string;
   spotifyToken: string;
   phoneNumberId: string;
   toPhoneNumber: string;
+  interactiveReply: string;
 }
 
 interface Song {
@@ -131,6 +132,69 @@ interface RawSong {
   duration_ms: number;
 }
 
+interface WhatsappMessageData {
+  messageType: MessageType;
+  messageBody: string;
+  phoneNumberId: string;
+  toPhoneNumber: string;
+  requesterName: string;
+  interactiveReply: string;
+}
+
+interface WhatsappIncomingMessageEntryChangesValueContact {
+  profile: {
+    name: string;
+  }
+  wa_id: string
+}
+
+interface WhatsappIncomingMessageEntryChangesValueMessage {
+  context: {
+    from: string;
+    id: string;
+  }
+  from: string;
+  id: string;
+  timestamp: string;
+  type: MessageType;
+  text: {
+    body: string
+  }
+  interactive?: {
+    type: string,
+    list_reply: {
+      id: string;
+      title: string;
+      description: string;
+    }
+  }
+}
+
+interface WhatsappIncomingMessageEntryChangesValue {
+  messaging_product: string;
+  metadata: {
+    display_phone_number: string;
+    phone_number_id: string;
+  }
+  contacts: WhatsappIncomingMessageEntryChangesValueContact[]
+  messages: WhatsappIncomingMessageEntryChangesValueMessage[]
+}
+
+interface WhatsappIncomingMessageEntryChanges {
+  value: WhatsappIncomingMessageEntryChangesValue;
+  field: string;
+}
+
+interface WhatsappIncomingMessageEntry {
+  id: string;
+  changes: WhatsappIncomingMessageEntryChanges[];
+}
+    
+interface WhatsappIncomingMessage {
+  object: any;
+  entry: WhatsappIncomingMessageEntry[];
+}
+
 export type {
   AuthObject,
   AppStatus,
@@ -146,4 +210,6 @@ export type {
   Song,
   SongQueue,
   RawSong,
+  WhatsappIncomingMessage,
+  WhatsappMessageData,
 };

@@ -1,5 +1,6 @@
 enum ErrorMessages {
   NOT_READY = "No habilitado, por favor acercate a la barra para solicitar la activacion del servicio de musica",
+  DUPLICATED_SONG = "Oh, aquella cancion ya esta en cola",
 }
 
 enum Routes {
@@ -18,4 +19,10 @@ enum TimeDefaults {
   INTERNAL_UPDATE_RETRY_NUMBER = 500,
 }
 
-export { ErrorMessages, Routes, Defaults, TimeDefaults };
+enum MessageType {
+  TEXT= 'text',
+  INTERACTIVE= 'interactive',
+  IMAGE = 'image',
+}
+
+export { ErrorMessages, Routes, Defaults, TimeDefaults, MessageType };

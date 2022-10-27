@@ -1,7 +1,7 @@
-import { Defaults, TimeDefaults } from "./constants";
+import { Defaults, TimeDefaults } from "../constants";
 import { play } from "./spotify";
-import { store } from "./store";
-import { RawSong } from "./types";
+import { store } from "../store";
+import { RawSong } from "../types";
 
 class SpotifySong {
   trackId: string;
