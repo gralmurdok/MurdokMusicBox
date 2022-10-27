@@ -10,6 +10,10 @@ class SpotifySong {
   imgUrl: string;
   durationMs: number;
   wasConsumed: boolean;
+  requesterName?: string;
+  progressMs: number;
+  remainingTime: number;
+  timeout: any;
 
   constructor(
     rawSong: RawSong,
@@ -20,12 +24,12 @@ class SpotifySong {
     this.imgUrl = rawSong.album.images[0].url;
     this.durationMs = rawSong.duration_ms;
     this.wasConsumed = false;
+    this.progressMs = 0;
+    this.remainingTime = 0;
   }
 }
 
 class SpotifyQueuedSong extends SpotifySong {
-  requesterName: string;
-
   constructor(
     rawSong: RawSong,
     requesterName: string = Defaults.REQUESTER_NAME
@@ -37,20 +41,24 @@ class SpotifyQueuedSong extends SpotifySong {
   consume = async () => {
     if (!this.wasConsumed) {
       try {
-        this.wasConsumed = true;
         await play([this.trackId]);
         store.setCurrentSong(this);
       } catch (err) {
-        this.wasConsumed = false;
+        // do nothing
       }
+      this.wasConsumed = true;
     }
   };
+
+  delayedConsume(shouldBePlayedIn: number, callback: () => void) {
+    this.timeout = setTimeout(async () => {
+      await this.consume();
+      callback();
+    }, shouldBePlayedIn);
+  }
 }
 
 class SpotifyCurrentSong extends SpotifySong {
-  progressMs: number;
-  remainingTime: number;
-
   constructor(rawSong: RawSong, progressMs: number = 0) {
     super(rawSong);
     this.progressMs = progressMs;

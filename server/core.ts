@@ -4,15 +4,12 @@ import { SpotifyCurrentSong, SpotifyQueuedSong } from "./song";
 import { SpotifySongQueueManager } from "./songQueueManager";
 import {
   getCurrentSong,
-  play,
-  queueSong,
   refreshToken,
   searchTracks,
-  getRecomendedSongs,
   fetchSongByTrackId,
 } from "./spotify";
 import { store } from "./store";
-import { APIParams, QueuedSong, Song } from "./types";
+import { APIParams, Song } from "./types";
 import { replyMusicBackToUser, replyTextMessage } from "./whatsapp";
 
 const songQueueManager = new SpotifySongQueueManager();
@@ -23,37 +20,6 @@ function getFormattedRemainigTime(remainingSeconds: number) {
     absRemainingSeconds % 60
   )} segundos`;
 }
-
-async function fallbackToRecommendedSongs() {
-  const recomendedSongs = await getRecomendedSongs();
-  const tracks = recomendedSongs.data.tracks;
-  const trackIds = tracks.map((track: { id: string }) => track.id);
-  await play(trackIds);
-  store.updateCurrentSongRequester(Defaults.REQUESTER_NAME);
-  store.updateWhenNextSongShouldBeQueued(tracks[0].duration_ms);
-}
-
-async function consumeSongFromQueue(nextSong: QueuedSong) {
-  await play([nextSong.trackId]);
-  store.removeSongFromQueue(nextSong.trackId);
-  store.updateCurrentSongRequester(nextSong.requesterName);
-  store.updateWhenNextSongShouldBeQueued(nextSong.durationMs);
-}
-
-// async function playNextSong() {
-//   const sortedSongQueue = store.getSortedSongQueue();
-//   const nextSong = sortedSongQueue[0];
-
-//   if (
-//     store.status.isReady &&
-//     nextSong &&
-//     nextSong.trackId !== store.getCurrentSong().trackId
-//   ) {
-//     await consumeSongFromQueue(nextSong);
-//   } else if (store.status.isReady && !store.status.isPlayingMusic) {
-//     await fallbackToRecommendedSongs();
-//   }
-// }
 
 async function updateCurrentPlayingSong() {
   try {
@@ -158,8 +124,6 @@ async function handleQueueSong(apiParams: APIParams, trackId: string) {
         phoneNumber: apiParams.toPhoneNumber,
         nextAvailableSongTimestamp: now + 180 * 1000,
       });
-
-      broadcastData(store.status);
 
       const content = `Nombre: ${currentUser.name}\nTelefono: ${currentUser.phoneNumber}\nCancion: ${newSpotifySong.name} - ${newSpotifySong.artist}`;
       await replyTextMessage(

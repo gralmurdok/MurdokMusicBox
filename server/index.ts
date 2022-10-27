@@ -2,14 +2,13 @@
 //import request from 'request';
 import { static as expressStatic } from "express";
 import axios from "axios";
-import { fetchMediaObject, fetchMediaURL, replyTextMessage } from "./whatsapp";
-import { ErrorMessages, Routes, TimeDefaults } from "./constants";
+import { replyTextMessage } from "./whatsapp";
+import { ErrorMessages, Routes } from "./constants";
 import {
   determineOperation,
   handleMusicSearchViaWhatsappMessage,
   handleQueueSong,
   registerUser,
-  updateAppStatus,
 } from "./core";
 import { APIParams } from "./types";
 import path from "path";

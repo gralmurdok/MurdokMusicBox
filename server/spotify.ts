@@ -1,5 +1,6 @@
 import axios from "axios";
 import { store } from "./store";
+import { Song } from "./types";
 
 function play(trackIds: string[]) {
   const trackIdUris = trackIds.map((trackId) => `spotify:track:${trackId}`);
@@ -23,9 +24,9 @@ function play(trackIds: string[]) {
 
 function getRecomendedSongs() {
   const params = new URLSearchParams({
-    seed_tracks: store
-      .getSortedLast5Played()
-      .map((lasPlayedSong) => lasPlayedSong.trackId)
+    seed_tracks: store.
+      status.last5Played
+      .map((song: Song) => song.trackId)
       .join(","),
     market: "EC",
     min_popularity: "80",

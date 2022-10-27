@@ -1,5 +1,5 @@
 import { Defaults } from "./constants";
-import { SpotifyQueuedSong } from "./song";
+import { SpotifySong } from "./song";
 
 interface APIParams {
   messageBody: string;
@@ -14,9 +14,10 @@ interface Song {
   name: string;
   trackId: string;
   artist: string;
-  requesterName: string;
+  requesterName?: string;
   imgUrl: string;
   durationMs: number;
+  remainingTime: number;
 }
 
 interface ReplyButton {
@@ -88,26 +89,16 @@ interface PermitToken {
   validUntil: number;
 }
 
-interface PlayingSong extends Song {
-  nextDefaultSong: number;
-  albumId: string;
-  remainingTime: number;
-}
-
-interface QueuedSong extends Song {
-  requestedAt: number;
-}
-
-type SongQueue = Record<string, QueuedSong | undefined>;
+type SongQueue = Record<string, Song | undefined>;
 
 interface AppStatus {
   isAuth: boolean;
   isReady: boolean;
   isPlayingMusic: boolean;
   permitToken: PermitToken;
-  currentSong: PlayingSong;
-  songQueue: SpotifyQueuedSong[];
-  last5Played: SongQueue;
+  currentSong: Song;
+  songQueue: Song[];
+  last5Played: Song[];
   wifiKey: string;
   isNextSongDefined: boolean;
   nextSongShouldBeQueuedAt: number;
@@ -141,20 +132,18 @@ interface RawSong {
 }
 
 export type {
-  PlayingSong,
   AuthObject,
   AppStatus,
   APIParams,
   TextMessage,
   WhatsappMessage,
-  Song,
   InteractiveMessage,
   ReplyButton,
   Section,
   SectionRow,
   CrossRoadsUser,
   PermitToken,
-  QueuedSong,
+  Song,
   SongQueue,
   RawSong,
 };
