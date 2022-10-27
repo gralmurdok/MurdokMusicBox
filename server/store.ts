@@ -6,7 +6,10 @@ import {
   AuthObject,
   AppStatus,
   Song,
+  APIParams,
+  VisualShow,
 } from "./types";
+import { title } from "process";
 const defaultCurrentSong = {
   name: "Bienvenidos!",
   trackId: Defaults.TRACK_ID,
@@ -33,6 +36,7 @@ class Store {
   auth: AuthObject;
   users: Record<string, CrossRoadsUser>;
   status: AppStatus;
+  visualShow: VisualShow;
 
   constructor() {
     this.auth = {
@@ -55,6 +59,10 @@ class Store {
       wifiKey: "",
       isNextSongDefined: false,
       nextSongShouldBeQueuedAt: Date.now(),
+    };
+    this.visualShow = {
+      title: '',
+      images: []
     };
   }
 
@@ -145,4 +153,4 @@ class Store {
 
 const store = new Store();
 
-export { store, defaultCurrentSong };
+export { store, defaultCurrentSong, normalizeSongStructure };

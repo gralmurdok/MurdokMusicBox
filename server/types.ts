@@ -9,6 +9,7 @@ interface APIParams {
   phoneNumberId: string;
   toPhoneNumber: string;
   interactiveReply: string;
+  imageId: string;
 }
 
 interface Song {
@@ -83,6 +84,7 @@ interface CrossRoadsUser {
   nextAvailableSongTimestamp: number;
   searchResults: Song[];
   searchQuery: string;
+  images: String[];
 }
 
 interface PermitToken {
@@ -103,6 +105,16 @@ interface AppStatus {
   wifiKey: string;
   isNextSongDefined: boolean;
   nextSongShouldBeQueuedAt: number;
+}
+
+interface CrossroadsImage {
+  description: string,
+  base64Source: string,
+}
+
+interface VisualShow {
+  title: string;
+  images: CrossroadsImage[];
 }
 
 interface AuthObject {
@@ -139,6 +151,7 @@ interface WhatsappMessageData {
   toPhoneNumber: string;
   requesterName: string;
   interactiveReply: string;
+  imageId: string;
 }
 
 interface WhatsappIncomingMessageEntryChangesValueContact {
@@ -167,6 +180,9 @@ interface WhatsappIncomingMessageEntryChangesValueMessage {
       title: string;
       description: string;
     }
+  }
+  image?: {
+    id: string;
   }
 }
 
@@ -210,6 +226,7 @@ export type {
   Song,
   SongQueue,
   RawSong,
+  VisualShow,
   WhatsappIncomingMessage,
   WhatsappMessageData,
 };

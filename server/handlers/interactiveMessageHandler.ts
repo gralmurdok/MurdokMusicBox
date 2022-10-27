@@ -1,4 +1,4 @@
-import { Defaults, ErrorMessages } from "../constants";
+import { Defaults, ErrorMessages, SuccessMessages } from "../constants";
 import { replyTextMessage } from "../messaging/whatsapp";
 import { SpotifyQueuedSong } from "../music/song";
 import { SpotifySongQueueManager } from "../music/songQueueManager";
@@ -13,9 +13,30 @@ async function handleInteractiveMessage(apiParams: APIParams) {
   console.log('HANDLING AS INTERACTIVE MESSAGE ' + apiParams.interactiveReply);
   if (isDuplicatedSong(apiParams)) {
     await handleDuplicatedSong(apiParams);
+  } else if(isNotReadyToQueueNextSong(apiParams)) {
+    await handleNotReadyToQueueNextSong(apiParams);
   } else {
     await handleQueueSong(apiParams);
   }
+}
+
+function isNotReadyToQueueNextSong(apiParams: APIParams) {
+  const currentUser = store.getUser(apiParams.toPhoneNumber);
+  return currentUser.phoneNumber !== Defaults.MASTER_NUMBER &&
+    currentUser.nextAvailableSongTimestamp > Date.now();
+    ;
+}
+
+async function handleNotReadyToQueueNextSong(apiParams: APIParams) {
+  const remainingMiliseconds =
+    store.getUser(apiParams.toPhoneNumber).nextAvailableSongTimestamp - Date.now();
+  const remainingSeconds = remainingMiliseconds / 1000;
+  await replyTextMessage(
+    apiParams,
+    `${ErrorMessages.NOT_READY_TO_QUEUE_SONG} ${getFormattedRemainigTime(
+      remainingSeconds
+    )}`
+  );
 }
 
 function isDuplicatedSong(apiParams: APIParams) {
@@ -55,7 +76,7 @@ async function handleQueueSong(apiParams: APIParams) {
 async function handleUpdateAndNotifyUser(apiParams: APIParams, remainingTime: number) {
   await replyTextMessage(
     apiParams,
-    `Tu cancion esta en la cola, y se reproducira en ${getFormattedRemainigTime(
+    `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
       remainingTime / 1000
     )}`
   );

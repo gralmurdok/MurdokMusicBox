@@ -12,7 +12,8 @@ function gatherDataFromMessage(incomingMessage: WhatsappIncomingMessage): Whatsa
     phoneNumberId: value.metadata.phone_number_id,
     toPhoneNumber: message.from,
     requesterName: value.contacts[0].profile.name,
-    interactiveReply: message.interactive?.list_reply.id ?? ''
+    interactiveReply: message.interactive?.list_reply.id ?? '',
+    imageId: message.image?.id ?? '',
   }
 }
 

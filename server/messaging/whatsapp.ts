@@ -46,11 +46,11 @@ function replyMessageBackToUser(apiParams: APIParams, data: WhatsappMessage) {
   });
 }
 
-function fetchMediaURL(apiParams: APIParams, mediaId: string) {
+function fetchMediaURL(apiParams: APIParams) {
   return axios({
     method: "GET", // Required, HTTP method, a string, e.g. POST, GET
     url:
-      `https://graph.facebook.com/v12.0/${mediaId}` +
+      `https://graph.facebook.com/v12.0/${apiParams.imageId}` +
       "?access_token=" +
       apiParams.whatsappToken,
     headers: { "Content-Type": "application/json" },

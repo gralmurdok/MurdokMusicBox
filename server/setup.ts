@@ -6,7 +6,7 @@ import path from "path";
 import WebSocket from "ws";
 import { TimeDefaults } from "./constants";
 import { store } from "./store";
-import { updateAppStatus } from "./core";
+import { updateAppStatus } from "./handlers/updateAppStatusHandler";
 
 dotenv.config();
 console.log(path.join(__dirname, "build"));

@@ -1,15 +1,16 @@
 import { Defaults } from "../constants";
 import { replyTextMessage } from "../messaging/whatsapp";
 import { store } from "../store";
-import { APIParams } from "../types";
+import { APIParams, CrossRoadsUser } from "../types";
 
 function registerUser(apiParams: APIParams) {
-  const newUser = {
+  const newUser: CrossRoadsUser = {
     name: apiParams.requesterName,
     phoneNumber: apiParams.toPhoneNumber,
     nextAvailableSongTimestamp: Date.now(),
     searchResults: [],
     searchQuery: apiParams.messageBody,
+    images: [],
   };
   store.addUser(newUser);
 

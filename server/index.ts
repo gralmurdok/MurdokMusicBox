@@ -1,15 +1,12 @@
-"use strict";
-//import request from 'request';
 import { static as expressStatic } from "express";
 import axios from "axios";
-import { replyTextMessage } from "./messaging/whatsapp";
-import { ErrorMessages, Routes } from "./constants";
+import { Routes } from "./constants";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
 import { app } from "./setup";
 import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
-import { handleOperationByMessageType } from "./determineOperation";
+import { handleOperationByMessageType } from "./handlers/determineOperationHandler";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -43,7 +40,6 @@ app.get("/slider-info", (req, res) => {
 });
 
 app.post("/webhook", async (req, res) => {
-
   try {
     const messageData = gatherDataFromMessage(req.body);
     const apiParams: APIParams = {

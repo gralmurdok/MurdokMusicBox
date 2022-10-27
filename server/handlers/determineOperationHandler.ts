@@ -1,8 +1,9 @@
-import { MessageType } from "./constants";
-import { handleInteractiveMessage } from "./handlers/interactiveMessageHandler";
-import { handleTextMessage } from "./handlers/textMessageHandler";
-import { APIParams } from "./types";
-import { ensureUserIsRegistered } from "./users/registerUser";
+import { MessageType } from "../constants";
+import { handleInteractiveMessage } from "./interactiveMessageHandler";
+import { handleTextMessage } from "./textMessageHandler";
+import { APIParams } from "../types";
+import { ensureUserIsRegistered } from "../users/registerUser";
+import { handleImageMessage } from "./imageMessageHandler";
 
 async function handleOperationByMessageType(apiParams: APIParams) {
   ensureUserIsRegistered(apiParams);
@@ -15,7 +16,7 @@ async function handleOperationByMessageType(apiParams: APIParams) {
       await handleInteractiveMessage(apiParams);
       break;
     case MessageType.IMAGE:
-      // handleImageMessage(apiParams.messageBody);
+      await handleImageMessage(apiParams);
       break;
   }
 }
