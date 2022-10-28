@@ -182,3 +182,13 @@
 .songs-container {
   min-height: 100vh;
 }
+
+.visualShow {
+  display: flex;
+  justify-content: center;
+}
+
+.visualShow > img {
+  max-width: 100vw;
+  max-height: 100vh;
+}

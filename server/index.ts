@@ -33,10 +33,8 @@ app.get(Routes.APP_STATUS, (req, res) => {
   res.json(store.status);
 });
 
-let imageData = {};
-
 app.get("/slider-info", (req, res) => {
-  res.json(imageData);
+  res.json(store.visualShow);
 });
 
 app.post("/webhook", async (req, res) => {

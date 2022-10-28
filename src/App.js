@@ -1,22 +1,51 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { Player } from "./Player/Player";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { dataTypes, WebsocketManager } from "./WebSocketService";
 
 const Config = () => {
   const [image, setImage] = useState();
+  const navigate = useNavigate();
 
-  useEffect(async () => {
+  useEffect(() => {
+    WebsocketManager.addStatusUpdateHandler((websocketMessage) => {
+      const parsedData = JSON.parse(websocketMessage.data);
+      const dataType = parsedData.type;
+
+      switch(dataType) {
+        case dataTypes.LOAD_IMAGE:
+          setImage(parsedData.appData);
+          break;
+        case dataTypes.PLAYER:
+          navigate('/player');
+          break;
+
+        default:
+          // do nothing
+      }
+
+      console.log('FROM CONFIG ' + parsedData);
+  });
+
     try {
-      const currentImage = await axios.get("/slider-info");
-      setImage(currentImage.data);
+      axios.get("/slider-info")
+      .then((currentImage) => setImage(currentImage.data.images[0].base64Source))
+      .catch((err) => {
+        // do nothing
+      });
+      
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  });
 
-  return <img src={image} />;
+  return (
+    <div className="visualShow">
+      <img alt="" src={image} />
+    </div>
+  );
 };
 
 function App() {

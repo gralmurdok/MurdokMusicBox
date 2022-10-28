@@ -229,4 +229,5 @@ export type {
   VisualShow,
   WhatsappIncomingMessage,
   WhatsappMessageData,
+  CrossroadsImage,
 };

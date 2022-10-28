@@ -2,7 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import axios from "axios";
 import { SongRow } from "./SongRow";
 import { QueuedSong } from "./QueuedSong";
-import { WebsocketManager } from "../WebSocketService";
+import { dataTypes, WebsocketManager } from "../WebSocketService";
+import { useNavigate } from "react-router-dom";
 
 function Player() {
   const defaultAppStatus = {
@@ -21,12 +22,24 @@ function Player() {
     wifiKey: "",
   };
   const [appStatus, setAppStatus] = useState(defaultAppStatus);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    WebsocketManager.initialize();
     WebsocketManager.addStatusUpdateHandler((websocketMessage) => {
         const parsedData = JSON.parse(websocketMessage.data);
-        setAppStatus(parsedData);
+        const dataType = parsedData.type;
+
+        switch(dataType) {
+          case dataTypes.PLAYER:
+            setAppStatus(parsedData.appData);
+            break;
+          case dataTypes.START_VISUAL_SHOW:
+            navigate('/config');
+            break;
+          default:
+            // do nothing
+        }
+
         console.log(parsedData);
     });
 

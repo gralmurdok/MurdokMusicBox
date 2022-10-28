@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import path from "path";
 import WebSocket from "ws";
-import { TimeDefaults } from "./constants";
+import { EventType, TimeDefaults } from "./constants";
 import { store } from "./store";
 import { updateAppStatus } from "./handlers/updateAppStatusHandler";
 
@@ -21,14 +21,18 @@ webSocketsServer.on("connection", (websocketClient) => {
   websocketClient.send(JSON.stringify(store.status, null, 2));
 });
 
-function broadcastData(data: unknown) {
+function broadcastData(type: EventType, data: unknown) {
+  store.mode = type;
   webSocketsServer.clients.forEach((webSocketClient) => {
-    webSocketClient.send(JSON.stringify(data, null, 2));
+    webSocketClient.send(JSON.stringify({
+      type,
+      appData: data
+    }, null, 2));
   });
 }
 
 setInterval(() => {
-  if (store.auth.accessToken) {
+  if (store.auth.accessToken && store.mode === EventType.PLAYER) {
     updateAppStatus();
   }
 }, TimeDefaults.INTERNAL_UPDATE_THRESHOLD);

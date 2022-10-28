@@ -1,4 +1,4 @@
-import { Defaults } from "./constants";
+import { EventType, Defaults } from "./constants";
 import { broadcastData } from "./setup";
 import { SpotifyQueuedSong, SpotifySong } from "./music/song";
 import {
@@ -6,10 +6,9 @@ import {
   AuthObject,
   AppStatus,
   Song,
-  APIParams,
   VisualShow,
 } from "./types";
-import { title } from "process";
+
 const defaultCurrentSong = {
   name: "Bienvenidos!",
   trackId: Defaults.TRACK_ID,
@@ -37,6 +36,7 @@ class Store {
   users: Record<string, CrossRoadsUser>;
   status: AppStatus;
   visualShow: VisualShow;
+  mode: EventType;
 
   constructor() {
     this.auth = {
@@ -64,6 +64,7 @@ class Store {
       title: '',
       images: []
     };
+    this.mode = EventType.PLAYER;
   }
 
   updateSongQueue(songQueue: SpotifyQueuedSong[]) {
@@ -72,7 +73,7 @@ class Store {
       songQueue: songQueue.map(normalizeSongStructure),
     }
 
-    broadcastData(store.status);
+    broadcastData(EventType.PLAYER, store.status);
   }
 
   setIsSpotifyReady(isReady: boolean) {
@@ -148,6 +149,13 @@ class Store {
 
   getCurrentSong() {
     return store.status.currentSong;
+  }
+
+  updateVisualShow(visualShow: Partial<VisualShow>) {
+    this.visualShow = {
+      ...this.visualShow,
+      ...visualShow,
+    }
   }
 }
 

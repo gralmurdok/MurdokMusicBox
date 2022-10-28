@@ -5,6 +5,7 @@ import {
   refreshToken,
 } from "../music/spotify";
 import { store } from "../store";
+import { EventType } from "../constants";
 
 async function updateCurrentPlayingSong() {
   try {
@@ -33,7 +34,7 @@ async function updateAppStatus() {
 
   await updateCurrentPlayingSong();
   store.updateAuthStatus();
-  broadcastData(store.status);
+  broadcastData(EventType.PLAYER, store.status);
 }
 
 export {

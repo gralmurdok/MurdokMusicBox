@@ -28,6 +28,8 @@ class WebsocketService {
     this.websocketServer.onmessage = (message) => {
       this.statusUpdateHandler(message);
     }
+
+    return this;
   }
 
   reconnect = () => {
@@ -45,6 +47,12 @@ class WebsocketService {
   }
 }
 
-const WebsocketManager = new WebsocketService();
+const WebsocketManager = new WebsocketService().initialize();
 
-export { WebsocketManager };
+const dataTypes = {
+  PLAYER: 'player',
+  START_VISUAL_SHOW: 'start_visual_show',
+  LOAD_IMAGE: 'load_image',
+}
+
+export { WebsocketManager, dataTypes };

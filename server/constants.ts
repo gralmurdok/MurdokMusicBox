@@ -36,4 +36,10 @@ enum MessageType {
   IMAGE = 'image',
 }
 
-export { ErrorMessages, Routes, Defaults, TimeDefaults, MessageType, SuccessMessages, NumberDefaults };
+enum EventType {
+  PLAYER = 'player',
+  START_VISUAL_SHOW = 'start_visual_show',
+  LOAD_IMAGE = 'load_image'
+}
+
+export { ErrorMessages, Routes, Defaults, TimeDefaults, MessageType, SuccessMessages, NumberDefaults, EventType };
