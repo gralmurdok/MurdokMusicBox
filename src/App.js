@@ -15,7 +15,7 @@ const Config = () => {
       const dataType = parsedData.type;
 
       switch(dataType) {
-        case dataTypes.LOAD_IMAGE:
+        case dataTypes.START_VISUAL_SHOW:
           setImage(parsedData.appData);
           break;
         case dataTypes.PLAYER:
@@ -26,7 +26,7 @@ const Config = () => {
           // do nothing
       }
 
-      console.log('FROM CONFIG ' + parsedData);
+      console.log('FROM CONFIG ' + parsedData.appData);
   });
 
     try {
