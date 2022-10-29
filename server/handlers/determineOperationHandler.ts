@@ -8,7 +8,7 @@ import { handleImageMessage } from "./imageMessageHandler";
 async function handleOperationByMessageType(apiParams: APIParams) {
   ensureUserIsRegistered(apiParams);
 
-  switch(apiParams.messageType) {
+  switch (apiParams.messageType) {
     case MessageType.TEXT:
       await handleTextMessage(apiParams);
       break;

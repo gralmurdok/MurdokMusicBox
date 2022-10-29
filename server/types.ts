@@ -108,8 +108,8 @@ interface AppStatus {
 }
 
 interface CrossroadsImage {
-  description: string,
-  base64Source: string,
+  description: string;
+  base64Source: string;
 }
 
 interface VisualShow {
@@ -157,33 +157,33 @@ interface WhatsappMessageData {
 interface WhatsappIncomingMessageEntryChangesValueContact {
   profile: {
     name: string;
-  }
-  wa_id: string
+  };
+  wa_id: string;
 }
 
 interface WhatsappIncomingMessageEntryChangesValueMessage {
   context: {
     from: string;
     id: string;
-  }
+  };
   from: string;
   id: string;
   timestamp: string;
   type: MessageType;
   text: {
-    body: string
-  }
+    body: string;
+  };
   interactive?: {
-    type: string,
+    type: string;
     list_reply: {
       id: string;
       title: string;
       description: string;
-    }
-  }
+    };
+  };
   image?: {
     id: string;
-  }
+  };
 }
 
 interface WhatsappIncomingMessageEntryChangesValue {
@@ -191,9 +191,9 @@ interface WhatsappIncomingMessageEntryChangesValue {
   metadata: {
     display_phone_number: string;
     phone_number_id: string;
-  }
-  contacts: WhatsappIncomingMessageEntryChangesValueContact[]
-  messages: WhatsappIncomingMessageEntryChangesValueMessage[]
+  };
+  contacts: WhatsappIncomingMessageEntryChangesValueContact[];
+  messages: WhatsappIncomingMessageEntryChangesValueMessage[];
 }
 
 interface WhatsappIncomingMessageEntryChanges {
@@ -205,7 +205,7 @@ interface WhatsappIncomingMessageEntry {
   id: string;
   changes: WhatsappIncomingMessageEntryChanges[];
 }
-    
+
 interface WhatsappIncomingMessage {
   object: any;
   entry: WhatsappIncomingMessageEntry[];

@@ -1,8 +1,8 @@
 function getFormattedRemainigTime(remainingSeconds: number) {
-    const absRemainingSeconds = Math.abs(remainingSeconds);
-    return `${Math.floor(absRemainingSeconds / 60)} minutos y ${Math.floor(
-      absRemainingSeconds % 60
-    )} segundos`;
-  }
+  const absRemainingSeconds = Math.abs(remainingSeconds);
+  return `${Math.floor(absRemainingSeconds / 60)} minutos y ${Math.floor(
+    absRemainingSeconds % 60
+  )} segundos`;
+}
 
-  export { getFormattedRemainigTime };
+export { getFormattedRemainigTime };

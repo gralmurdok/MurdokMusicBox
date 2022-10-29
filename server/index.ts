@@ -43,12 +43,12 @@ app.post("/webhook", async (req, res) => {
     const apiParams: APIParams = {
       whatsappToken: process.env.WHATSAPP_TOKEN as string,
       spotifyToken: store.auth.accessToken,
-      ...messageData
+      ...messageData,
     };
 
     await handleOperationByMessageType(apiParams);
     res.sendStatus(200);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }

@@ -6,7 +6,7 @@ import { normalizeSongStructure, store } from "../store";
 import { APIParams, RawSong } from "../types";
 
 function handleTextMessage(apiParams: APIParams) {
-  console.log('HANDLING AS TEXT MESSAGE ' + apiParams.messageBody);
+  console.log("HANDLING AS TEXT MESSAGE " + apiParams.messageBody);
   handleMusicSearchViaWhatsappMessage(apiParams);
 }
 
@@ -24,10 +24,7 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
     });
     await replyMusicBackToUser(apiParams);
   } catch (err) {
-    await replyTextMessage(
-      apiParams,
-      ErrorMessages.SEARCH_ERROR,
-    );
+    await replyTextMessage(apiParams, ErrorMessages.SEARCH_ERROR);
   }
 }
 

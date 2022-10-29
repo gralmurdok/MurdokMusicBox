@@ -1,9 +1,6 @@
 import { broadcastData } from "../setup";
 import { SpotifyCurrentSong } from "../music/song";
-import {
-  getCurrentSong,
-  refreshToken,
-} from "../music/spotify";
+import { getCurrentSong, refreshToken } from "../music/spotify";
 import { store } from "../store";
 import { EventType } from "../constants";
 
@@ -37,6 +34,4 @@ async function updateAppStatus() {
   broadcastData(EventType.PLAYER, store.status);
 }
 
-export {
-  updateAppStatus,
-};
+export { updateAppStatus };

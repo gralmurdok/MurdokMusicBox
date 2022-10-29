@@ -28,7 +28,7 @@ function normalizeSongStructure(spotifySong: SpotifySong): Song {
     imgUrl: spotifySong.imgUrl,
     durationMs: spotifySong.durationMs,
     remainingTime: spotifySong.remainingTime,
-  }
+  };
 }
 
 class Store {
@@ -61,8 +61,8 @@ class Store {
       nextSongShouldBeQueuedAt: Date.now(),
     };
     this.visualShow = {
-      title: '',
-      images: []
+      title: "",
+      images: [],
     };
     this.mode = EventType.PLAYER;
   }
@@ -71,7 +71,7 @@ class Store {
     store.status = {
       ...store.status,
       songQueue: songQueue.map(normalizeSongStructure),
-    }
+    };
 
     broadcastData(EventType.PLAYER, store.status);
   }
@@ -90,16 +90,22 @@ class Store {
     };
   }
 
-  setCurrentSong(currentSong: SpotifySong) {
-    const normalizedSong = normalizeSongStructure(currentSong);
+  setNormalizedSong(normalizedSong: Partial<Song>) {
     this.status = {
       ...this.status,
       currentSong: {
         ...this.status.currentSong,
         ...normalizedSong,
-        requesterName: normalizedSong.requesterName ? normalizedSong.requesterName : this.status.currentSong.requesterName
+        requesterName: normalizedSong.requesterName
+          ? normalizedSong.requesterName
+          : this.status.currentSong.requesterName,
       },
     };
+  }
+
+  setCurrentSong(currentSong: SpotifySong) {
+    const normalizedSong = normalizeSongStructure(currentSong);
+    this.setNormalizedSong(normalizedSong);
   }
 
   addUser(newUser: CrossRoadsUser) {
@@ -119,17 +125,17 @@ class Store {
     };
   }
 
-
   updateLast5Played() {
     const currentSong = store.getCurrentSong();
 
-    if (!this.status.last5Played.find((playedSong: Song) => playedSong.trackId === currentSong.trackId)) {
+    if (
+      !this.status.last5Played.find(
+        (playedSong: Song) => playedSong.trackId === currentSong.trackId
+      )
+    ) {
       this.status = {
         ...this.status,
-        last5Played: [
-          ...this.status.last5Played,
-          currentSong,
-        ],
+        last5Played: [...this.status.last5Played, currentSong],
       };
 
       console.log(store.status.last5Played);
@@ -155,7 +161,7 @@ class Store {
     this.visualShow = {
       ...this.visualShow,
       ...visualShow,
-    }
+    };
   }
 }
 

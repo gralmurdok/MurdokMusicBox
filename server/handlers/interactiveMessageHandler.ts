@@ -10,10 +10,10 @@ import { getFormattedRemainigTime } from "../utils";
 const songQueueManager = new SpotifySongQueueManager();
 
 async function handleInteractiveMessage(apiParams: APIParams) {
-  console.log('HANDLING AS INTERACTIVE MESSAGE ' + apiParams.interactiveReply);
+  console.log("HANDLING AS INTERACTIVE MESSAGE " + apiParams.interactiveReply);
   if (isDuplicatedSong(apiParams)) {
     await handleDuplicatedSong(apiParams);
-  } else if(isNotReadyToQueueNextSong(apiParams)) {
+  } else if (isNotReadyToQueueNextSong(apiParams)) {
     await handleNotReadyToQueueNextSong(apiParams);
   } else {
     await handleQueueSong(apiParams);
@@ -22,14 +22,16 @@ async function handleInteractiveMessage(apiParams: APIParams) {
 
 function isNotReadyToQueueNextSong(apiParams: APIParams) {
   const currentUser = store.getUser(apiParams.toPhoneNumber);
-  return currentUser.phoneNumber !== Defaults.MASTER_NUMBER &&
-    currentUser.nextAvailableSongTimestamp > Date.now();
-    ;
+  return (
+    currentUser.phoneNumber !== Defaults.MASTER_NUMBER &&
+    currentUser.nextAvailableSongTimestamp > Date.now()
+  );
 }
 
 async function handleNotReadyToQueueNextSong(apiParams: APIParams) {
   const remainingMiliseconds =
-    store.getUser(apiParams.toPhoneNumber).nextAvailableSongTimestamp - Date.now();
+    store.getUser(apiParams.toPhoneNumber).nextAvailableSongTimestamp -
+    Date.now();
   const remainingSeconds = remainingMiliseconds / 1000;
   await replyTextMessage(
     apiParams,
@@ -44,7 +46,9 @@ function isDuplicatedSong(apiParams: APIParams) {
   const songQueue = store.status.songQueue;
   const scheduledSongList = [...songQueue, currentSong];
 
-  return !!scheduledSongList.find((song: Song) => song.trackId === apiParams.interactiveReply);
+  return !!scheduledSongList.find(
+    (song: Song) => song.trackId === apiParams.interactiveReply
+  );
 }
 
 async function handleDuplicatedSong(apiParams: APIParams) {
@@ -53,7 +57,9 @@ async function handleDuplicatedSong(apiParams: APIParams) {
 
 async function handleQueueSong(apiParams: APIParams) {
   const currentSong = store.getCurrentSong();
-  const newRawSongResponse = await fetchSongByTrackId(apiParams.interactiveReply);
+  const newRawSongResponse = await fetchSongByTrackId(
+    apiParams.interactiveReply
+  );
   const newSpotifySong = new SpotifyQueuedSong(
     newRawSongResponse.data,
     apiParams.requesterName
@@ -73,7 +79,10 @@ async function handleQueueSong(apiParams: APIParams) {
   handleUpdateAndNotifyUser(apiParams, remainingTime);
 }
 
-async function handleUpdateAndNotifyUser(apiParams: APIParams, remainingTime: number) {
+async function handleUpdateAndNotifyUser(
+  apiParams: APIParams,
+  remainingTime: number
+) {
   await replyTextMessage(
     apiParams,
     `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(

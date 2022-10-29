@@ -3,7 +3,7 @@ enum ErrorMessages {
   DUPLICATED_SONG = "Oh, aquella cancion ya esta en cola",
   NOT_READY_TO_QUEUE_SONG = "Puedes pedir tu siguiente cancion en",
   SEARCH_ERROR = "Tuvimos problemas para encontrar la musica que buscas, por favor intenta otra vez, si el problema persiste acercate a la barra a reportarlo.",
-  UNABLE_TO_STORE_IMAGE = "Tuvimos problemas para guardar tu imagen, por favor intenta otra vez, si el problema persiste acercate a la barra a reportarlo."
+  UNABLE_TO_STORE_IMAGE = "Tuvimos problemas para guardar tu imagen, por favor intenta otra vez, si el problema persiste acercate a la barra a reportarlo.",
 }
 
 enum SuccessMessages {
@@ -31,15 +31,24 @@ enum NumberDefaults {
 }
 
 enum MessageType {
-  TEXT= 'text',
-  INTERACTIVE= 'interactive',
-  IMAGE = 'image',
+  TEXT = "text",
+  INTERACTIVE = "interactive",
+  IMAGE = "image",
 }
 
 enum EventType {
-  PLAYER = 'player',
-  START_VISUAL_SHOW = 'start_visual_show',
-  LOAD_IMAGE = 'load_image'
+  PLAYER = "player",
+  START_VISUAL_SHOW = "start_visual_show",
+  LOAD_IMAGE = "load_image",
 }
 
-export { ErrorMessages, Routes, Defaults, TimeDefaults, MessageType, SuccessMessages, NumberDefaults, EventType };
+export {
+  ErrorMessages,
+  Routes,
+  Defaults,
+  TimeDefaults,
+  MessageType,
+  SuccessMessages,
+  NumberDefaults,
+  EventType,
+};

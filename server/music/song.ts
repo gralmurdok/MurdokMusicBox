@@ -15,9 +15,7 @@ class SpotifySong {
   remainingTime: number;
   timeout: any;
 
-  constructor(
-    rawSong: RawSong,
-  ) {
+  constructor(rawSong: RawSong) {
     this.trackId = rawSong.id;
     this.name = rawSong.name;
     this.artist = rawSong.artists[0].name;
@@ -62,7 +60,8 @@ class SpotifyCurrentSong extends SpotifySong {
   constructor(rawSong: RawSong, progressMs: number = 0) {
     super(rawSong);
     this.progressMs = progressMs;
-    this.remainingTime = this.durationMs - this.progressMs - TimeDefaults.NEXT_SONG_OFFSET_MS;
+    this.remainingTime =
+      this.durationMs - this.progressMs - TimeDefaults.NEXT_SONG_OFFSET_MS;
   }
 }
 

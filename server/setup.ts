@@ -24,10 +24,16 @@ webSocketsServer.on("connection", (websocketClient) => {
 function broadcastData(type: EventType, data: unknown) {
   store.mode = type;
   webSocketsServer.clients.forEach((webSocketClient) => {
-    webSocketClient.send(JSON.stringify({
-      type,
-      appData: data
-    }, null, 2));
+    webSocketClient.send(
+      JSON.stringify(
+        {
+          type,
+          appData: data,
+        },
+        null,
+        2
+      )
+    );
   });
 }
 

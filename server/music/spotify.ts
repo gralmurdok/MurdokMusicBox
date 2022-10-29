@@ -24,8 +24,7 @@ function play(trackIds: string[]) {
 
 function getRecomendedSongs() {
   const params = new URLSearchParams({
-    seed_tracks: store.
-      status.last5Played
+    seed_tracks: store.status.last5Played
       .map((song: Song) => song.trackId)
       .join(","),
     market: "EC",
