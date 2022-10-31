@@ -1,4 +1,8 @@
-async function handleExecuteAction(action: any, onError: any) {
+async function handleExecuteAction(
+  action: any,
+  onError: any,
+  lastFallback?: any
+) {
   let wasUnsuccesful = false;
 
   try {
@@ -12,6 +16,9 @@ async function handleExecuteAction(action: any, onError: any) {
     try {
       await onError();
     } catch (err) {
+      if (lastFallback) {
+        await lastFallback();
+      }
       console.log("Falback error: " + err);
     }
   }

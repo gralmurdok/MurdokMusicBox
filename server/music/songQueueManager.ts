@@ -29,8 +29,15 @@ class SpotifySongQueueManager {
           store.setCurrentSong(new SpotifyQueuedSong(tracks[0]));
         },
         async () => {
+          const last5Played = store.status.last5Played;
+          await play(last5Played.map((song) => song.trackId));
+          store.setNormalizedSong({
+            ...last5Played[0],
+            requesterName: Defaults.REQUESTER_NAME,
+          });
+        },
+        () => {
           store.setNormalizedSong({ requesterName: Defaults.REQUESTER_NAME });
-          await play(store.status.last5Played.map((song) => song.trackId));
         }
       );
     }, shouldBePlayedIn);
