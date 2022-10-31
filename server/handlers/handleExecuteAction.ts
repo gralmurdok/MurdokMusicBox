@@ -9,7 +9,7 @@ async function handleExecuteAction(
     await action();
   } catch (err) {
     console.log("Main error: " + err);
-    wasUnsuccesful = false;
+    wasUnsuccesful = true;
   }
 
   if (wasUnsuccesful) {
