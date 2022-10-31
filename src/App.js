@@ -14,28 +14,30 @@ const Config = () => {
       const parsedData = JSON.parse(websocketMessage.data);
       const dataType = parsedData.type;
 
-      switch(dataType) {
+      switch (dataType) {
         case dataTypes.START_VISUAL_SHOW:
           setImage(parsedData.appData);
           break;
         case dataTypes.PLAYER:
-          navigate('/player');
+          navigate("/player");
           break;
 
         default:
-          // do nothing
+        // do nothing
       }
 
-      console.log('FROM CONFIG ' + parsedData.appData);
-  });
+      console.log("FROM CONFIG " + parsedData.appData);
+    });
 
     try {
-      axios.get("/slider-info")
-      .then((currentImage) => setImage(currentImage.data.images[0].base64Source))
-      .catch((err) => {
-        // do nothing
-      });
-      
+      axios
+        .get("/slider-info")
+        .then((currentImage) =>
+          setImage(currentImage.data.images[0].base64Source)
+        )
+        .catch((err) => {
+          // do nothing
+        });
     } catch (err) {
       console.log(err);
     }

@@ -8,7 +8,6 @@ enum ErrorMessages {
 
 enum SuccessMessages {
   SONG_QUEUED = "Tu cancion esta en la cola, y se reproducira en",
-  SONG_PLAYED = "Tu cancion se reproducira ahora",
 }
 
 enum Routes {

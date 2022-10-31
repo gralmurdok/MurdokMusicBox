@@ -26,21 +26,21 @@ function Player() {
 
   useEffect(() => {
     WebsocketManager.addStatusUpdateHandler((websocketMessage) => {
-        const parsedData = JSON.parse(websocketMessage.data);
-        const dataType = parsedData.type;
+      const parsedData = JSON.parse(websocketMessage.data);
+      const dataType = parsedData.type;
 
-        switch(dataType) {
-          case dataTypes.PLAYER:
-            setAppStatus(parsedData.appData);
-            break;
-          case dataTypes.START_VISUAL_SHOW:
-            navigate('/config');
-            break;
-          default:
-            // do nothing
-        }
+      switch (dataType) {
+        case dataTypes.PLAYER:
+          setAppStatus(parsedData.appData);
+          break;
+        case dataTypes.START_VISUAL_SHOW:
+          navigate("/config");
+          break;
+        default:
+        // do nothing
+      }
 
-        console.log(parsedData);
+      console.log(parsedData);
     });
 
     axios
@@ -113,14 +113,25 @@ function Player() {
     );
   }
 
-  return appStatus.isAuth ? (
-    <div className="App container">
+  const player = (
+    <Fragment>
       <div className="current-song">{renderPlayer()}</div>
       <div className="App-header music-code">{renderHeader()}</div>
       <div className="App-content song-queue">{renderQueuedSongs()}</div>
+    </Fragment>
+  );
+
+  return (
+    <div
+      className="App container"
+      onDoubleClick={() =>
+        !document.fullscreenElement
+          ? document.body.requestFullscreen()
+          : document.exitFullscreen()
+      }
+    >
+      {appStatus.isAuth ? player : renderAuthLink()}
     </div>
-  ) : (
-    renderAuthLink()
   );
 }
 

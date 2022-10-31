@@ -51,10 +51,8 @@ class SpotifyQueuedSong extends SpotifySong {
           await play([this.trackId]);
           store.setCurrentSong(this);
           if (this.apiParams.phoneNumberId) {
-            await replyTextMessage(
-              this.apiParams as APIParams,
-              SuccessMessages.SONG_PLAYED
-            );
+            const message = `Tu canción ${this.name} de ${this.artist} se reproducira ahora.`;
+            await replyTextMessage(this.apiParams as APIParams, message);
           }
         },
         () => {}
