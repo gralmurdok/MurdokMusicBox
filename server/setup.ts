@@ -18,7 +18,16 @@ const server = app.listen(process.env.PORT || 1337, () =>
 const webSocketsServer = new WebSocket.Server({ server });
 webSocketsServer.on("connection", (websocketClient) => {
   console.log("New client connected");
-  websocketClient.send(JSON.stringify(store.status, null, 2));
+  websocketClient.send(
+    JSON.stringify(
+      {
+        type: store.mode,
+        appData: store.status,
+      },
+      null,
+      2
+    )
+  );
 });
 
 function broadcastData(type: EventType, data: unknown) {

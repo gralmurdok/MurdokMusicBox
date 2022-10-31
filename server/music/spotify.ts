@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleExecuteAction } from "../handlers/handleExecuteAction";
 import { store } from "../store";
 import { Song } from "../types";
 
@@ -112,28 +113,29 @@ async function refreshToken() {
     process.env.CLIENT_ID + ":" + process.env.SECRET_ID
   ).toString("base64");
 
-  try {
-    const authResponse = await axios({
-      method: "POST",
-      url: "https://accounts.spotify.com/api/token",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${authCredentials}`,
-      },
-      params: {
-        grant_type: "refresh_token",
-        refresh_token: store.auth.refreshToken,
-      },
-    });
-    console.log("REFRESHING TOKEN ", authResponse.data);
-    store.auth = {
-      ...store.auth,
-      accessToken: authResponse.data.access_token,
-      expiresAt: Date.now() + authResponse.data.expires_in * 1000,
-    };
-  } catch (err) {
-    console.log(err);
-  }
+  await handleExecuteAction(
+    async () => {
+      const authResponse = await axios({
+        method: "POST",
+        url: "https://accounts.spotify.com/api/token",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${authCredentials}`,
+        },
+        params: {
+          grant_type: "refresh_token",
+          refresh_token: store.auth.refreshToken,
+        },
+      });
+      console.log("REFRESHING TOKEN ", authResponse.data);
+      store.auth = {
+        ...store.auth,
+        accessToken: authResponse.data.access_token,
+        expiresAt: Date.now() + authResponse.data.expires_in * 1000,
+      };
+    },
+    () => {}
+  );
 }
 
 export {

@@ -6,6 +6,10 @@ import {
   simpleMessage,
 } from "./whatsappMessageBuilder";
 
+function getWhatsappToken() {
+  return process.env.WHATSAPP_TOKEN;
+}
+
 function replyMusicBackToUser(apiParams: APIParams) {
   const songsList: Song[] = store
     .getUser(apiParams.toPhoneNumber)
@@ -40,7 +44,7 @@ function replyMessageBackToUser(apiParams: APIParams, data: WhatsappMessage) {
       "https://graph.facebook.com/v12.0/" +
       apiParams.phoneNumberId +
       "/messages?access_token=" +
-      apiParams.whatsappToken,
+      getWhatsappToken(),
     data,
     headers: { "Content-Type": "application/json" },
   });
@@ -52,7 +56,7 @@ function fetchMediaURL(apiParams: APIParams) {
     url:
       `https://graph.facebook.com/v12.0/${apiParams.imageId}` +
       "?access_token=" +
-      apiParams.whatsappToken,
+      getWhatsappToken(),
     headers: { "Content-Type": "application/json" },
   });
 }
@@ -63,7 +67,7 @@ function fetchMediaObject(apiParams: APIParams, url: string) {
     url,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiParams.whatsappToken}`,
+      Authorization: `Bearer ${getWhatsappToken()}`,
     },
     responseType: "arraybuffer",
   });

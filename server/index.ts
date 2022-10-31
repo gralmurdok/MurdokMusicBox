@@ -7,6 +7,7 @@ import { store } from "./store";
 import { app } from "./setup";
 import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
 import { handleOperationByMessageType } from "./handlers/determineOperationHandler";
+import { updateAppStatus } from "./handlers/updateAppStatusHandler";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -41,7 +42,6 @@ app.post("/webhook", async (req, res) => {
   try {
     const messageData = gatherDataFromMessage(req.body);
     const apiParams: APIParams = {
-      whatsappToken: process.env.WHATSAPP_TOKEN as string,
       spotifyToken: store.auth.accessToken,
       ...messageData,
     };

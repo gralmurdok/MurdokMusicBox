@@ -3,6 +3,7 @@ import { SpotifyQueuedSong, SpotifySong } from "./song";
 import { getRecomendedSongs, play } from "./spotify";
 import { store } from "../store";
 import { RawSong } from "../types";
+import { handleExecuteAction } from "../handlers/handleExecuteAction";
 
 class SpotifySongQueueManager {
   songQueue: SpotifyQueuedSong[];
@@ -14,21 +15,24 @@ class SpotifySongQueueManager {
 
   handleQueueRecommendedSongs = (shouldBePlayedIn: number) => {
     this.queueRecommendedTimeout = setTimeout(async () => {
-      try {
-        const recomendedSongs = await getRecomendedSongs();
-        const tracks = recomendedSongs.data.tracks;
-        const trackIds = tracks.map((track: { id: string }) => track.id);
+      await handleExecuteAction(
+        async () => {
+          const recomendedSongs = await getRecomendedSongs();
+          const tracks = recomendedSongs.data.tracks;
+          const trackIds = tracks.map((track: { id: string }) => track.id);
 
-        recomendedSongs.data.tracks
-          .map((x: RawSong) => new SpotifySong(x))
-          .forEach((x: SpotifySong) => console.log(x));
+          recomendedSongs.data.tracks
+            .map((x: RawSong) => new SpotifySong(x))
+            .forEach((x: SpotifySong) => console.log(x));
 
-        await play(trackIds);
-        store.setCurrentSong(new SpotifyQueuedSong(tracks[0]));
-      } catch (err) {
-        store.setNormalizedSong({ requesterName: Defaults.REQUESTER_NAME });
-        console.log(err);
-      }
+          await play(trackIds);
+          store.setCurrentSong(new SpotifyQueuedSong(tracks[0]));
+        },
+        async () => {
+          store.setNormalizedSong({ requesterName: Defaults.REQUESTER_NAME });
+          await play(store.status.last5Played.map((song) => song.trackId));
+        }
+      );
     }, shouldBePlayedIn);
   };
 

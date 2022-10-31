@@ -1,7 +1,9 @@
-import { Defaults, TimeDefaults } from "../constants";
+import { Defaults, SuccessMessages, TimeDefaults } from "../constants";
 import { play } from "./spotify";
 import { store } from "../store";
-import { RawSong } from "../types";
+import { APIParams, RawSong } from "../types";
+import { handleExecuteAction } from "../handlers/handleExecuteAction";
+import { replyTextMessage } from "../messaging/whatsapp";
 
 class SpotifySong {
   trackId: string;
@@ -28,22 +30,35 @@ class SpotifySong {
 }
 
 class SpotifyQueuedSong extends SpotifySong {
+  apiParams: Partial<APIParams>;
+  requesterName: string;
+
   constructor(
     rawSong: RawSong,
-    requesterName: string = Defaults.REQUESTER_NAME
+    apiParams = {
+      requesterName: Defaults.REQUESTER_NAME as string,
+    }
   ) {
     super(rawSong);
-    this.requesterName = requesterName;
+    this.requesterName = apiParams.requesterName;
+    this.apiParams = apiParams;
   }
 
   consume = async () => {
     if (!this.wasConsumed) {
-      try {
-        await play([this.trackId]);
-        store.setCurrentSong(this);
-      } catch (err) {
-        // do nothing
-      }
+      await handleExecuteAction(
+        async () => {
+          await play([this.trackId]);
+          store.setCurrentSong(this);
+          if (this.apiParams.phoneNumberId) {
+            await replyTextMessage(
+              this.apiParams as APIParams,
+              SuccessMessages.SONG_PLAYED
+            );
+          }
+        },
+        () => {}
+      );
       this.wasConsumed = true;
     }
   };

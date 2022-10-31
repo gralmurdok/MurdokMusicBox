@@ -4,7 +4,6 @@ interface APIParams {
   messageBody: string;
   messageType: MessageType;
   requesterName: string;
-  whatsappToken: string;
   spotifyToken: string;
   phoneNumberId: string;
   toPhoneNumber: string;

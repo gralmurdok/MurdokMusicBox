@@ -62,7 +62,7 @@ async function handleQueueSong(apiParams: APIParams) {
   );
   const newSpotifySong = new SpotifyQueuedSong(
     newRawSongResponse.data,
-    apiParams.requesterName
+    apiParams
   );
   const remainingTimeInMs = songQueueManager
     .retrieveRemainingSongs()
@@ -70,13 +70,13 @@ async function handleQueueSong(apiParams: APIParams) {
       return accum + song.durationMs;
     }, currentSong.remainingTime);
 
-  const remainingTime =
-    currentSong.requesterName === Defaults.REQUESTER_NAME
-      ? 0
-      : remainingTimeInMs;
+  const canForcePlay = currentSong.requesterName === Defaults.REQUESTER_NAME;
+  const remainingTime = canForcePlay ? 0 : remainingTimeInMs;
   songQueueManager.addSong(newSpotifySong, remainingTime);
 
-  handleUpdateAndNotifyUser(apiParams, remainingTime);
+  if (!canForcePlay) {
+    handleUpdateAndNotifyUser(apiParams, remainingTime);
+  }
 }
 
 async function handleUpdateAndNotifyUser(
