@@ -5,22 +5,23 @@ import { QueuedSong } from "./QueuedSong";
 import { dataTypes, WebsocketManager } from "../WebSocketService";
 import { useNavigate } from "react-router-dom";
 
+const defaultAppStatus = {
+  isAuth: false,
+  permitToken: {
+    token: "",
+    validUntil: 0,
+  },
+  currentSong: {
+    name: "",
+    artist: "",
+    imgUrl: "",
+    requesterName: "",
+  },
+  songQueue: [],
+  wifiKey: "",
+};
+
 function Player() {
-  const defaultAppStatus = {
-    isAuth: false,
-    permitToken: {
-      token: "",
-      validUntil: 0,
-    },
-    currentSong: {
-      name: "",
-      artist: "",
-      imgUrl: "",
-      requesterName: "",
-    },
-    songQueue: [],
-    wifiKey: "",
-  };
   const [appStatus, setAppStatus] = useState(defaultAppStatus);
   const navigate = useNavigate();
 

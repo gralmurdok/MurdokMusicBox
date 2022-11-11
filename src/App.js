@@ -5,18 +5,24 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { dataTypes, WebsocketManager } from "./WebSocketService";
 
+const defaultSliderStatus = {
+  images: []
+};
+
 const Config = () => {
-  const [image, setImage] = useState();
+  const [sliderStatus, setSliderStatus] = useState(defaultSliderStatus);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     WebsocketManager.addStatusUpdateHandler((websocketMessage) => {
       const parsedData = JSON.parse(websocketMessage.data);
       const dataType = parsedData.type;
+      const imageIndex = parsedData.appData ?? 0;
 
       switch (dataType) {
-        case dataTypes.START_VISUAL_SHOW:
-          setImage(parsedData.appData);
+        case dataTypes.LOAD_IMAGE:
+          setCurrentImageIndex(imageIndex);
           break;
         case dataTypes.PLAYER:
           navigate("/player");
@@ -26,26 +32,26 @@ const Config = () => {
         // do nothing
       }
 
-      console.log("FROM CONFIG " + parsedData.appData);
+      console.log(`FROM CONFIG ${websocketMessage.data}`);
     });
 
-    try {
-      axios
-        .get("/slider-info")
-        .then((currentImage) =>
-          setImage(currentImage.data.images[0].base64Source)
-        )
-        .catch((err) => {
-          // do nothing
+    axios
+      .get("/slider-info")
+      .then((currentAppData) => {
+        setSliderStatus({
+          images: currentAppData.data.images,
         });
-    } catch (err) {
-      console.log(err);
-    }
-  });
+
+        console.log(JSON.stringify(sliderStatus.images, null, 2));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <div className="visualShow">
-      <img alt="" src={image} />
+      <img alt="" src={sliderStatus.images[currentImageIndex]?.base64Source} />
     </div>
   );
 };

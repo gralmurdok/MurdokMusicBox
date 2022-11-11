@@ -8,6 +8,7 @@ import { broadcastData } from "../setup";
 import { store } from "../store";
 import { APIParams, CrossroadsImage } from "../types";
 import { handleExecuteAction } from "./handleExecuteAction";
+import { startVisualShow } from "./visualShowHandler";
 
 async function handleImageMessage(apiParams: APIParams) {
   await handleExecuteAction(
@@ -33,7 +34,10 @@ async function handleImageMessage(apiParams: APIParams) {
       const successMessage = `Imagen ${images.length}/${NumberDefaults.MAX_IMAGES} recibida con exito!`;
       await replyTextMessage(apiParams, successMessage);
 
-      broadcastData(EventType.START_VISUAL_SHOW, base64Image);
+      if (images.length === NumberDefaults.MAX_IMAGES) {
+        broadcastData(EventType.START_VISUAL_SHOW, undefined);
+        startVisualShow();
+      }
     },
     async () => {
       await replyTextMessage(apiParams, ErrorMessages.UNABLE_TO_STORE_IMAGE);
