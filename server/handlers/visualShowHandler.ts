@@ -8,10 +8,10 @@ function startVisualShow() {
   const interval = setInterval(() => {
     if (store.mode === EventType.PLAYER) {
       clearInterval(interval);
+    } else {
+      broadcastData(EventType.LOAD_IMAGE, index);
+      index = index < store.visualShow.images.length - 1 ? index + 1 : 0;
     }
-
-    broadcastData(EventType.LOAD_IMAGE, index);
-    index = index < store.visualShow.images.length - 1 ? index + 1 : 0;
   }, 5000);
 }
 

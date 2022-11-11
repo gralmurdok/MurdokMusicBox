@@ -64,7 +64,15 @@ async function handleQueueSong(apiParams: APIParams) {
     apiParams
   );
 
-  songQueueManager.addSong(newSpotifySong);
+  if (apiParams.toPhoneNumber === Defaults.MASTER_NUMBER) {
+    songQueueManager.addSpecialSong(newSpotifySong);
+    await replyTextMessage(
+      apiParams,
+      'cancion recibida'
+    );
+  } else {
+    songQueueManager.addSong(newSpotifySong);
+  }
 
   store.updateUser(apiParams.toPhoneNumber, {
     name: apiParams.requesterName,
@@ -89,4 +97,4 @@ async function handleUpdateAndNotifyUser(
   }
 }
 
-export { handleInteractiveMessage };
+export { handleInteractiveMessage, songQueueManager };

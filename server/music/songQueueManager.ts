@@ -1,13 +1,15 @@
-import { Defaults, TimeDefaults } from "../constants";
+import { Defaults, EventType, TimeDefaults } from "../constants";
 import { SpotifyQueuedSong, SpotifySong } from "./song";
 import { getRecomendedSongs, play } from "./spotify";
 import { store } from "../store";
 import { RawSong, Song } from "../types";
 import { handleExecuteAction } from "../handlers/handleExecuteAction";
+import { broadcastData } from "../setup";
 
 class SpotifySongQueueManager {
   songQueue: SpotifyQueuedSong[];
   queueRecommendedTimeout: any;
+  specialSong?: SpotifyQueuedSong;
 
   constructor() {
     this.songQueue = [];
@@ -58,6 +60,17 @@ class SpotifySongQueueManager {
     }
   }
 
+  playSpecialSong = () => {
+    console.log(this.specialSong);
+    this.specialSong?.delayedConsume(0, (durationMs: number) => {
+      setTimeout(this.resumeSongs, durationMs);
+    });
+  }
+
+  addSpecialSong = (newSong: SpotifyQueuedSong) => {
+    this.specialSong = newSong;
+  }
+
   addSong = (newSong: SpotifyQueuedSong) => {
     this.setSongQueue([...this.retrieveRemainingSongs(), newSong]);
     clearTimeout(this.queueRecommendedTimeout);
@@ -77,15 +90,21 @@ class SpotifySongQueueManager {
 
   pauseSongs = () => {
     clearTimeout(this.queueRecommendedTimeout);
-    this.songQueue.forEach((song: SpotifyQueuedSong) => {
-      clearTimeout(song.timeout);
+    this.songQueue.forEach(async(song: SpotifyQueuedSong) => {
+      await song.pause();
     });
   }
 
   resumeSongs = () => {
-    this.songQueue.forEach((song: SpotifyQueuedSong) => {
-      song.delayedConsume(this.getCurrentSongPlayingTime(), this.onConsumeSong);
-    })
+    if (this.songQueue.length > 0) {
+      this.songQueue.forEach(async(song: SpotifyQueuedSong) => {
+        await song.delayedConsume(this.getCurrentSongPlayingTime(), this.onConsumeSong);
+      })
+    } else {
+      this.handleQueueRecommendedSongs(0);
+    }
+
+    broadcastData(EventType.PLAYER, store.status);
   }
 
   retrieveRemainingSongs = () => {

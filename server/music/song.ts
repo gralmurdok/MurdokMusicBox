@@ -61,6 +61,11 @@ class SpotifyQueuedSong extends SpotifySong {
     }
   };
 
+  pause = async() => {
+    clearTimeout(this.timeout);
+    await replyTextMessage(this.apiParams as APIParams, 'Tu cancion ha sido pausada debido a que hay un evento especial en curso.');
+  }
+
   delayedConsume(shouldBePlayedIn: number, callback: (durationMs: number) => void) {
     this.timeout = setTimeout(async () => {
       await this.consume();

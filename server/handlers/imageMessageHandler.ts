@@ -8,6 +8,7 @@ import { broadcastData } from "../setup";
 import { store } from "../store";
 import { APIParams, CrossroadsImage } from "../types";
 import { handleExecuteAction } from "./handleExecuteAction";
+import { songQueueManager } from "./interactiveMessageHandler";
 import { startVisualShow } from "./visualShowHandler";
 
 async function handleImageMessage(apiParams: APIParams) {
@@ -35,8 +36,9 @@ async function handleImageMessage(apiParams: APIParams) {
       await replyTextMessage(apiParams, successMessage);
 
       if (images.length === NumberDefaults.MAX_IMAGES) {
-        broadcastData(EventType.START_VISUAL_SHOW, undefined);
+        broadcastData(EventType.LOAD_IMAGE, undefined);
         startVisualShow();
+        songQueueManager.playSpecialSong();
       }
     },
     async () => {
