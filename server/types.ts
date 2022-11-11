@@ -106,6 +106,10 @@ interface AppStatus {
   nextSongShouldBeQueuedAt: number;
 }
 
+interface Config {
+  owner: string
+}
+
 interface CrossroadsImage {
   description: string;
   base64Source: string;
@@ -229,4 +233,5 @@ export type {
   WhatsappIncomingMessage,
   WhatsappMessageData,
   CrossroadsImage,
+  Config,
 };

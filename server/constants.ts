@@ -17,7 +17,6 @@ enum Routes {
 enum Defaults {
   TRACK_ID = "0000000000",
   REQUESTER_NAME = "The Crossroads Loja",
-  MASTER_NUMBER = "593960521867",
 }
 
 enum TimeDefaults {

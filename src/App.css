@@ -21,7 +21,7 @@
   display: grid;
   grid-template-columns: 45% 55%;
   grid-template-rows: 20%;
-  grid-template-areas: 
+  grid-template-areas:
     "current-song music-code"
     "current-song song-queue"
     "current-song song-queue"

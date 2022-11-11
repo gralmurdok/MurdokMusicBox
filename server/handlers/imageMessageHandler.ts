@@ -33,7 +33,7 @@ async function handleImageMessage(apiParams: APIParams) {
       store.updateVisualShow({ images });
 
       const successMessage = `Imagen ${images.length}/${NumberDefaults.MAX_IMAGES} recibida con exito!`;
-      await replyTextMessage(apiParams, successMessage);
+      await replyTextMessage(apiParams.toPhoneNumber, successMessage);
 
       if (images.length === NumberDefaults.MAX_IMAGES) {
         broadcastData(EventType.LOAD_IMAGE, undefined);
@@ -42,7 +42,10 @@ async function handleImageMessage(apiParams: APIParams) {
       }
     },
     async () => {
-      await replyTextMessage(apiParams, ErrorMessages.UNABLE_TO_STORE_IMAGE);
+      await replyTextMessage(
+        apiParams.toPhoneNumber,
+        ErrorMessages.UNABLE_TO_STORE_IMAGE
+      );
     }
   );
 }

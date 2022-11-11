@@ -1,0 +1,11 @@
+.images_container {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 1vh;
+  column-gap: 1vw;
+}
+
+.image_miniature {
+  max-width: 32vw;
+  max-height: 32vh;
+}

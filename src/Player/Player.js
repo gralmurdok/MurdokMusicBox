@@ -35,7 +35,7 @@ function Player() {
           setAppStatus(parsedData.appData);
           break;
         case dataTypes.LOAD_IMAGE:
-          navigate("/config");
+          navigate("/visual_show");
           break;
         default:
         // do nothing

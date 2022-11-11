@@ -19,7 +19,6 @@ function replyMusicBackToUser(apiParams: APIParams) {
     }));
 
   return replyMessageBackToUser(
-    apiParams,
     interactiveListMessage(
       apiParams.toPhoneNumber,
       "Resultados de tu busqueda",
@@ -29,25 +28,22 @@ function replyMusicBackToUser(apiParams: APIParams) {
   );
 }
 
-function replyTextMessage(apiParams: APIParams, message: string) {
+function replyTextMessage(phoneNumber: string, message: string) {
   console.log(message);
-  return replyMessageBackToUser(
-    apiParams,
-    simpleMessage(apiParams.toPhoneNumber, message)
-  );
+  return replyMessageBackToUser(simpleMessage(phoneNumber, message));
 }
 
-function replyMessageBackToUser(apiParams: APIParams, data: WhatsappMessage) {
+function replyMessageBackToUser(data: WhatsappMessage) {
   return axios({
     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
     url:
       "https://graph.facebook.com/v12.0/" +
-      apiParams.phoneNumberId +
+      process.env.MUSIC_BOX_PHONE_NUMBER_ID +
       "/messages?access_token=" +
       getWhatsappToken(),
     data,
     headers: { "Content-Type": "application/json" },
-  });
+  }).catch((err) => console.log(err));
 }
 
 function fetchMediaURL(apiParams: APIParams) {

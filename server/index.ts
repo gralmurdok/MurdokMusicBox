@@ -7,8 +7,9 @@ import { store } from "./store";
 import { app } from "./setup";
 import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
 import { handleOperationByMessageType } from "./handlers/determineOperationHandler";
-import { updateAppStatus } from "./handlers/updateAppStatusHandler";
 import { handleExecuteAction } from "./handlers/handleExecuteAction";
+import { normalizeOwnerPhone } from "./utils";
+import { replyTextMessage } from "./messaging/whatsapp";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -39,12 +40,28 @@ app.get("/slider-info", (req, res) => {
   res.json(store.visualShow);
 });
 
+app.post("/update-party-owner", async (req, res) => {
+  await handleExecuteAction(async () => {
+    store.config.owner = normalizeOwnerPhone(req.body.owner);
+    console.log(store.config.owner);
+    await replyTextMessage(store.config.owner, 'Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir');
+    res.sendStatus(200);
+  }, () => {
+    res.sendStatus(500);
+  });
+});
+
+app.post("/approve-party", async (req, res) => {
+  console.log("approved");
+})
+
 app.post("/webhook", async (req, res) => {
   console.log(JSON.stringify(req.body));
 
   await handleExecuteAction(
     async () => {
       const messageData = gatherDataFromMessage(req.body);
+      console.log(messageData);
       const apiParams: APIParams = {
         spotifyToken: store.auth.accessToken,
         ...messageData,

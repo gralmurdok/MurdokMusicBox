@@ -29,7 +29,10 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
       await replyMusicBackToUser(apiParams);
     },
     async () => {
-      await replyTextMessage(apiParams, ErrorMessages.SEARCH_ERROR);
+      await replyTextMessage(
+        apiParams.toPhoneNumber,
+        ErrorMessages.SEARCH_ERROR
+      );
     }
   );
 }

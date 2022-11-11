@@ -5,4 +5,8 @@ function getFormattedRemainigTime(remainingSeconds: number) {
   )} segundos`;
 }
 
-export { getFormattedRemainigTime };
+function normalizeOwnerPhone(ownerPhone: string) {
+  return ownerPhone.length > 10 ? ownerPhone : ownerPhone.replace(/^0/, '593')
+}
+
+export { getFormattedRemainigTime, normalizeOwnerPhone };

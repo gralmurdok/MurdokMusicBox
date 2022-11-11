@@ -7,6 +7,7 @@ import {
   AppStatus,
   Song,
   VisualShow,
+  Config,
 } from "./types";
 
 const defaultCurrentSong = {
@@ -37,6 +38,7 @@ class Store {
   status: AppStatus;
   visualShow: VisualShow;
   mode: EventType;
+  config: Config;
 
   constructor() {
     this.auth = {
@@ -65,6 +67,9 @@ class Store {
       images: [],
     };
     this.mode = EventType.PLAYER;
+    this.config = {
+      owner: '',
+    }
   }
 
   updateSongQueue(songQueue: SpotifyQueuedSong[]) {

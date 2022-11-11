@@ -6,7 +6,7 @@ import { EventType } from "../constants";
 import { handleExecuteAction } from "./handleExecuteAction";
 
 async function updateCurrentPlayingSong() {
-  handleExecuteAction(
+  await handleExecuteAction(
     async () => {
       const currentRawSong = await getCurrentSong(store.auth.accessToken);
       const currentSong = new SpotifyCurrentSong(

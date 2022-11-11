@@ -1,4 +1,4 @@
-import { Defaults, ErrorMessages, SuccessMessages } from "../constants";
+import { ErrorMessages, SuccessMessages } from "../constants";
 import { replyTextMessage } from "../messaging/whatsapp";
 import { SpotifyQueuedSong } from "../music/song";
 import { SpotifySongQueueManager } from "../music/songQueueManager";
@@ -23,7 +23,7 @@ async function handleInteractiveMessage(apiParams: APIParams) {
 function isNotReadyToQueueNextSong(apiParams: APIParams) {
   const currentUser = store.getUser(apiParams.toPhoneNumber);
   return (
-    currentUser.phoneNumber !== Defaults.MASTER_NUMBER &&
+    currentUser.phoneNumber !== process.env.MASTER_PHONE_NUMBER &&
     currentUser.nextAvailableSongTimestamp > Date.now()
   );
 }
@@ -34,7 +34,7 @@ async function handleNotReadyToQueueNextSong(apiParams: APIParams) {
     Date.now();
   const remainingSeconds = remainingMiliseconds / 1000;
   await replyTextMessage(
-    apiParams,
+    apiParams.toPhoneNumber,
     `${ErrorMessages.NOT_READY_TO_QUEUE_SONG} ${getFormattedRemainigTime(
       remainingSeconds
     )}`
@@ -52,7 +52,10 @@ function isDuplicatedSong(apiParams: APIParams) {
 }
 
 async function handleDuplicatedSong(apiParams: APIParams) {
-  await replyTextMessage(apiParams, ErrorMessages.DUPLICATED_SONG);
+  await replyTextMessage(
+    apiParams.toPhoneNumber,
+    ErrorMessages.DUPLICATED_SONG
+  );
 }
 
 async function handleQueueSong(apiParams: APIParams) {
@@ -64,11 +67,11 @@ async function handleQueueSong(apiParams: APIParams) {
     apiParams
   );
 
-  if (apiParams.toPhoneNumber === Defaults.MASTER_NUMBER) {
+  if (apiParams.toPhoneNumber === store.config.owner) {
     songQueueManager.addSpecialSong(newSpotifySong);
     await replyTextMessage(
-      apiParams,
-      'cancion recibida'
+      apiParams.toPhoneNumber,
+      `cancion de evento recibida: ${newSpotifySong.name} de ${newSpotifySong.artist}`
     );
   } else {
     songQueueManager.addSong(newSpotifySong);
@@ -80,7 +83,10 @@ async function handleQueueSong(apiParams: APIParams) {
     nextAvailableSongTimestamp: Date.now() + 180 * 1000,
   });
 
-  handleUpdateAndNotifyUser(apiParams, songQueueManager.getCurrentSongPlayingTime());
+  handleUpdateAndNotifyUser(
+    apiParams,
+    songQueueManager.getCurrentSongPlayingTime()
+  );
 }
 
 async function handleUpdateAndNotifyUser(
@@ -89,7 +95,7 @@ async function handleUpdateAndNotifyUser(
 ) {
   if (remainingTime > 0) {
     await replyTextMessage(
-      apiParams,
+      apiParams.toPhoneNumber,
       `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
         remainingTime / 1000
       )}`
