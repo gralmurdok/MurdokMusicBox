@@ -34,7 +34,7 @@ function Player() {
         case dataTypes.PLAYER:
           setAppStatus(parsedData.appData);
           break;
-        case dataTypes.START_VISUAL_SHOW:
+        case dataTypes.LOAD_IMAGE:
           navigate("/config");
           break;
         default:

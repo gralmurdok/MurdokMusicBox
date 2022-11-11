@@ -25,7 +25,7 @@ async function handleImageMessage(apiParams: APIParams) {
         base64Source: base64Image,
       };
 
-      const images = [newImage, ...store.visualShow.images].slice(
+      const images = [...store.visualShow.images, newImage].slice(
         0,
         NumberDefaults.MAX_IMAGES
       );

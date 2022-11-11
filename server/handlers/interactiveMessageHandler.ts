@@ -56,7 +56,6 @@ async function handleDuplicatedSong(apiParams: APIParams) {
 }
 
 async function handleQueueSong(apiParams: APIParams) {
-  const currentSong = store.getCurrentSong();
   const newRawSongResponse = await fetchSongByTrackId(
     apiParams.interactiveReply
   );
@@ -64,37 +63,30 @@ async function handleQueueSong(apiParams: APIParams) {
     newRawSongResponse.data,
     apiParams
   );
-  const remainingTimeInMs = songQueueManager
-    .retrieveRemainingSongs()
-    .reduce((accum: number, song: Song) => {
-      return accum + song.durationMs;
-    }, currentSong.remainingTime);
 
-  const canForcePlay = currentSong.requesterName === Defaults.REQUESTER_NAME;
-  const remainingTime = canForcePlay ? 0 : remainingTimeInMs;
-  songQueueManager.addSong(newSpotifySong, remainingTime);
-
-  if (!canForcePlay) {
-    handleUpdateAndNotifyUser(apiParams, remainingTime);
-  }
-}
-
-async function handleUpdateAndNotifyUser(
-  apiParams: APIParams,
-  remainingTime: number
-) {
-  await replyTextMessage(
-    apiParams,
-    `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
-      remainingTime / 1000
-    )}`
-  );
+  songQueueManager.addSong(newSpotifySong);
 
   store.updateUser(apiParams.toPhoneNumber, {
     name: apiParams.requesterName,
     phoneNumber: apiParams.toPhoneNumber,
     nextAvailableSongTimestamp: Date.now() + 180 * 1000,
   });
+
+  handleUpdateAndNotifyUser(apiParams, songQueueManager.getCurrentSongPlayingTime());
+}
+
+async function handleUpdateAndNotifyUser(
+  apiParams: APIParams,
+  remainingTime: number
+) {
+  if (remainingTime > 0) {
+    await replyTextMessage(
+      apiParams,
+      `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
+        remainingTime / 1000
+      )}`
+    );
+  }
 }
 
 export { handleInteractiveMessage };

@@ -2,7 +2,7 @@ import { Defaults, TimeDefaults } from "../constants";
 import { SpotifyQueuedSong, SpotifySong } from "./song";
 import { getRecomendedSongs, play } from "./spotify";
 import { store } from "../store";
-import { RawSong } from "../types";
+import { RawSong, Song } from "../types";
 import { handleExecuteAction } from "../handlers/handleExecuteAction";
 
 class SpotifySongQueueManager {
@@ -48,19 +48,45 @@ class SpotifySongQueueManager {
     store.updateSongQueue(songQueue);
   };
 
-  addSong = (newSong: SpotifyQueuedSong, shouldBePlayedIn: number) => {
+  onConsumeSong = (durationMs: number) => {
+    const remainingSongs = this.retrieveRemainingSongs();
+    store.updateSongQueue(remainingSongs);
+    if (remainingSongs.length === 0) {
+      this.handleQueueRecommendedSongs(
+        durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS
+      );
+    }
+  }
+
+  addSong = (newSong: SpotifyQueuedSong) => {
     this.setSongQueue([...this.retrieveRemainingSongs(), newSong]);
     clearTimeout(this.queueRecommendedTimeout);
-    newSong.delayedConsume(shouldBePlayedIn, () => {
-      const remainingSongs = this.retrieveRemainingSongs();
-      store.updateSongQueue(remainingSongs);
-      if (remainingSongs.length === 0) {
-        this.handleQueueRecommendedSongs(
-          newSong.durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS
-        );
-      }
-    });
+    newSong.delayedConsume(this.getCurrentSongPlayingTime(), this.onConsumeSong);
   };
+
+  getCurrentSongPlayingTime = () => {
+    const currentSong = store.getCurrentSong();
+    const remainingTimeInMs = this
+      .retrieveRemainingSongs()
+      .reduce((accum: number, song: Song) => {
+        return accum + song.durationMs;
+      }, currentSong.remainingTime);
+    const canForcePlay = currentSong.requesterName === Defaults.REQUESTER_NAME;
+    return canForcePlay ? 0 : remainingTimeInMs;
+  }
+
+  pauseSongs = () => {
+    clearTimeout(this.queueRecommendedTimeout);
+    this.songQueue.forEach((song: SpotifyQueuedSong) => {
+      clearTimeout(song.timeout);
+    });
+  }
+
+  resumeSongs = () => {
+    this.songQueue.forEach((song: SpotifyQueuedSong) => {
+      song.delayedConsume(this.getCurrentSongPlayingTime(), this.onConsumeSong);
+    })
+  }
 
   retrieveRemainingSongs = () => {
     return this.songQueue.filter((spotifySong) => !spotifySong.wasConsumed);

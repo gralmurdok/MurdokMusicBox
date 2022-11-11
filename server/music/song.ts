@@ -61,10 +61,10 @@ class SpotifyQueuedSong extends SpotifySong {
     }
   };
 
-  delayedConsume(shouldBePlayedIn: number, callback: () => void) {
+  delayedConsume(shouldBePlayedIn: number, callback: (durationMs: number) => void) {
     this.timeout = setTimeout(async () => {
       await this.consume();
-      callback();
+      callback(this.durationMs);
     }, shouldBePlayedIn);
   }
 }
