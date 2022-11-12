@@ -72,10 +72,11 @@ class SpotifySongQueueManager {
   };
 
   addSong = (newSong: SpotifyQueuedSong) => {
+    const delayInMs = this.getCurrentSongPlayingTime();
     this.setSongQueue([...this.retrieveRemainingSongs(), newSong]);
     clearTimeout(this.queueRecommendedTimeout);
     newSong.delayedConsume(
-      this.getCurrentSongPlayingTime(),
+      delayInMs,
       this.onConsumeSong
     );
   };
@@ -101,11 +102,13 @@ class SpotifySongQueueManager {
 
   resumeSongs = () => {
     if (this.songQueue.length > 0) {
-      this.songQueue.forEach(async (song: SpotifyQueuedSong) => {
+      let delayInMs = 0;
+      this.retrieveRemainingSongs().forEach(async (song: SpotifyQueuedSong) => {
         await song.delayedConsume(
-          this.getCurrentSongPlayingTime(),
+          delayInMs,
           this.onConsumeSong
         );
+        delayInMs = delayInMs + song.durationMs;
       });
     } else {
       this.handleQueueRecommendedSongs(0);
