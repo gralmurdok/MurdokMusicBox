@@ -15,7 +15,7 @@ function registerUser(apiParams: APIParams) {
   store.addUser(newUser);
 
   const content = `Nombre: ${newUser.name}\nTelefono: ${newUser.phoneNumber}\nMensaje de entrada: ${newUser.searchQuery}`;
-  replyTextMessage(process.env.MASTER_PHONE_NUMBER2 as string, content);
+  replyTextMessage(process.env.MASTER_PHONE_NUMBER as string, content);
 }
 
 function ensureUserIsRegistered(apiParams: APIParams) {

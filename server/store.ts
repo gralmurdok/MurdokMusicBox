@@ -77,8 +77,6 @@ class Store {
       ...store.status,
       songQueue: songQueue.map(normalizeSongStructure),
     };
-
-    broadcastData(EventType.PLAYER, store.status);
   }
 
   setIsSpotifyReady(isReady: boolean) {

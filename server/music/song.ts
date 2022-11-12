@@ -32,6 +32,7 @@ class SpotifySong {
 class SpotifyQueuedSong extends SpotifySong {
   apiParams: Partial<APIParams>;
   requesterName: string;
+  onSongEnd: (durationMs: number) => void;
 
   constructor(
     rawSong: RawSong,
@@ -42,6 +43,7 @@ class SpotifyQueuedSong extends SpotifySong {
     super(rawSong);
     this.requesterName = apiParams.requesterName;
     this.apiParams = apiParams;
+    this.onSongEnd = () => {};
   }
 
   consume = async () => {
@@ -71,12 +73,15 @@ class SpotifyQueuedSong extends SpotifySong {
 
   delayedConsume(
     shouldBePlayedIn: number,
-    callback: (durationMs: number) => void
   ) {
     this.timeout = setTimeout(async () => {
       await this.consume();
-      callback(this.durationMs);
+      this.onSongEnd(this.durationMs);
     }, shouldBePlayedIn);
+  }
+
+  setOnEndSong(callback: (durationMs: number) => void) {
+    this.onSongEnd = callback;
   }
 }
 

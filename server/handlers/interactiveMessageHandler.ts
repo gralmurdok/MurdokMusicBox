@@ -66,6 +66,7 @@ async function handleQueueSong(apiParams: APIParams) {
     newRawSongResponse.data,
     apiParams
   );
+  const currentRemainingTime = songQueueManager.getCurrentSongPlayingTime();
 
   if (apiParams.toPhoneNumber === store.config.owner) {
     songQueueManager.addSpecialSong(newSpotifySong);
@@ -75,6 +76,12 @@ async function handleQueueSong(apiParams: APIParams) {
     );
   } else {
     songQueueManager.addSong(newSpotifySong);
+    await replyTextMessage(
+      apiParams.toPhoneNumber,
+      `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
+        currentRemainingTime / 1000
+      )}`
+    );
   }
 
   store.updateUser(apiParams.toPhoneNumber, {
@@ -82,25 +89,6 @@ async function handleQueueSong(apiParams: APIParams) {
     phoneNumber: apiParams.toPhoneNumber,
     nextAvailableSongTimestamp: Date.now() + 180 * 1000,
   });
-
-  handleUpdateAndNotifyUser(
-    apiParams,
-    songQueueManager.getCurrentSongPlayingTime()
-  );
-}
-
-async function handleUpdateAndNotifyUser(
-  apiParams: APIParams,
-  remainingTime: number
-) {
-  if (remainingTime > 0) {
-    await replyTextMessage(
-      apiParams.toPhoneNumber,
-      `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
-        remainingTime / 1000
-      )}`
-    );
-  }
 }
 
 export { handleInteractiveMessage, songQueueManager };

@@ -16,6 +16,7 @@ class SpotifySongQueueManager {
   }
 
   handleQueueRecommendedSongs = (shouldBePlayedIn: number) => {
+    console.log('QUEUED RECOMMENDED SONGS');
     this.queueRecommendedTimeout = setTimeout(async () => {
       await handleExecuteAction(
         async () => {
@@ -50,7 +51,7 @@ class SpotifySongQueueManager {
     store.updateSongQueue(songQueue);
   };
 
-  onConsumeSong = (durationMs: number) => {
+  onSongEnding = (durationMs: number) => {
     const remainingSongs = this.retrieveRemainingSongs();
     store.updateSongQueue(remainingSongs);
     if (remainingSongs.length === 0) {
@@ -58,13 +59,13 @@ class SpotifySongQueueManager {
         durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS
       );
     }
+    broadcastData(EventType.PLAYER, store.status);
   };
 
   playSpecialSong = () => {
-    console.log(this.specialSong);
-    this.specialSong?.delayedConsume(0, (durationMs: number) => {
-      setTimeout(this.resumeSongs, durationMs);
-    });
+    this.pauseSongs();
+    this.specialSong?.setOnEndSong((durationMs) => setTimeout(this.resumeSongs, durationMs));
+    this.specialSong?.delayedConsume(0);
   };
 
   addSpecialSong = (newSong: SpotifyQueuedSong) => {
@@ -75,9 +76,9 @@ class SpotifySongQueueManager {
     const delayInMs = this.getCurrentSongPlayingTime();
     this.setSongQueue([...this.retrieveRemainingSongs(), newSong]);
     clearTimeout(this.queueRecommendedTimeout);
+    newSong.setOnEndSong((songDurationInMs: number) => this.onSongEnding(songDurationInMs));
     newSong.delayedConsume(
-      delayInMs,
-      this.onConsumeSong
+      delayInMs
     );
   };
 
@@ -105,16 +106,13 @@ class SpotifySongQueueManager {
       let delayInMs = 0;
       this.retrieveRemainingSongs().forEach(async (song: SpotifyQueuedSong) => {
         await song.delayedConsume(
-          delayInMs,
-          this.onConsumeSong
+          delayInMs
         );
         delayInMs = delayInMs + song.durationMs;
       });
     } else {
       this.handleQueueRecommendedSongs(0);
     }
-
-    broadcastData(EventType.PLAYER, store.status);
   };
 
   retrieveRemainingSongs = () => {
