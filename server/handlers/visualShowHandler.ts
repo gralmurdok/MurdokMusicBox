@@ -22,16 +22,6 @@ function startVisualShow(requesterPhoneNumber: string) {
         index = index < store.visualShow.images.length - 1 ? index + 1 : 0;
       }
     }, 5000);
-
-    // resets event data
-    store.config = {
-      owner: "",
-      specialSong: defaultCurrentSong,
-    };
-    store.visualShow = {
-      title: "",
-      images: [],
-    };
   } else {
     replyTextMessage(
       requesterPhoneNumber,
@@ -42,6 +32,15 @@ function startVisualShow(requesterPhoneNumber: string) {
 
 function endVisualShow(requesterPhoneNumber: string) {
   if (requesterPhoneNumber === store.config.owner) {
+    // resets event data
+    store.config = {
+      owner: "",
+      specialSong: defaultCurrentSong,
+    };
+    store.visualShow = {
+      title: "",
+      images: [],
+    };
     songQueueManager.resumeSongs();
   } else {
     replyTextMessage(requesterPhoneNumber, "No tienes ningun evento en curso.");
