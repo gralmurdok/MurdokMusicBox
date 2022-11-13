@@ -1,4 +1,4 @@
-import { EventType, Defaults } from "./constants";
+import { WebsocketsActions, Defaults } from "./constants";
 import { broadcastData } from "./setup";
 import { SpotifyQueuedSong, SpotifySong } from "./music/song";
 import {
@@ -37,7 +37,7 @@ class Store {
   users: Record<string, CrossRoadsUser>;
   status: AppStatus;
   visualShow: VisualShow;
-  mode: EventType;
+  mode: WebsocketsActions;
   config: Config;
 
   constructor() {
@@ -66,10 +66,11 @@ class Store {
       title: "",
       images: [],
     };
-    this.mode = EventType.PLAYER;
+    this.mode = WebsocketsActions.PLAYER;
     this.config = {
-      owner: '',
-    }
+      owner: "",
+      specialSong: defaultCurrentSong,
+    };
   }
 
   updateSongQueue(songQueue: SpotifyQueuedSong[]) {

@@ -2,7 +2,7 @@ import { broadcastData } from "../setup";
 import { SpotifyCurrentSong } from "../music/song";
 import { getCurrentSong, refreshToken } from "../music/spotify";
 import { store } from "../store";
-import { EventType } from "../constants";
+import { WebsocketsActions } from "../constants";
 import { handleExecuteAction } from "./handleExecuteAction";
 
 async function updateCurrentPlayingSong() {
@@ -35,7 +35,7 @@ async function updateAppStatus() {
 
   await updateCurrentPlayingSong();
   store.updateAuthStatus();
-  broadcastData(EventType.PLAYER, store.status);
+  broadcastData(WebsocketsActions.PLAYER, store.status);
 }
 
 export { updateAppStatus };

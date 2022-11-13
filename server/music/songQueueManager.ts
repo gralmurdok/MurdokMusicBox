@@ -1,7 +1,7 @@
-import { Defaults, EventType, TimeDefaults } from "../constants";
+import { Defaults, WebsocketsActions, TimeDefaults } from "../constants";
 import { SpotifyQueuedSong, SpotifySong } from "./song";
 import { getRecomendedSongs, play } from "./spotify";
-import { store } from "../store";
+import { normalizeSongStructure, store } from "../store";
 import { RawSong, Song } from "../types";
 import { handleExecuteAction } from "../handlers/handleExecuteAction";
 import { broadcastData } from "../setup";
@@ -9,14 +9,17 @@ import { broadcastData } from "../setup";
 class SpotifySongQueueManager {
   songQueue: SpotifyQueuedSong[];
   queueRecommendedTimeout: any;
+  resumeSongsTimeout: any;
   specialSong?: SpotifyQueuedSong;
+  isPresentingEvent: boolean;
 
   constructor() {
     this.songQueue = [];
+    this.isPresentingEvent = false;
   }
 
   handleQueueRecommendedSongs = (shouldBePlayedIn: number) => {
-    console.log('QUEUED RECOMMENDED SONGS');
+    console.log("QUEUED RECOMMENDED SONGS");
     this.queueRecommendedTimeout = setTimeout(async () => {
       await handleExecuteAction(
         async () => {
@@ -59,27 +62,35 @@ class SpotifySongQueueManager {
         durationMs - TimeDefaults.NEXT_SONG_OFFSET_MS
       );
     }
-    broadcastData(EventType.PLAYER, store.status);
+    broadcastData(WebsocketsActions.PLAYER, store.status);
   };
 
   playSpecialSong = () => {
+    this.isPresentingEvent = true;
     this.pauseSongs();
-    this.specialSong?.setOnEndSong((durationMs) => setTimeout(this.resumeSongs, durationMs));
+    this.specialSong?.setOnEndSong(
+      (durationMs) =>
+        (this.resumeSongsTimeout = setTimeout(this.resumeSongs, durationMs))
+    );
     this.specialSong?.delayedConsume(0);
   };
 
   addSpecialSong = (newSong: SpotifyQueuedSong) => {
     this.specialSong = newSong;
+    store.config.specialSong = normalizeSongStructure(newSong);
   };
 
   addSong = (newSong: SpotifyQueuedSong) => {
     const delayInMs = this.getCurrentSongPlayingTime();
     this.setSongQueue([...this.retrieveRemainingSongs(), newSong]);
     clearTimeout(this.queueRecommendedTimeout);
-    newSong.setOnEndSong((songDurationInMs: number) => this.onSongEnding(songDurationInMs));
-    newSong.delayedConsume(
-      delayInMs
+    newSong.setOnEndSong((songDurationInMs: number) =>
+      this.onSongEnding(songDurationInMs)
     );
+
+    if (!this.isPresentingEvent) {
+      newSong.delayedConsume(delayInMs);
+    }
   };
 
   getCurrentSongPlayingTime = () => {
@@ -96,19 +107,19 @@ class SpotifySongQueueManager {
 
   pauseSongs = () => {
     clearTimeout(this.queueRecommendedTimeout);
-    this.songQueue.forEach(async (song: SpotifyQueuedSong) => {
+    this.retrieveRemainingSongs().forEach(async (song: SpotifyQueuedSong) => {
       await song.pause();
     });
   };
 
   resumeSongs = () => {
+    this.isPresentingEvent = false;
+    clearTimeout(this.resumeSongsTimeout);
     if (this.songQueue.length > 0) {
-      let delayInMs = 0;
-      this.retrieveRemainingSongs().forEach(async (song: SpotifyQueuedSong) => {
-        await song.delayedConsume(
-          delayInMs
-        );
-        delayInMs = delayInMs + song.durationMs;
+      const currentRemainingSongs = this.retrieveRemainingSongs();
+      this.setSongQueue([]);
+      currentRemainingSongs.forEach(async (song: SpotifyQueuedSong) => {
+        this.addSong(song);
       });
     } else {
       this.handleQueueRecommendedSongs(0);

@@ -9,8 +9,10 @@ import { getFormattedRemainigTime } from "../utils";
 
 const songQueueManager = new SpotifySongQueueManager();
 
-async function handleInteractiveMessage(apiParams: APIParams) {
-  console.log("HANDLING AS INTERACTIVE MESSAGE " + apiParams.interactiveReply);
+async function handleInteractiveListMessage(apiParams: APIParams) {
+  console.log(
+    "HANDLING AS INTERACTIVE MESSAGE " + apiParams.interactiveListReply
+  );
   if (isDuplicatedSong(apiParams)) {
     await handleDuplicatedSong(apiParams);
   } else if (isNotReadyToQueueNextSong(apiParams)) {
@@ -47,7 +49,7 @@ function isDuplicatedSong(apiParams: APIParams) {
   const scheduledSongList = [...songQueue, currentSong];
 
   return !!scheduledSongList.find(
-    (song: Song) => song.trackId === apiParams.interactiveReply
+    (song: Song) => song.trackId === apiParams.interactiveListReply
   );
 }
 
@@ -60,7 +62,7 @@ async function handleDuplicatedSong(apiParams: APIParams) {
 
 async function handleQueueSong(apiParams: APIParams) {
   const newRawSongResponse = await fetchSongByTrackId(
-    apiParams.interactiveReply
+    apiParams.interactiveListReply
   );
   const newSpotifySong = new SpotifyQueuedSong(
     newRawSongResponse.data,
@@ -91,4 +93,4 @@ async function handleQueueSong(apiParams: APIParams) {
   });
 }
 
-export { handleInteractiveMessage, songQueueManager };
+export { handleInteractiveListMessage, songQueueManager };

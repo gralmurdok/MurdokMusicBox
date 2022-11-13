@@ -6,7 +6,7 @@ function getFormattedRemainigTime(remainingSeconds: number) {
 }
 
 function normalizeOwnerPhone(ownerPhone: string) {
-  return ownerPhone.length > 10 ? ownerPhone : ownerPhone.replace(/^0/, '593')
+  return ownerPhone.length > 10 ? ownerPhone : ownerPhone.replace(/^0/, "593");
 }
 
 export { getFormattedRemainigTime, normalizeOwnerPhone };

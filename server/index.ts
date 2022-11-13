@@ -9,7 +9,8 @@ import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
 import { handleOperationByMessageType } from "./handlers/determineOperationHandler";
 import { handleExecuteAction } from "./handlers/handleExecuteAction";
 import { normalizeOwnerPhone } from "./utils";
-import { replyTextMessage } from "./messaging/whatsapp";
+import { replyMessageBackToUser, replyTextMessage } from "./messaging/whatsapp";
+import { interactiveReplyButtonsMessage } from "./messaging/whatsappMessageBuilder";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -41,19 +42,37 @@ app.get("/slider-info", (req, res) => {
 });
 
 app.post("/update-party-owner", async (req, res) => {
-  await handleExecuteAction(async () => {
-    store.config.owner = normalizeOwnerPhone(req.body.owner);
-    console.log(store.config.owner);
-    await replyTextMessage(store.config.owner, 'Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir');
-    res.sendStatus(200);
-  }, () => {
-    res.sendStatus(500);
-  });
+  await handleExecuteAction(
+    async () => {
+      store.config.owner = normalizeOwnerPhone(req.body.owner);
+      console.log(store.config.owner);
+      await replyTextMessage(
+        store.config.owner,
+        "Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir"
+      );
+      res.sendStatus(200);
+    },
+    () => {
+      res.sendStatus(500);
+    }
+  );
 });
 
 app.post("/approve-party", async (req, res) => {
+  await handleExecuteAction(
+    async () => {
+      await replyMessageBackToUser(
+        interactiveReplyButtonsMessage(
+          store.config.owner,
+          "Presiona el siguiente boton para iniciar tu evento",
+          store.config.specialSong.imgUrl
+        )
+      );
+    },
+    () => {}
+  );
   console.log("approved");
-})
+});
 
 app.post("/webhook", async (req, res) => {
   console.log(JSON.stringify(req.body));

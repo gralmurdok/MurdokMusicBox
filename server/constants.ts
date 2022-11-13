@@ -31,14 +31,21 @@ enum NumberDefaults {
 
 enum MessageType {
   TEXT = "text",
-  INTERACTIVE = "interactive",
+  INTERACTIVE_LIST_REPLY = "list_reply",
+  INTERACTIVE_BUTTON_REPLY = "button_reply",
   IMAGE = "image",
+  GENERAL_INTERACTIVE = "interactive",
 }
 
-enum EventType {
+enum WebsocketsActions {
   PLAYER = "player",
   START_VISUAL_SHOW = "start_visual_show",
   LOAD_IMAGE = "load_image",
+}
+
+enum Events {
+  INIT = "init",
+  END = "end",
 }
 
 export {
@@ -49,5 +56,6 @@ export {
   MessageType,
   SuccessMessages,
   NumberDefaults,
-  EventType,
+  WebsocketsActions,
+  Events,
 };

@@ -7,7 +7,8 @@ interface APIParams {
   spotifyToken: string;
   phoneNumberId: string;
   toPhoneNumber: string;
-  interactiveReply: string;
+  interactiveListReply: string;
+  interactiveButtonReply: string;
   imageId: string;
 }
 
@@ -107,7 +108,8 @@ interface AppStatus {
 }
 
 interface Config {
-  owner: string
+  owner: string;
+  specialSong: Song;
 }
 
 interface CrossroadsImage {
@@ -153,7 +155,8 @@ interface WhatsappMessageData {
   phoneNumberId: string;
   toPhoneNumber: string;
   requesterName: string;
-  interactiveReply: string;
+  interactiveListReply: string;
+  interactiveButtonReply: string;
   imageId: string;
 }
 
@@ -177,11 +180,15 @@ interface WhatsappIncomingMessageEntryChangesValueMessage {
     body: string;
   };
   interactive?: {
-    type: string;
-    list_reply: {
+    type: MessageType;
+    list_reply?: {
       id: string;
       title: string;
       description: string;
+    };
+    button_reply?: {
+      id: string;
+      title: string;
     };
   };
   image?: {
@@ -234,4 +241,5 @@ export type {
   WhatsappMessageData,
   CrossroadsImage,
   Config,
+  WhatsappIncomingMessageEntryChangesValueMessage,
 };
