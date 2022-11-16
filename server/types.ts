@@ -84,7 +84,8 @@ interface CrossRoadsUser {
   nextAvailableSongTimestamp: number;
   searchResults: Song[];
   searchQuery: string;
-  images: String[];
+  images: string[];
+  songs: string[]
 }
 
 interface PermitToken {
@@ -221,6 +222,8 @@ interface WhatsappIncomingMessage {
   entry: WhatsappIncomingMessageEntry[];
 }
 
+interface CrossroadsUserDBEntry { phone: string, name: string, songs: string[], eventSong: string, eventImages: string };
+
 export type {
   AuthObject,
   AppStatus,
@@ -242,4 +245,5 @@ export type {
   CrossroadsImage,
   Config,
   WhatsappIncomingMessageEntryChangesValueMessage,
+  CrossroadsUserDBEntry
 };

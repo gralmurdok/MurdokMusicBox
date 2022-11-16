@@ -1,4 +1,5 @@
 import { ErrorMessages, SuccessMessages } from "../constants";
+import { persistSongs } from "../database/databaseHandler";
 import { replyTextMessage } from "../messaging/whatsapp";
 import { SpotifyQueuedSong } from "../music/song";
 import { SpotifySongQueueManager } from "../music/songQueueManager";
@@ -84,13 +85,19 @@ async function handleQueueSong(apiParams: APIParams) {
         currentRemainingTime / 1000
       )}`
     );
-  }
 
-  store.updateUser(apiParams.toPhoneNumber, {
-    name: apiParams.requesterName,
-    phoneNumber: apiParams.toPhoneNumber,
-    nextAvailableSongTimestamp: Date.now() + 180 * 1000,
-  });
+    const currentUserSongs = store.getUser(apiParams.toPhoneNumber).songs;
+    const songs = currentUserSongs.includes(apiParams.interactiveListReply) ? currentUserSongs : [apiParams.interactiveListReply, ...currentUserSongs];
+  
+    store.updateUser(apiParams.toPhoneNumber, {
+      name: apiParams.requesterName,
+      phoneNumber: apiParams.toPhoneNumber,
+      nextAvailableSongTimestamp: Date.now() + 180 * 1000,
+      songs,
+    });
+  
+    persistSongs(apiParams.toPhoneNumber, songs);
+  }
 }
 
 export { handleInteractiveListMessage, songQueueManager };

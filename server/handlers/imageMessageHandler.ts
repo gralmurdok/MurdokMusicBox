@@ -1,15 +1,12 @@
-import { NumberDefaults, ErrorMessages, WebsocketsActions } from "../constants";
+import { NumberDefaults, ErrorMessages } from "../constants";
 import {
   fetchMediaObject,
   fetchMediaURL,
   replyTextMessage,
 } from "../messaging/whatsapp";
-import { broadcastData } from "../setup";
 import { store } from "../store";
 import { APIParams, CrossroadsImage } from "../types";
 import { handleExecuteAction } from "./handleExecuteAction";
-import { songQueueManager } from "./interactiveListMessageHandler";
-import { startVisualShow } from "./visualShowHandler";
 
 async function handleImageMessage(apiParams: APIParams) {
   await handleExecuteAction(

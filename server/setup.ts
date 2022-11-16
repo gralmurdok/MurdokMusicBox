@@ -1,4 +1,3 @@
-"use strict";
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
@@ -7,6 +6,7 @@ import WebSocket from "ws";
 import { WebsocketsActions, TimeDefaults } from "./constants";
 import { store } from "./store";
 import { updateAppStatus } from "./handlers/updateAppStatusHandler";
+import { loadDatabaseUsers } from "./users/registerUser";
 
 dotenv.config();
 console.log(path.join(__dirname, "build"));
@@ -51,5 +51,7 @@ setInterval(() => {
     updateAppStatus();
   }
 }, TimeDefaults.INTERNAL_UPDATE_THRESHOLD);
+
+loadDatabaseUsers();
 
 export { app, webSocketsServer, broadcastData };

@@ -11,6 +11,7 @@ import { handleExecuteAction } from "./handlers/handleExecuteAction";
 import { normalizeOwnerPhone } from "./utils";
 import { replyMessageBackToUser, replyTextMessage } from "./messaging/whatsapp";
 import { interactiveReplyButtonsMessage } from "./messaging/whatsappMessageBuilder";
+import { persistUser } from "./database/databaseHandler";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
