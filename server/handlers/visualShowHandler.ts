@@ -42,6 +42,7 @@ function endVisualShow(requesterPhoneNumber: string) {
       images: [],
     };
     songQueueManager.resumeSongs();
+    broadcastData(WebsocketsActions.PLAYER, store.status);
   } else {
     replyTextMessage(requesterPhoneNumber, "No tienes ningun evento en curso.");
   }

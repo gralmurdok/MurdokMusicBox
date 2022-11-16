@@ -115,8 +115,8 @@ class SpotifySongQueueManager {
   resumeSongs = () => {
     this.isPresentingEvent = false;
     clearTimeout(this.resumeSongsTimeout);
-    if (this.songQueue.length > 0) {
-      const currentRemainingSongs = this.retrieveRemainingSongs();
+    const currentRemainingSongs = this.retrieveRemainingSongs();
+    if (currentRemainingSongs.length > 0) {
       this.setSongQueue([]);
       currentRemainingSongs.forEach(async (song: SpotifyQueuedSong) => {
         this.addSong(song);
