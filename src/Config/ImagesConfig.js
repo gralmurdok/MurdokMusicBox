@@ -4,7 +4,9 @@ const ImagesSection = ({ images, onClickUpdate }) => {
       <button onClick={onClickUpdate}>Actualizar Imagenes</button>
       <div className="images_container">
         {images.map((image) => (
-          <img className="image_miniature" alt="" src={image.base64Source} />
+          <div className="image_miniature_container">
+            <img className="image_miniature" alt="" src={image.base64Source} />
+          </div>
         ))}
       </div>
     </div>
