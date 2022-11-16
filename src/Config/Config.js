@@ -36,7 +36,6 @@ const Config = () => {
       });
   };
 
-
   const approveParty = () => {
     axios
       .post("/approve-party", {

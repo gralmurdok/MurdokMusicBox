@@ -1,6 +1,6 @@
 import { static as expressStatic } from "express";
 import axios from "axios";
-import { Routes } from "./constants";
+import { EVENT_SONGS, Routes } from "./constants";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
@@ -10,8 +10,10 @@ import { handleOperationByMessageType } from "./handlers/determineOperationHandl
 import { handleExecuteAction } from "./handlers/handleExecuteAction";
 import { normalizeOwnerPhone } from "./utils";
 import { replyMessageBackToUser, replyTextMessage } from "./messaging/whatsapp";
-import { interactiveReplyButtonsMessage } from "./messaging/whatsappMessageBuilder";
-import { persistUser } from "./database/databaseHandler";
+import {
+  interactiveListMessage,
+  interactiveReplyButtonsMessage,
+} from "./messaging/whatsappMessageBuilder";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
@@ -46,10 +48,13 @@ app.post("/update-party-owner", async (req, res) => {
   await handleExecuteAction(
     async () => {
       store.config.owner = normalizeOwnerPhone(req.body.owner);
-      console.log(store.config.owner);
-      await replyTextMessage(
-        store.config.owner,
-        "Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir"
+      await replyMessageBackToUser(
+        interactiveListMessage(
+          store.config.owner,
+          "Host de evento!",
+          `Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir o elige una de la lista.`,
+          EVENT_SONGS
+        )
       );
       res.sendStatus(200);
     },

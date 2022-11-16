@@ -10,7 +10,7 @@ async function loadDatabaseUsers() {
       phoneNumber: user.phone,
       nextAvailableSongTimestamp: Date.now(),
       searchResults: [],
-      searchQuery: '',
+      searchQuery: "",
       images: user.songs,
       songs: user.songs,
     };

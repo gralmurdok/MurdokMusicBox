@@ -75,7 +75,7 @@ async function handleQueueSong(apiParams: APIParams) {
     songQueueManager.addSpecialSong(newSpotifySong);
     await replyTextMessage(
       apiParams.toPhoneNumber,
-      `cancion de evento recibida: ${newSpotifySong.name} de ${newSpotifySong.artist}`
+      `*Cancion de evento recibida:* ${newSpotifySong.name} de ${newSpotifySong.artist}, ahora envia algunas *imagenes* que seran proyectadas mientras dura el evento.`
     );
   } else {
     songQueueManager.addSong(newSpotifySong);
@@ -87,15 +87,17 @@ async function handleQueueSong(apiParams: APIParams) {
     );
 
     const currentUserSongs = store.getUser(apiParams.toPhoneNumber).songs;
-    const songs = currentUserSongs.includes(apiParams.interactiveListReply) ? currentUserSongs : [apiParams.interactiveListReply, ...currentUserSongs];
-  
+    const songs = currentUserSongs.includes(apiParams.interactiveListReply)
+      ? currentUserSongs
+      : [apiParams.interactiveListReply, ...currentUserSongs];
+
     store.updateUser(apiParams.toPhoneNumber, {
       name: apiParams.requesterName,
       phoneNumber: apiParams.toPhoneNumber,
       nextAvailableSongTimestamp: Date.now() + 180 * 1000,
       songs,
     });
-  
+
     persistSongs(apiParams.toPhoneNumber, songs);
   }
 }

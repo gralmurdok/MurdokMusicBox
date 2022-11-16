@@ -139,7 +139,7 @@ class Store {
     ) {
       this.status = {
         ...this.status,
-        last5Played: [...this.status.last5Played, currentSong],
+        last5Played: [...this.status.last5Played, currentSong].slice(-5),
       };
 
       console.log(store.status.last5Played);
