@@ -1,16 +1,7 @@
-const OwnerSection = ({ owner, onClickUpdateOwner, onChangeOwner }) => {
+const OwnerSection = ({ partyCode, onClickUpdatePartyCode }) => {
   return (
-    <div className="owner_section">
-      <div className="owner_title">Encargado de la fiesta</div>
-      <div className="owner_form">
-        <input
-          type="text"
-          placeholder="0999999999"
-          onChange={(e) => onChangeOwner(e.target.value)}
-          value={owner}
-        />
-        <button onClick={onClickUpdateOwner}>Guadar</button>
-      </div>
+    <div className="party_code_section">
+      <div className="party_code">Codigo de evento: {!partyCode ? <button onClick={onClickUpdatePartyCode}>Generar</button> : partyCode }</div>
     </div>
   );
 };

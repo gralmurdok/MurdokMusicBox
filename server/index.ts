@@ -44,19 +44,13 @@ app.get("/slider-info", (req, res) => {
   res.json(store.visualShow);
 });
 
-app.post("/update-party-owner", async (req, res) => {
+app.get("/update-party-code", async (req, res) => {
   await handleExecuteAction(
     async () => {
-      store.config.owner = normalizeOwnerPhone(req.body.owner);
-      await replyMessageBackToUser(
-        interactiveListMessage(
-          store.config.owner,
-          "Host de evento!",
-          `Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir o elige una de la lista.`,
-          EVENT_SONGS
-        )
-      );
-      res.sendStatus(200);
+      store.config.specialEventCode = (Math.floor(Math.random() * 9000) + 1000).toString();
+      res.json({
+        specialEventCode: store.config.specialEventCode
+      });
     },
     () => {
       res.sendStatus(500);
@@ -77,7 +71,7 @@ app.post("/approve-party", async (req, res) => {
     },
     () => {}
   );
-  console.log("approved");
+  res.sendStatus(200);
 });
 
 app.post("/webhook", async (req, res) => {

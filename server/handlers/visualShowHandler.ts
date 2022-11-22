@@ -36,6 +36,7 @@ function endVisualShow(requesterPhoneNumber: string) {
     store.config = {
       owner: "",
       specialSong: defaultCurrentSong,
+      specialEventCode: "",
     };
     store.visualShow = {
       title: "",

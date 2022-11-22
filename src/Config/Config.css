@@ -15,23 +15,18 @@
   max-height: 50vh;
 }
 
-.owner_title {
-  text-align: center;
+.party_code {
   color: white;
   font-size: 5vw;
 }
 
-.owner_form {
+.party_code_section {
   font-size: 4vw;
   margin-top: 2vh;
+  text-align: center;
 }
 
-.owner_form > input {
-  width: 24vw;
-  font-size: 4vw;
-}
-
-.owner_form > button {
+.party_code > button {
   font-size: 4vw;
   cursor: pointer;
 }

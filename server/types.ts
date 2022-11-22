@@ -111,6 +111,7 @@ interface AppStatus {
 interface Config {
   owner: string;
   specialSong: Song;
+  specialEventCode: string;
 }
 
 interface CrossroadsImage {

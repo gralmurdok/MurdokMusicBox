@@ -11,7 +11,7 @@ const defaultSliderStatus = {
 
 const Config = () => {
   const [sliderStatus, setSliderStatus] = useState(defaultSliderStatus);
-  const [owner, setOwner] = useState("");
+  const [partyCode, setPartyCode] = useState("");
 
   const updateSliderStatus = () => {
     axios
@@ -26,10 +26,11 @@ const Config = () => {
       });
   };
 
-  const updateOwner = () => {
+  const updatePartyCode = () => {
     axios
-      .post("/update-party-owner", {
-        owner,
+      .get("/update-party-code")
+      .then((response) => {
+        setPartyCode(response.data.specialEventCode);
       })
       .catch((err) => {
         console.log(err);
@@ -38,8 +39,10 @@ const Config = () => {
 
   const approveParty = () => {
     axios
-      .post("/approve-party", {
-        owner,
+      .post("/approve-party")
+      .then(() => {
+        setPartyCode("");
+        setSliderStatus(defaultSliderStatus);
       })
       .catch((err) => {
         console.log(err);
@@ -49,9 +52,8 @@ const Config = () => {
   return (
     <div className="config">
       <OwnerSection
-        onClickUpdateOwner={updateOwner}
-        onChangeOwner={setOwner}
-        owner={owner}
+        onClickUpdatePartyCode={updatePartyCode}
+        partyCode={partyCode}
       />
       <ImagesSection
         images={sliderStatus.images}

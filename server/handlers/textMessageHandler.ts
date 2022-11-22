@@ -1,4 +1,5 @@
 import { ErrorMessages } from "../constants";
+import { isSpecialEvent } from "../matchers/specialEventMatcher";
 import { replyMusicBackToUser, replyTextMessage } from "../messaging/whatsapp";
 import { SpotifySong } from "../music/song";
 import { searchTracks } from "../music/spotify";
@@ -8,7 +9,11 @@ import { handleExecuteAction } from "./handleExecuteAction";
 
 function handleTextMessage(apiParams: APIParams) {
   console.log("HANDLING AS TEXT MESSAGE " + apiParams.messageBody);
-  handleMusicSearchViaWhatsappMessage(apiParams);
+  if (isSpecialEvent(apiParams)) {
+    handleSpecialEvent(apiParams);
+  } else {
+    handleMusicSearchViaWhatsappMessage(apiParams);
+  }
 }
 
 async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
@@ -34,6 +39,14 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
         ErrorMessages.SEARCH_ERROR
       );
     }
+  );
+}
+
+async function handleSpecialEvent(apiParams: APIParams) {
+  store.config.owner = apiParams.toPhoneNumber
+  await replyTextMessage(
+    store.config.owner,
+    "Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir"
   );
 }
 

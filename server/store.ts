@@ -70,6 +70,7 @@ class Store {
     this.config = {
       owner: "",
       specialSong: defaultCurrentSong,
+      specialEventCode: "",
     };
   }
 
