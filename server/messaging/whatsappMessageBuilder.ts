@@ -1,4 +1,5 @@
-import { Defaults } from "./constants";
+import { Defaults, Events } from "../constants";
+import { store } from "../store";
 import {
   InteractiveMessage,
   ReplyButton,
@@ -6,7 +7,7 @@ import {
   SectionRow,
   Song,
   TextMessage,
-} from "./types";
+} from "../types";
 
 function simpleMessage(from: string, message: string): TextMessage {
   return {
@@ -17,29 +18,37 @@ function simpleMessage(from: string, message: string): TextMessage {
 }
 
 function interactiveReplyButtonsMessage(
-  from: string,
+  toPhoneNumber: string,
   message: string,
-  song: Song
+  imageUrl: string
 ): InteractiveMessage {
-  const button: ReplyButton = {
+  const startButton: ReplyButton = {
     type: "reply",
     reply: {
-      id: song.trackId,
-      title: "Play",
+      id: Events.INIT,
+      title: "INICIAR",
+    },
+  };
+
+  const endButton: ReplyButton = {
+    type: "reply",
+    reply: {
+      id: Events.END,
+      title: "TERMINAR",
     },
   };
 
   return {
     messaging_product: "whatsapp",
     recipient_type: "individual",
-    to: from,
+    to: toPhoneNumber,
     type: "interactive",
     interactive: {
       type: "button",
       header: {
         type: "image",
         image: {
-          link: song.imgUrl,
+          link: imageUrl,
         },
       },
       body: {
@@ -49,7 +58,7 @@ function interactiveReplyButtonsMessage(
         text: Defaults.REQUESTER_NAME,
       },
       action: {
-        buttons: [button],
+        buttons: [startButton, endButton],
       },
     },
   };

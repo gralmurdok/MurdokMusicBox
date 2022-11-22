@@ -1,5 +1,7 @@
 import axios from "axios";
-import { store } from "./store";
+import { handleExecuteAction } from "../handlers/handleExecuteAction";
+import { store } from "../store";
+import { Song } from "../types";
 
 function play(trackIds: string[]) {
   const trackIdUris = trackIds.map((trackId) => `spotify:track:${trackId}`);
@@ -23,13 +25,15 @@ function play(trackIds: string[]) {
 
 function getRecomendedSongs() {
   const params = new URLSearchParams({
-    seed_tracks: store
-      .getSortedLast5Played()
-      .map((lasPlayedSong) => lasPlayedSong.trackId)
+    seed_tracks: store.status.last5Played
+      .map((song: Song) => song.trackId)
       .join(","),
     market: "EC",
-    min_popularity: "80",
+    //min_popularity: "80",
   }).toString();
+
+  console.log(params);
+
   return axios({
     method: "GET", // Required, HTTP method, a string, e.g. POST, GET
     url: `https://api.spotify.com/v1/recommendations?${params}`,
@@ -93,33 +97,45 @@ function getCurrentSong(token: string) {
   });
 }
 
+function fetchSongByTrackId(trackId: string) {
+  return axios({
+    method: "GET",
+    url: `https://api.spotify.com/v1/tracks/${trackId}`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.auth.accessToken}`,
+    },
+  });
+}
+
 async function refreshToken() {
   const authCredentials = Buffer.from(
     process.env.CLIENT_ID + ":" + process.env.SECRET_ID
   ).toString("base64");
 
-  try {
-    const authResponse = await axios({
-      method: "POST",
-      url: "https://accounts.spotify.com/api/token",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${authCredentials}`,
-      },
-      params: {
-        grant_type: "refresh_token",
-        refresh_token: store.auth.refreshToken,
-      },
-    });
-    console.log("REFRESHING TOKEN ", authResponse.data);
-    store.auth = {
-      ...store.auth,
-      accessToken: authResponse.data.access_token,
-      expiresAt: Date.now() + authResponse.data.expires_in * 1000,
-    };
-  } catch (err) {
-    console.log(err);
-  }
+  await handleExecuteAction(
+    async () => {
+      const authResponse = await axios({
+        method: "POST",
+        url: "https://accounts.spotify.com/api/token",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${authCredentials}`,
+        },
+        params: {
+          grant_type: "refresh_token",
+          refresh_token: store.auth.refreshToken,
+        },
+      });
+      console.log("REFRESHING TOKEN ", authResponse.data);
+      store.auth = {
+        ...store.auth,
+        accessToken: authResponse.data.access_token,
+        expiresAt: Date.now() + authResponse.data.expires_in * 1000,
+      };
+    },
+    () => {}
+  );
 }
 
 export {
@@ -130,4 +146,5 @@ export {
   refreshToken,
   playAlbum,
   getRecomendedSongs,
+  fetchSongByTrackId,
 };

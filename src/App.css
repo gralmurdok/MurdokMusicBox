@@ -21,7 +21,7 @@
   display: grid;
   grid-template-columns: 45% 55%;
   grid-template-rows: 20%;
-  grid-template-areas: 
+  grid-template-areas:
     "current-song music-code"
     "current-song song-queue"
     "current-song song-queue"
@@ -41,8 +41,20 @@
   }
 }
 
+.Auth-link-container {
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .App-link {
   color: #61dafb;
+  font-size: 10vw;
+  background-color: #181818;
+  border-radius: 75px;
+  padding: 4vh;
 }
 
 @keyframes App-logo-spin {
@@ -169,4 +181,14 @@
 
 .songs-container {
   min-height: 100vh;
+}
+
+.visual_show {
+  display: flex;
+  justify-content: center;
+}
+
+.visual_show > img {
+  max-width: 100vw;
+  max-height: 100vh;
 }

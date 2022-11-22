@@ -1,47 +1,22 @@
-"use strict";
-//import request from 'request';
-import express from "express";
-import bodyParser from "body-parser";
+import { static as expressStatic } from "express";
 import axios from "axios";
-import dotenv from "dotenv";
-import { replyTextMessage } from "./whatsapp";
-import { ErrorMessages, Routes, TimeDefaults } from "./constants";
-import {
-  determineOperation,
-  handleMusicSearchViaWhatsappMessage,
-  handleQueueSong,
-  registerUser,
-  updateAppStatus,
-} from "./core";
+import { EVENT_SONGS, Routes } from "./constants";
 import { APIParams } from "./types";
 import path from "path";
 import { store } from "./store";
-
-dotenv.config();
-console.log(path.join(__dirname, "build"));
-const app = express().use(bodyParser.json());
-
-// Sets server port and logs message on success
-
-let retryNumber = 100;
-let timeout: any;
-
-app.listen(process.env.PORT || 1337, () =>
-  console.log("webhook is listening ", process.env.PORT)
-);
+import { app } from "./setup";
+import { gatherDataFromMessage } from "./handlers/incomingMessageHandler";
+import { handleOperationByMessageType } from "./handlers/determineOperationHandler";
+import { handleExecuteAction } from "./handlers/handleExecuteAction";
+import { normalizeOwnerPhone } from "./utils";
+import { replyMessageBackToUser, replyTextMessage } from "./messaging/whatsapp";
+import {
+  interactiveListMessage,
+  interactiveReplyButtonsMessage,
+} from "./messaging/whatsappMessageBuilder";
 
 app.get(["/", "index.html"], (req, res) => {
   res.redirect("/menu");
-});
-
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("/menu", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "menu.pdf"));
-});
-
-app.get("/player", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.get("/qr-code", (req, res) => {
@@ -62,122 +37,75 @@ app.get("/set-wifi-key", (req, res) => {
 });
 
 app.get(Routes.APP_STATUS, (req, res) => {
-  retryNumber = TimeDefaults.INTERNAL_UPDATE_RETRY_NUMBER;
   res.json(store.status);
 });
 
-app.get("/internal-update", async (req, res) => {
-  if (store.auth.accessToken) {
-    await updateAppStatus();
+app.get("/slider-info", (req, res) => {
+  res.json(store.visualShow);
+});
 
-    res.status(200).json(store.status);
-
-    if (timeout) {
-      clearTimeout(timeout);
+app.post("/update-party-owner", async (req, res) => {
+  await handleExecuteAction(
+    async () => {
+      store.config.owner = normalizeOwnerPhone(req.body.owner);
+      await replyMessageBackToUser(
+        interactiveListMessage(
+          store.config.owner,
+          "Host de evento!",
+          `Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir o elige una de la lista.`,
+          EVENT_SONGS
+        )
+      );
+      res.sendStatus(200);
+    },
+    () => {
+      res.sendStatus(500);
     }
+  );
+});
 
-    timeout = setTimeout(() => {
-      if (retryNumber > 0) {
-        axios
-          .get(`${process.env.HOST}/internal-update`)
-          .catch((err) => console.log(err));
-        retryNumber--;
-      } else {
-        clearTimeout(timeout);
-      }
-    }, TimeDefaults.INTERNAL_UPDATE_THRESHOLD);
-  }
+app.post("/approve-party", async (req, res) => {
+  await handleExecuteAction(
+    async () => {
+      await replyMessageBackToUser(
+        interactiveReplyButtonsMessage(
+          store.config.owner,
+          "Presiona el siguiente boton para iniciar tu evento",
+          store.config.specialSong.imgUrl
+        )
+      );
+    },
+    () => {}
+  );
+  console.log("approved");
 });
 
 app.post("/webhook", async (req, res) => {
-  if (req.body.object) {
-    if (
-      req.body.entry &&
-      req.body.entry[0].changes &&
-      req.body.entry[0].changes[0] &&
-      req.body.entry[0].changes[0].value.messages &&
-      req.body.entry[0].changes[0].value.messages[0]
-    ) {
-      console.log(JSON.stringify(req.body.entry, null, 2));
-      const phoneNumberId =
-        req.body.entry[0].changes[0].value.metadata.phone_number_id;
+  console.log(JSON.stringify(req.body));
 
-      const contact = req.body.entry[0].changes[0].value.contacts[0];
-      const message = req.body.entry[0].changes[0].value.messages[0];
-      const messageType = message?.type;
-      const messageBody = message?.text?.body;
-      const whatsappToken = process.env.WHATSAPP_TOKEN as string;
-      const toPhoneNumber = message.from; // extract the phone number from the webhook payload
-      const requesterName = contact.profile.name;
-
-      let trackId: string = messageBody?.match(/track\/(\w+)/)?.[1];
-
+  await handleExecuteAction(
+    async () => {
+      const messageData = gatherDataFromMessage(req.body);
+      console.log(messageData);
       const apiParams: APIParams = {
-        messageBody,
-        whatsappToken,
         spotifyToken: store.auth.accessToken,
-        phoneNumberId,
-        toPhoneNumber,
-        requesterName,
+        ...messageData,
       };
 
-      const operation = determineOperation(apiParams);
+      await handleOperationByMessageType(apiParams);
+    },
+    () => {}
+  );
 
-      switch (operation) {
-        case "register":
-          await registerUser(apiParams);
-          break;
-        case "receiptSongs":
-          if (!apiParams.spotifyToken) {
-            await replyTextMessage(apiParams, ErrorMessages.NOT_READY);
-            return res.sendStatus(204);
-          } else {
-            if (messageType === "interactive" || trackId) {
-              if (message?.interactive?.type) {
-                trackId = message?.interactive[message?.interactive.type].id;
-              }
-              await handleQueueSong(apiParams, trackId);
-            } else {
-              await handleMusicSearchViaWhatsappMessage(apiParams);
-            }
-          }
-        case "noAuth":
-          break;
-      }
-
-      console.log(
-        operation,
-        store
-          .getUser(apiParams.toPhoneNumber)
-          .searchResults.slice(0, 3)
-          .map(
-            (x) =>
-              `${x.trackId} | ${x.name} - ${x.artist} by ${x.requesterName}`
-          )
-      );
-    }
-    res.sendStatus(200);
-  } else {
-    // Return a '404 Not Found' if event is not from a WhatsApp API
-    res.sendStatus(404);
-  }
+  res.sendStatus(200);
 });
 
-// Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
-// info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
 app.get("/webhook", (req, res) => {
-  /**
-   * UPDATE YOUR VERIFY TOKEN
-   *This will be the Verify Token value when you set up webhook
-   **/
   const verify_token = process.env.VERIFY_TOKEN;
-
-  // Parse params from the webhook verification request
   let mode = req.query["hub.mode"];
   let token = req.query["hub.verify_token"];
   let challenge = req.query["hub.challenge"];
 
-  // Check if a token and mode were sent
   if (mode && token) {
     // Check the mode and token sent are correct
     if (mode === "subscribe" && token === verify_token) {
@@ -233,6 +161,17 @@ app.get("/callback", async (req, res) => {
     refreshToken: authResponse.data.refresh_token,
     expiresAt: Date.now() + authResponse.data.expires_in * 1000,
   };
+  store.updateAuthStatus();
 
   res.redirect("/player");
+});
+
+app.use(expressStatic(path.join(__dirname, "build")));
+
+app.get("/menu", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "menu.pdf"));
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });

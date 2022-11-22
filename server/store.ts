@@ -1,29 +1,44 @@
-import { Defaults, TimeDefaults } from "./constants";
+import { WebsocketsActions, Defaults } from "./constants";
+import { broadcastData } from "./setup";
+import { SpotifyQueuedSong, SpotifySong } from "./music/song";
 import {
   CrossRoadsUser,
   AuthObject,
   AppStatus,
-  PlayingSong,
   Song,
-  SongQueue,
-  QueuedSong,
+  VisualShow,
+  Config,
 } from "./types";
+
 const defaultCurrentSong = {
   name: "Bienvenidos!",
   trackId: Defaults.TRACK_ID,
   artist: "Reproduce musica en spotify para empezar.",
-  albumId: "",
-  nextDefaultSong: 0,
-  endsAt: 0,
+  remainingTime: 0,
   requesterName: Defaults.REQUESTER_NAME,
   imgUrl: "",
   durationMs: 0,
 };
 
+function normalizeSongStructure(spotifySong: SpotifySong): Song {
+  return {
+    trackId: spotifySong.trackId,
+    name: spotifySong.name,
+    artist: spotifySong.artist,
+    requesterName: spotifySong.requesterName,
+    imgUrl: spotifySong.imgUrl,
+    durationMs: spotifySong.durationMs,
+    remainingTime: spotifySong.remainingTime,
+  };
+}
+
 class Store {
   auth: AuthObject;
   users: Record<string, CrossRoadsUser>;
   status: AppStatus;
+  visualShow: VisualShow;
+  mode: WebsocketsActions;
+  config: Config;
 
   constructor() {
     this.auth = {
@@ -41,42 +56,27 @@ class Store {
         validUntil: 0,
       },
       currentSong: defaultCurrentSong,
-      songQueue: {},
-      last5Played: {},
+      songQueue: [],
+      last5Played: [],
       wifiKey: "",
       isNextSongDefined: false,
       nextSongShouldBeQueuedAt: Date.now(),
     };
-  }
-
-  updateCurrentSongRequester(requesterName: string) {
-    this.status = {
-      ...this.status,
-      currentSong: {
-        ...this.status.currentSong,
-        requesterName,
-      },
+    this.visualShow = {
+      title: "",
+      images: [],
+    };
+    this.mode = WebsocketsActions.PLAYER;
+    this.config = {
+      owner: "",
+      specialSong: defaultCurrentSong,
     };
   }
 
-  updateWhenNextSongShouldBeQueued(songDurationInMs: number) {
-    this.status = {
-      ...this.status,
-      nextSongShouldBeQueuedAt:
-        Date.now() + songDurationInMs - TimeDefaults.NEXT_SONG_OFFSET_MS,
-    };
-    console.log(
-      new Date(this.status.nextSongShouldBeQueuedAt).toLocaleTimeString()
-    );
-  }
-
-  removeSongFromQueue(trackId: string) {
-    this.status = {
-      ...this.status,
-      songQueue: {
-        ...this.status.songQueue,
-        [trackId]: undefined,
-      },
+  updateSongQueue(songQueue: SpotifyQueuedSong[]) {
+    store.status = {
+      ...store.status,
+      songQueue: songQueue.map(normalizeSongStructure),
     };
   }
 
@@ -94,14 +94,22 @@ class Store {
     };
   }
 
-  setCurrentSong(currentSong: Partial<PlayingSong>) {
+  setNormalizedSong(normalizedSong: Partial<Song>) {
     this.status = {
       ...this.status,
       currentSong: {
         ...this.status.currentSong,
-        ...currentSong,
+        ...normalizedSong,
+        requesterName: normalizedSong.requesterName
+          ? normalizedSong.requesterName
+          : this.status.currentSong.requesterName,
       },
     };
+  }
+
+  setCurrentSong(currentSong: SpotifySong) {
+    const normalizedSong = normalizeSongStructure(currentSong);
+    this.setNormalizedSong(normalizedSong);
   }
 
   addUser(newUser: CrossRoadsUser) {
@@ -121,43 +129,20 @@ class Store {
     };
   }
 
-  addSongToQueue(queuedSong: Song) {
-    this.status.songQueue = {
-      ...this.status.songQueue,
-      [queuedSong.trackId]: {
-        ...queuedSong,
-        requestedAt: Date.now(),
-      },
-    };
-  }
-
   updateLast5Played() {
     const currentSong = store.getCurrentSong();
 
-    if (!this.status.last5Played[currentSong.trackId]) {
-      const last5PlayedQueue = {
-        ...this.status.last5Played,
-        [currentSong.trackId]: {
-          ...currentSong,
-          requestedAt: Date.now(),
-        },
-      };
-
-      const last5Played = getDescendentSortedList(last5PlayedQueue)
-        .slice(0, 5)
-        .reduce((accum: SongQueue, song: QueuedSong) => {
-          return {
-            ...accum,
-            [song.trackId]: song,
-          };
-        }, {});
-
+    if (
+      !this.status.last5Played.find(
+        (playedSong: Song) => playedSong.trackId === currentSong.trackId
+      )
+    ) {
       this.status = {
         ...this.status,
-        last5Played: last5Played,
+        last5Played: [...this.status.last5Played, currentSong].slice(-5),
       };
 
-      console.log(store.getSortedLast5Played().map((x) => x.name));
+      console.log(store.status.last5Played);
     }
   }
 
@@ -176,33 +161,14 @@ class Store {
     return store.status.currentSong;
   }
 
-  getSortedSongQueue() {
-    return getAscendentSortedList(this.status.songQueue);
+  updateVisualShow(visualShow: Partial<VisualShow>) {
+    this.visualShow = {
+      ...this.visualShow,
+      ...visualShow,
+    };
   }
-
-  getSortedLast5Played() {
-    return getAscendentSortedList(this.status.last5Played);
-  }
-}
-
-function transformToList(songQueue: SongQueue) {
-  return Object.keys(songQueue)
-    .map((trackId) => songQueue[trackId] as QueuedSong)
-    .filter((x) => !!x);
-}
-
-function getAscendentSortedList(songQueue: SongQueue) {
-  return transformToList(songQueue).sort(
-    (a: QueuedSong, b: QueuedSong) => a.requestedAt - b.requestedAt
-  );
-}
-
-function getDescendentSortedList(songQueue: SongQueue) {
-  return transformToList(songQueue).sort(
-    (a: QueuedSong, b: QueuedSong) => b.requestedAt - a.requestedAt
-  );
 }
 
 const store = new Store();
 
-export { store, defaultCurrentSong };
+export { store, defaultCurrentSong, normalizeSongStructure };
