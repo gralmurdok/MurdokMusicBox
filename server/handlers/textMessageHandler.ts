@@ -1,6 +1,7 @@
-import { ErrorMessages } from "../constants";
+import { ErrorMessages, EVENT_SONGS } from "../constants";
 import { isSpecialEvent } from "../matchers/specialEventMatcher";
-import { replyMusicBackToUser, replyTextMessage } from "../messaging/whatsapp";
+import { replyMessageBackToUser, replyMusicBackToUser, replyTextMessage } from "../messaging/whatsapp";
+import { interactiveListMessage } from "../messaging/whatsappMessageBuilder";
 import { SpotifySong } from "../music/song";
 import { searchTracks } from "../music/spotify";
 import { normalizeSongStructure, store } from "../store";
@@ -44,9 +45,13 @@ async function handleMusicSearchViaWhatsappMessage(apiParams: APIParams) {
 
 async function handleSpecialEvent(apiParams: APIParams) {
   store.config.owner = apiParams.toPhoneNumber
-  await replyTextMessage(
-    store.config.owner,
-    "Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir"
+  await replyMessageBackToUser(
+    interactiveListMessage(
+      store.config.owner,
+      "Host de evento!",
+      `Estas registrado como host de evento crossroads, por favor escribe el nombre de la cancion que deseas reproducir o elige una de la lista.`,
+      EVENT_SONGS
+    )
   );
 }
 

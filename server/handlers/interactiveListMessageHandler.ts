@@ -14,7 +14,9 @@ async function handleInteractiveListMessage(apiParams: APIParams) {
   console.log(
     "HANDLING AS INTERACTIVE MESSAGE " + apiParams.interactiveListReply
   );
-  if (isDuplicatedSong(apiParams)) {
+  if (isSpecialSong(apiParams)) {
+    await handleQueueSpecialSong(apiParams);
+  } else if (isDuplicatedSong(apiParams)) {
     await handleDuplicatedSong(apiParams);
   } else if (isNotReadyToQueueNextSong(apiParams)) {
     await handleNotReadyToQueueNextSong(apiParams);
@@ -54,6 +56,20 @@ function isDuplicatedSong(apiParams: APIParams) {
   );
 }
 
+function isSpecialSong(apiParams: APIParams) {
+  return apiParams.toPhoneNumber === store.config.owner;
+}
+
+async function buildSpotifySong(apiParams: APIParams) {
+  const newRawSongResponse = await fetchSongByTrackId(
+    apiParams.interactiveListReply
+  );
+  return new SpotifyQueuedSong(
+    newRawSongResponse.data,
+    apiParams
+  );
+}
+
 async function handleDuplicatedSong(apiParams: APIParams) {
   await replyTextMessage(
     apiParams.toPhoneNumber,
@@ -62,44 +78,39 @@ async function handleDuplicatedSong(apiParams: APIParams) {
 }
 
 async function handleQueueSong(apiParams: APIParams) {
-  const newRawSongResponse = await fetchSongByTrackId(
-    apiParams.interactiveListReply
-  );
-  const newSpotifySong = new SpotifyQueuedSong(
-    newRawSongResponse.data,
-    apiParams
-  );
+  const newSpotifySong = await buildSpotifySong(apiParams);
   const currentRemainingTime = songQueueManager.getCurrentSongPlayingTime();
 
-  if (apiParams.toPhoneNumber === store.config.owner) {
-    songQueueManager.addSpecialSong(newSpotifySong);
-    await replyTextMessage(
-      apiParams.toPhoneNumber,
-      `*Cancion de evento recibida:* ${newSpotifySong.name} de ${newSpotifySong.artist}, ahora envia algunas *imagenes* que seran proyectadas mientras dura el evento.`
-    );
-  } else {
-    songQueueManager.addSong(newSpotifySong);
-    await replyTextMessage(
-      apiParams.toPhoneNumber,
-      `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
-        currentRemainingTime / 1000
-      )}`
-    );
+  songQueueManager.addSong(newSpotifySong);
+  await replyTextMessage(
+    apiParams.toPhoneNumber,
+    `${SuccessMessages.SONG_QUEUED} ${getFormattedRemainigTime(
+      currentRemainingTime / 1000
+    )}`
+  );
 
-    const currentUserSongs = store.getUser(apiParams.toPhoneNumber).songs;
-    const songs = currentUserSongs.includes(apiParams.interactiveListReply)
-      ? currentUserSongs
-      : [apiParams.interactiveListReply, ...currentUserSongs];
+  const currentUserSongs = store.getUser(apiParams.toPhoneNumber).songs;
+  const songs = currentUserSongs.includes(apiParams.interactiveListReply)
+    ? currentUserSongs
+    : [apiParams.interactiveListReply, ...currentUserSongs];
 
-    store.updateUser(apiParams.toPhoneNumber, {
-      name: apiParams.requesterName,
-      phoneNumber: apiParams.toPhoneNumber,
-      nextAvailableSongTimestamp: Date.now() + 180 * 1000,
-      songs,
-    });
+  store.updateUser(apiParams.toPhoneNumber, {
+    name: apiParams.requesterName,
+    phoneNumber: apiParams.toPhoneNumber,
+    nextAvailableSongTimestamp: Date.now() + 180 * 1000,
+    songs,
+  });
 
-    persistSongs(apiParams.toPhoneNumber, songs);
-  }
+  persistSongs(apiParams.toPhoneNumber, songs);
+}
+
+async function handleQueueSpecialSong(apiParams: APIParams) {
+  const newSpotifySong = await buildSpotifySong(apiParams);
+  songQueueManager.addSpecialSong(newSpotifySong);
+  await replyTextMessage(
+    apiParams.toPhoneNumber,
+    `*Cancion de evento recibida:* ${newSpotifySong.name} de ${newSpotifySong.artist}, ahora envia algunas *imagenes* que seran proyectadas mientras dura el evento.`
+  );
 }
 
 export { handleInteractiveListMessage, songQueueManager };
