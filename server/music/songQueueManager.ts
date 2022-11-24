@@ -5,6 +5,7 @@ import { normalizeSongStructure, store } from "../store";
 import { RawSong, Song } from "../types";
 import { handleExecuteAction } from "../handlers/handleExecuteAction";
 import { broadcastData } from "../setup";
+import { endVisualShow } from "../handlers/visualShowHandler";
 
 class SpotifySongQueueManager {
   songQueue: SpotifyQueuedSong[];
@@ -68,11 +69,14 @@ class SpotifySongQueueManager {
   playSpecialSong = () => {
     this.isPresentingEvent = true;
     this.pauseSongs();
-    this.specialSong?.setOnEndSong(
-      (durationMs) =>
-        (this.resumeSongsTimeout = setTimeout(this.resumeSongs, durationMs))
-    );
-    this.specialSong?.delayedConsume(0);
+    if (this.specialSong) {
+      const specialSongRequesterPhone = this.specialSong.apiParams.toPhoneNumber as string; 
+      this.specialSong.setOnEndSong(
+        (durationMs) =>
+          (this.resumeSongsTimeout = setTimeout(() => endVisualShow(specialSongRequesterPhone), durationMs))
+      );
+      this.specialSong.delayedConsume(0);
+    }
   };
 
   addSpecialSong = (newSong: SpotifyQueuedSong) => {
