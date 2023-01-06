@@ -6,7 +6,7 @@ function SongRow({ name, artist, imgUrl, requester }) {
 
     if (imgUrl) {
       rv = (
-        <div className="SongRow-image-container">
+        <div className="SongRow-image-crcontainer">
           <img src={imgUrl} className="SongRow-image" alt="logo" />
         </div>
       );

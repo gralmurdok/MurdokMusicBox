@@ -1,3 +1,4 @@
+import "../musicbox.css";
 import { Fragment, useEffect, useState } from "react";
 import axios from "axios";
 import { SongRow } from "./SongRow";
@@ -56,7 +57,7 @@ function Player() {
 
   function renderAuthLink() {
     return (
-      <div className="Auth-link-container">
+      <div className="Auth-link-crcontainer">
         <a className="App-link" href="/spotify-login">
           Autorizar
         </a>
@@ -84,14 +85,14 @@ function Player() {
       rv = null;
     }
 
-    return <div className="Queued-songs-container">{rv}</div>;
+    return <div className="Queued-songs-crcontainer">{rv}</div>;
   }
 
   function renderPlayer() {
     return (
       <Fragment>
         <div>
-          <div className="songs-container">
+          <div className="songs-crcontainer">
             <SongRow
               name={appStatus.currentSong.name}
               artist={appStatus.currentSong.artist}
@@ -107,7 +108,7 @@ function Player() {
   function renderHeader() {
     return (
       <Fragment>
-        <div className="code-container">
+        <div className="code-crcontainer">
           <div className="code-text">WS:0985467110</div>
         </div>
       </Fragment>
@@ -124,7 +125,7 @@ function Player() {
 
   return (
     <div
-      className="App container"
+      className="App crcontainer"
       onDoubleClick={() =>
         !document.fullscreenElement
           ? document.body.requestFullscreen()

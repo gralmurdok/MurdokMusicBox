@@ -15,10 +15,6 @@ import {
   interactiveReplyButtonsMessage,
 } from "./messaging/whatsappMessageBuilder";
 
-app.get(["/", "index.html"], (req, res) => {
-  res.redirect("/menu");
-});
-
 app.get("/qr-code", (req, res) => {
   res.redirect(
     `https://wa.me/593985467110?text=${store.status.currentSong.name} - ${store.status.currentSong.artist}`
