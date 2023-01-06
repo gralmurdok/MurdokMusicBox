@@ -7,15 +7,20 @@ const About = () => {
       <nav class="navbar nav-first navbar-dark bg-dark">
         <div class="container">
           <a class="navbar-brand" href="#">
-            <img
-              src="assets/imgs/logo.png"
-              alt="crossroads"
-            />
+            <img src="assets/imgs/logo.png" alt="crossroads" />
           </a>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <a class="nav-link text-primary" href="#home">
                 LLAMANOS AL: <span class="pl-2 text-muted">0979700737</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-primary" href="#home">
+                ENCUENTRANOS EN:{" "}
+                <span class="pl-2 text-muted">
+                  Loja, 24 de Mayo entre Miguel Riofrio y Azuay
+                </span>
               </a>
             </li>
           </ul>
@@ -54,7 +59,12 @@ const About = () => {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#testmonial">
-                  Testimonios y sugerencias
+                  Guia The Crossroads
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#suggestions">
+                  Sugerencias
                 </a>
               </li>
             </ul>
@@ -64,11 +74,7 @@ const About = () => {
 
       <header class="header">
         <div class="overlay">
-          <img
-            src="assets/imgs/logo.png"
-            alt="crossroads"
-            class="logo"
-          />
+          <img src="assets/imgs/logo.png" alt="crossroads" class="logo" />
           <h1 class="subtitle">Bienvenido a nuestro Restaurante</h1>
           <h1 class="title">The Crossroads Loja</h1>
           <a class="btn btn-primary mt-3" href="#mainmenu">
@@ -131,9 +137,10 @@ const About = () => {
               <h6 class="section-subtitle">La gran historia</h6>
               <h3 class="section-title">Nuestra aventura culinaria</h3>
               <p>
-                Procesamos el jugo de caña con el objetivo de brindarte nuevas experiencias a tu paladar 
-                contamos con una amplia variedad de micheladas / michecañas y picadas en tablita, y como si fuera poco 
-                ofrecemos bebidas adaptadas al clima de nuestra ciudad
+                Procesamos el jugo de caña con el objetivo de brindarte nuevas
+                experiencias a tu paladar contamos con una amplia variedad de
+                micheladas / michecañas y picadas en tablita, y como si fuera
+                poco ofrecemos bebidas adaptadas al clima de nuestra ciudad
               </p>
             </div>
             <div class="col-md-6 order-1 order-sm-first">
@@ -161,15 +168,14 @@ const About = () => {
       <section id="service" class="pattern-style-4 has-overlay">
         <div class="container raise-2">
           <h6 class="section-subtitle text-center">Mejores platillos</h6>
-          <h3 class="section-title mb-6 pb-3 text-center">Platillos especiales</h3>
+          <h3 class="section-title mb-6 pb-3 text-center">
+            Platillos especiales
+          </h3>
           <div class="row">
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-1.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-1.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -178,7 +184,8 @@ const About = () => {
                   </div>
                   <div class="body">
                     <p>
-                      (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo + papas rústicas)
+                      (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo +
+                      papas rústicas)
                     </p>
                   </div>
                 </div>
@@ -187,10 +194,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-2.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-2.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -199,7 +203,8 @@ const About = () => {
                   </div>
                   <div class="body">
                     <p>
-                      (200gr de panceta de cerdo confitada + papas rústicas + Salsa chimichurri de la casa)
+                      (200gr de panceta de cerdo confitada + papas rústicas +
+                      Salsa chimichurri de la casa)
                     </p>
                   </div>
                 </div>
@@ -208,10 +213,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-3.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-3.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -220,7 +222,8 @@ const About = () => {
                   </div>
                   <div class="body">
                     <p>
-                      (250gr de costilla de cerdo horneada en salsa BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
+                      (250gr de costilla de cerdo horneada en salsa
+                      BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
                     </p>
                   </div>
                 </div>
@@ -229,10 +232,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-4.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-4.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -241,7 +241,8 @@ const About = () => {
                   </div>
                   <div class="body">
                     <p>
-                      Deliciosas bebidas basadas en cerveza + jugo de caña / maracuyá / tajín / limón / sal
+                      Deliciosas bebidas basadas en cerveza + jugo de caña /
+                      maracuyá / tajín / limón / sal
                     </p>
                   </div>
                 </div>
@@ -250,20 +251,17 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-5.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-5.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Jarra Guarapo / Crossroads / Michecaña</h5>
+                    <h5 class="title float-left">
+                      Jarra Guarapo / Crossroads / Michecaña
+                    </h5>
                     <p class="float-right text-primary">$6 - $8</p>
                   </div>
                   <div class="body">
-                    <p>
-                      Jarras de nuestras bebidas más populares
-                    </p>
+                    <p>Jarras de nuestras bebidas más populares</p>
                   </div>
                 </div>
               </a>
@@ -271,10 +269,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img
-                    src="assets/imgs/dish-6.jpg"
-                    alt="crossroads"
-                  />
+                  <img src="assets/imgs/dish-6.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -282,9 +277,7 @@ const About = () => {
                     <p class="float-right text-primary">$3</p>
                   </div>
                   <div class="body">
-                    <p>
-                      Vino hervido con especias, limón y dulzor agregado
-                    </p>
+                    <p>Vino hervido con especias, limón y dulzor agregado</p>
                   </div>
                 </div>
               </a>
@@ -309,7 +302,8 @@ const About = () => {
                       <div class="flex-grow-1">
                         Alitas crossroads
                         <p class="mt-1 mb-0">
-                          (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo + papas rústicas)
+                          (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo
+                          + papas rústicas)
                         </p>
                       </div>
                       <h6 class="float-right text-primary">$5</h6>
@@ -325,7 +319,8 @@ const About = () => {
                       <div class="flex-grow-1">
                         Chicharroads
                         <p class="mt-1 mb-0">
-                          (200gr de panceta de cerdo confitada + papas rústicas + Salsa chimichurri de la casa)
+                          (200gr de panceta de cerdo confitada + papas rústicas
+                          + Salsa chimichurri de la casa)
                         </p>
                       </div>
                       <h6 class="float-right text-primary">$5</h6>
@@ -341,7 +336,8 @@ const About = () => {
                       <div class="flex-grow-1">
                         Crosstillas
                         <p class="mt-1 mb-0">
-                          (250gr de costilla de cerdo horneada en salsa BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
+                          (250gr de costilla de cerdo horneada en salsa
+                          BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
                         </p>
                       </div>
                       <h6 class="float-right text-primary">$6</h6>
@@ -357,7 +353,8 @@ const About = () => {
                       <div class="flex-grow-1">
                         Michecañas
                         <p class="mt-2 mb-0">
-                          Deliciosas bebidas basadas en cerveza + jugo de caña / tajín
+                          Deliciosas bebidas basadas en cerveza + jugo de caña /
+                          tajín
                         </p>
                       </div>
                       <h6 class="float-right text-primary">$3.50</h6>
@@ -372,9 +369,7 @@ const About = () => {
                     <div class="d-flex">
                       <div class="flex-grow-1">
                         Jarra Crossroads
-                        <p class="mt-2 mb-0">
-                          Jarras de Guarapo + Licor
-                        </p>
+                        <p class="mt-2 mb-0">Jarras de Guarapo + Licor</p>
                       </div>
                       <h6 class="float-right text-primary">$8</h6>
                     </div>
@@ -418,7 +413,8 @@ const About = () => {
                 />
                 <h5 class="my-3">Cross</h5>
                 <p>
-                  Chef independiente, Chef previo en Diabluma y aprendiz del muy reconocido Chef Mauricio Artieda
+                  Chef independiente, Chef previo en Diabluma y aprendiz del muy
+                  reconocido Chef Mauricio Artieda
                 </p>
               </div>
             </div>
@@ -431,7 +427,8 @@ const About = () => {
                 />
                 <h5 class="my-3">Claudia</h5>
                 <p>
-                  Magister en Direccion de Hoteles y empresas de Restauracion en entornos globales 
+                  Magister en Direccion de Hoteles y empresas de Restauracion en
+                  entornos globales
                 </p>
               </div>
             </div>
@@ -441,8 +438,12 @@ const About = () => {
 
       <section id="testmonial" class="pattern-style-3">
         <div class="container">
-          <h6 class="section-subtitle text-center">Necesitas un tutorial de Crossroads?</h6>
-          <h3 class="section-title mb-5 text-center">Guia para disfrutar de The Crossroads</h3>
+          <h6 class="section-subtitle text-center">
+            Necesitas un tutorial de Crossroads?
+          </h6>
+          <h3 class="section-title mb-5 text-center">
+            Guia para disfrutar de The Crossroads
+          </h3>
 
           <div class="row">
             <div class="col-md-4 my-3 my-md-0">
@@ -455,7 +456,9 @@ const About = () => {
                     </div>
                   </div>
                   <p class="mb-0">
-                    Deleitate con nuestra perfecta combinacion de bebidas y piqueos para consentir tu paladar, una Crosstilla de Maracuya + una Michecaña puede ser un buen comienzo
+                    Deleitate con nuestra perfecta combinacion de bebidas y
+                    piqueos para consentir tu paladar, una Crosstilla de
+                    Maracuya + una Michecaña puede ser un buen comienzo
                   </p>
                 </div>
               </div>
@@ -470,7 +473,9 @@ const About = () => {
                     </div>
                   </div>
                   <p class="mb-0">
-                    Escanea el codigo QR presente en el menu y envia via Whatsapp el nombre de la cancion/artista que mas sea de tu agrado, nuestro bot se encargara de guiarte en el proceso
+                    Escanea el codigo QR presente en el menu y envia via
+                    Whatsapp el nombre de la cancion/artista que mas sea de tu
+                    agrado, nuestro bot se encargara de guiarte en el proceso
                   </p>
                 </div>
               </div>
@@ -495,8 +500,16 @@ const About = () => {
           </div>
         </div>
       </section>
-      <section id="book-table" class="bg-white">
+
+      <section id="suggestions" class="bg-white">
         <div class="container">
+          <h6 class="section-subtitle text-center">
+            Cuentanos tu experiencia!
+          </h6>
+          <h3 class="section-title mb-5 text-center">
+            Dejanos tus sugerencias
+          </h3>
+
           <div class="row align-items-center">
             <div class="col-md-6 d-none d-md-block">
               <img
@@ -513,7 +526,7 @@ const About = () => {
                     class="form-control"
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
-                    placeholder="Tu nombre"
+                    placeholder="Tu nombre (opcional)"
                   />
                 </div>
                 <div class="form-group">
@@ -536,7 +549,9 @@ const About = () => {
                   Enviar sugerencia
                 </button>
                 <small class="form-text text-muted mt-3">
-                  Nosotros no enviamos Spam a nuestros clientes, el numero de telefono será usado unicamente como metodo de identificación interna{" "}
+                  Nosotros no enviamos Spam a nuestros clientes, el numero de
+                  telefono será usado unicamente como metodo de identificación
+                  interna{" "}
                 </small>
               </form>
             </div>
