@@ -8,14 +8,14 @@ const About = () => {
         <div class="container">
           <a class="navbar-brand" href="#">
             <img
-              src="assets/imgs/navbar-brand.svg"
+              src="assets/imgs/logo.png"
               alt="crossroads"
             />
           </a>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <a class="nav-link text-primary" href="#home">
-                LLAMANOS : <span class="pl-2 text-muted">0960521867</span>
+                LLAMANOS AL: <span class="pl-2 text-muted">0979700737</span>
               </a>
             </li>
           </ul>
@@ -44,7 +44,7 @@ const About = () => {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#service">
-                  Nuestro servicio
+                  Especiales
                 </a>
               </li>
               <li class="nav-item">
@@ -54,7 +54,7 @@ const About = () => {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#testmonial">
-                  Testimonios
+                  Testimonios y sugerencias
                 </a>
               </li>
             </ul>
@@ -65,14 +65,14 @@ const About = () => {
       <header class="header">
         <div class="overlay">
           <img
-            src="assets/imgs/logo.svg"
+            src="assets/imgs/logo.png"
             alt="crossroads"
             class="logo"
           />
           <h1 class="subtitle">Bienvenido a nuestro Restaurante</h1>
           <h1 class="title">The Crossroads Loja</h1>
-          <a class="btn btn-primary mt-3" href="#book-table">
-            Book A Table
+          <a class="btn btn-primary mt-3" href="#mainmenu">
+            Ver Menú
           </a>
         </div>
       </header>
@@ -81,29 +81,29 @@ const About = () => {
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-6">
-              <h6 class="section-subtitle">Opening Times</h6>
-              <h3 class="section-title">Working Times</h3>
+              <h6 class="section-subtitle">Horarios de apertura</h6>
+              <h3 class="section-title">Horarios de trabajo</h3>
               <p class="mb-1 font-weight-bold">
-                Monday - Thursday :{" "}
+                Martes - Miercoles :{" "}
                 <span class="font-weight-normal pl-2 text-muted">
-                  7:00 am - 12:00 pm
+                  04:00 pm - 10:00 pm
+                </span>
+              </p>
+              <p class="mb-1 font-weight-bold">
+                Jueves :{" "}
+                <span class="font-weight-normal pl-2 text-muted">
+                  04:00 pm - 10:00 pm / Medianoche
                 </span>
               </p>
               <p class="mb-1 font-weight-bold">
                 Friday - Saturday :{" "}
                 <span class="font-weight-normal pl-2 text-muted">
-                  7:00 am - Midnight
-                </span>
-              </p>
-              <p class="mb-1 font-weight-bold">
-                Saturday - Sunday :{" "}
-                <span class="font-weight-normal pl-2 text-muted">
-                  9:00 am - 12:00 pm
+                  04:00 pm - Medianoche
                 </span>
               </p>
 
-              <a href="#book-table" class="btn btn-primary btn-sm w-md mt-4">
-                Book a table
+              <a href="#mainmenu" class="btn btn-primary btn-sm w-md mt-4">
+                Ver Menú
               </a>
             </div>
             <div class="col-md-6">
@@ -128,12 +128,12 @@ const About = () => {
           <div class="section-devider my-6 transparent"></div>
           <div class="row align-items-center">
             <div class="col-md-6">
-              <h6 class="section-subtitle">The Great Story</h6>
-              <h3 class="section-title">Our Culinary Journey</h3>
+              <h6 class="section-subtitle">La gran historia</h6>
+              <h3 class="section-title">Nuestra aventura culinaria</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Hic
-                illo a, aut, eum nesciunt obcaecati deserunt ipsam nostrum
-                voluptate recusandae?
+                Procesamos el jugo de caña con el objetivo de brindarte nuevas experiencias a tu paladar 
+                contamos con una amplia variedad de micheladas / michecañas y picadas en tablita, y como si fuera poco 
+                ofrecemos bebidas adaptadas al clima de nuestra ciudad
               </p>
             </div>
             <div class="col-md-6 order-1 order-sm-first">
@@ -160,8 +160,8 @@ const About = () => {
 
       <section id="service" class="pattern-style-4 has-overlay">
         <div class="container raise-2">
-          <h6 class="section-subtitle text-center">Featured Food</h6>
-          <h3 class="section-title mb-6 pb-3 text-center">Special Dishes</h3>
+          <h6 class="section-subtitle text-center">Mejores platillos</h6>
+          <h3 class="section-title mb-6 pb-3 text-center">Platillos especiales</h3>
           <div class="row">
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
@@ -173,13 +173,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Aperiam incidunt dicta</h5>
-                    <p class="float-right text-primary">$25</p>
+                    <h5 class="title float-left">Alitas crossroads</h5>
+                    <p class="float-right text-primary">$5</p>
                   </div>
                   <div class="body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing Eos,
-                      earum dicta est veniam beatae libero!
+                      (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo + papas rústicas)
                     </p>
                   </div>
                 </div>
@@ -195,13 +194,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Facere molestiae quaerat</h5>
-                    <p class="float-right text-primary">$35</p>
+                    <h5 class="title float-left">Chicharroads</h5>
+                    <p class="float-right text-primary">$5</p>
                   </div>
                   <div class="body">
                     <p>
-                      Voluptatem voluptate ad fugit aliquam, laboriosam neque
-                      vero incidunt itaque.
+                      (200gr de panceta de cerdo confitada + papas rústicas + Salsa chimichurri de la casa)
                     </p>
                   </div>
                 </div>
@@ -217,13 +215,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Veniam Beatae Libero</h5>
-                    <p class="float-right text-primary">$18</p>
+                    <h5 class="title float-left">Crosstillas</h5>
+                    <p class="float-right text-primary">$6</p>
                   </div>
                   <div class="body">
                     <p>
-                      Accusamus libero quo tempore suscipit molestias qui quam
-                      illo facere aspernatur esse! Doloribus?
+                      (250gr de costilla de cerdo horneada en salsa BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
                     </p>
                   </div>
                 </div>
@@ -239,13 +236,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Incidunt Eius</h5>
-                    <p class="float-right text-primary">$30</p>
+                    <h5 class="title float-left">Micheladas / Michecañas</h5>
+                    <p class="float-right text-primary">$3 - $4.50</p>
                   </div>
                   <div class="body">
                     <p>
-                      Doloremque maiores tempore, nostrum rerum nihil distinctio
-                      expedita voluptates eos deserunt.
+                      Deliciosas bebidas basadas en cerveza + jugo de caña / maracuyá / tajín / limón / sal
                     </p>
                   </div>
                 </div>
@@ -261,13 +257,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Nihil dDstinctio</h5>
-                    <p class="float-right text-primary">$24</p>
+                    <h5 class="title float-left">Jarra Guarapo / Crossroads / Michecaña</h5>
+                    <p class="float-right text-primary">$6 - $8</p>
                   </div>
                   <div class="body">
                     <p>
-                      Doloremque maiores tempore, nostrum rerum expedita
-                      incidunt eius voluptates eos deserunt.
+                      Jarras de nuestras bebidas más populares
                     </p>
                   </div>
                 </div>
@@ -283,13 +278,12 @@ const About = () => {
                 </div>
                 <div class="info">
                   <div class="head clearfix">
-                    <h5 class="title float-left">Dignissimos quidem</h5>
-                    <p class="float-right text-primary">$44</p>
+                    <h5 class="title float-left">Copa de Vino hervido</h5>
+                    <p class="float-right text-primary">$3</p>
                   </div>
                   <div class="body">
                     <p>
-                      Doloremque maiores tempore, nostrum rerum nihil distinctio
-                      expedita voluptates eos deserunt.
+                      Vino hervido con especias, limón y dulzor agregado
                     </p>
                   </div>
                 </div>
@@ -299,10 +293,10 @@ const About = () => {
         </div>
       </section>
 
-      <section class="has-img-bg">
+      <section id="mainmenu" class="has-img-bg">
         <div class="container">
-          <h6 class="section-subtitle text-center">Great Food</h6>
-          <h3 class="section-title mb-6 text-center">Main Menu</h3>
+          <h6 class="section-subtitle text-center">Piqueos y bebidas</h6>
+          <h3 class="section-title mb-6 text-center">Menú Principal</h3>
           <div class="card bg-light">
             <div class="card-body px-4 pb-4 text-center">
               <div class="row text-left">
@@ -313,12 +307,12 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Dolorem Exmaiores
+                        Alitas crossroads
                         <p class="mt-1 mb-0">
-                          Numquam dolor dolores molestiae maiores quidem.
+                          (5 alitas de pollo horneadas en salsa BBQ/Queso/Búfalo + papas rústicas)
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$12</h6>
+                      <h6 class="float-right text-primary">$5</h6>
                     </div>
                   </a>
                 </div>
@@ -329,13 +323,12 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Aperiam incidunt dicta
+                        Chicharroads
                         <p class="mt-1 mb-0">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit.
+                          (200gr de panceta de cerdo confitada + papas rústicas + Salsa chimichurri de la casa)
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$23</h6>
+                      <h6 class="float-right text-primary">$5</h6>
                     </div>
                   </a>
                 </div>
@@ -346,13 +339,12 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Animi repellat labore
+                        Crosstillas
                         <p class="mt-1 mb-0">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit.
+                          (250gr de costilla de cerdo horneada en salsa BBQ/Queso/Búfalo/Maracuyá + papas rústicas)
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$32</h6>
+                      <h6 class="float-right text-primary">$6</h6>
                     </div>
                   </a>
                 </div>
@@ -363,13 +355,12 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Quo ipsum similique
+                        Michecañas
                         <p class="mt-2 mb-0">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit.
+                          Deliciosas bebidas basadas en cerveza + jugo de caña / tajín
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$17</h6>
+                      <h6 class="float-right text-primary">$3.50</h6>
                     </div>
                   </a>
                 </div>
@@ -380,13 +371,12 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Est nam tempore
+                        Jarra Crossroads
                         <p class="mt-2 mb-0">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit.
+                          Jarras de Guarapo + Licor
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$21</h6>
+                      <h6 class="float-right text-primary">$8</h6>
                     </div>
                   </a>
                 </div>
@@ -397,19 +387,18 @@ const About = () => {
                   >
                     <div class="d-flex">
                       <div class="flex-grow-1">
-                        Nesciunt ab veniam
+                        Copa de Vino hervido
                         <p class="mt-2 mb-0">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit.
+                          Vino hervido con especias, limón y dulzor agregado
                         </p>
                       </div>
-                      <h6 class="float-right text-primary">$10</h6>
+                      <h6 class="float-right text-primary">$3</h6>
                     </div>
                   </a>
                 </div>
               </div>
-              <a href="#book-table" class="btn btn-primary mt-4">
-                Book A Table
+              <a href="/menu" class="btn btn-primary mt-4">
+                Descargar menú detallado
               </a>
             </div>
           </div>
@@ -417,91 +406,33 @@ const About = () => {
       </section>
       <section id="team">
         <div class="container">
-          <h6 class="section-subtitle text-center">Great Team</h6>
-          <h3 class="section-title mb-5 text-center">Talented Chefs</h3>
+          <h6 class="section-subtitle text-center">Gran Equipo</h6>
+          <h3 class="section-title mb-5 text-center">Personal Talentoso</h3>
           <div class="row">
-            <div class="col-md-4 my-3">
+            <div class="col-md-6 my-3">
               <div class="team-wrapper text-center">
                 <img
                   src="assets/imgs/chef-1.jpg"
                   class="circle-120 rounded-circle mb-3 shadow"
                   alt="crossroads"
                 />
-                <h5 class="my-3">Brian Scott</h5>
+                <h5 class="my-3">Cross</h5>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sapiente suscipit, odio nulla reiciendis!
+                  Chef independiente, Chef previo en Diabluma y aprendiz del muy reconocido Chef Mauricio Artieda
                 </p>
-                <h6 class="socials mt-3">
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-facebook"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-twitter"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-instagram"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-google"></i>
-                  </a>
-                </h6>
               </div>
             </div>
-            <div class="col-md-4 my-3">
+            <div class="col-md-6 my-3">
               <div class="team-wrapper text-center">
                 <img
                   src="assets/imgs/chef-2.jpg"
                   class="circle-120 rounded-circle mb-3 shadow"
                   alt="crossroads"
                 />
-                <h5 class="my-3">Edward Harris</h5>
+                <h5 class="my-3">Claudia</h5>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sapiente suscipit, odio nulla reiciendis!
+                  Magister en Direccion de Hoteles y empresas de Restauracion en entornos globales 
                 </p>
-                <h6 class="socials mt-3">
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-facebook"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-twitter"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-instagram"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-google"></i>
-                  </a>
-                </h6>
-              </div>
-            </div>
-            <div class="col-md-4 my-3">
-              <div class="team-wrapper text-center">
-                <img
-                  src="assets/imgs/chef-3.jpg"
-                  class="circle-120 rounded-circle mb-3 shadow"
-                  alt="crossroads"
-                />
-                <h5 class="my-3">Richard Reb</h5>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sapiente suscipit, odio nulla reiciendis!
-                </p>
-                <h6 class="socials mt-3">
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-facebook"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-twitter"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-instagram"></i>
-                  </a>
-                  <a href="javascript:void(0)" class="px-2">
-                    <i class="ti-google"></i>
-                  </a>
-                </h6>
               </div>
             </div>
           </div>
@@ -510,27 +441,21 @@ const About = () => {
 
       <section id="testmonial" class="pattern-style-3">
         <div class="container">
-          <h6 class="section-subtitle text-center">Best Clients</h6>
-          <h3 class="section-title mb-5 text-center">Testmonials</h3>
+          <h6 class="section-subtitle text-center">Necesitas un tutorial de Crossroads?</h6>
+          <h3 class="section-title mb-5 text-center">Guia para disfrutar de The Crossroads</h3>
 
           <div class="row">
             <div class="col-md-4 my-3 my-md-0">
               <div class="card">
                 <div class="card-body">
                   <div class="media align-items-center mb-3">
-                    <img
-                      class="mr-3"
-                      src="assets/imgs/avatar.jpg"
-                      alt="crossroads"
-                    />
                     <div class="media-body">
-                      <h6 class="mt-1 mb-0">John Doe</h6>
-                      <small class="text-muted mb-0">Business Analyst</small>
+                      <h6 class="mt-1 mb-0">1. Elige tu combo</h6>
+                      <small class="text-muted mb-0">Piqueo + Bebida</small>
                     </div>
                   </div>
                   <p class="mb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Delectus enim modi, id dicta reiciendis itaque.
+                    Deleitate con nuestra perfecta combinacion de bebidas y piqueos para consentir tu paladar, una Crosstilla de Maracuya + una Michecaña puede ser un buen comienzo
                   </p>
                 </div>
               </div>
@@ -539,19 +464,13 @@ const About = () => {
               <div class="card">
                 <div class="card-body">
                   <div class="media align-items-center mb-3">
-                    <img
-                      class="mr-3"
-                      src="assets/imgs/avatar-1.jpg"
-                      alt="crossroads"
-                    />
                     <div class="media-body">
-                      <h6 class="mt-1 mb-0">Maria Garcia</h6>
-                      <small class="text-muted mb-0">Insurance Agent</small>
+                      <h6 class="mt-1 mb-0">2. Toma el control de la musica</h6>
+                      <small class="text-muted mb-0">Billie Jean</small>
                     </div>
                   </div>
                   <p class="mb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Delectus enim modi, id dicta reiciendis itaque.
+                    Escanea el codigo QR presente en el menu y envia via Whatsapp el nombre de la cancion/artista que mas sea de tu agrado, nuestro bot se encargara de guiarte en el proceso
                   </p>
                 </div>
               </div>
@@ -560,21 +479,15 @@ const About = () => {
               <div class="card">
                 <div class="card-body">
                   <div class="media align-items-center mb-3">
-                    <img
-                      class="mr-3"
-                      src="assets/imgs/avatar-2.jpg"
-                      alt="crossroads"
-                    />
                     <div class="media-body">
-                      <h6 class="mt-1 mb-0">Mason Miller</h6>
+                      <h6 class="mt-1 mb-0">3. Deja que todo fluya</h6>
                       <small class="text-muted mb-0">
-                        Residential Appraiser
+                        The Crossroads es lo Maximo!
                       </small>
                     </div>
                   </div>
                   <p class="mb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Delectus enim modi, id dicta reiciendis itaque.
+                    Tu combinacion de sabor, bebida y musica volara tus sentidos
                   </p>
                 </div>
               </div>
@@ -600,7 +513,7 @@ const About = () => {
                     class="form-control"
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
-                    placeholder="Your Name"
+                    placeholder="Tu nombre"
                   />
                 </div>
                 <div class="form-group">
@@ -608,30 +521,22 @@ const About = () => {
                     type="tel"
                     class="form-control"
                     name="phone"
-                    placeholder="Your Phone"
+                    placeholder="Tu telefono (opcional)"
                   />
                 </div>
                 <div class="form-group">
-                  <input
-                    type="datetime-local"
+                  <textarea
+                    type="text"
                     class="form-control"
-                    name="date"
-                  />
-                </div>
-                <div class="form-group">
-                  <input
-                    type="number"
-                    class="form-control"
-                    name="seats"
-                    placeholder="Seats"
+                    name="suggestion"
+                    placeholder="Escribe tu sugerencia aquí"
                   />
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">
-                  Book A Table
+                  Enviar sugerencia
                 </button>
                 <small class="form-text text-muted mt-3">
-                  We don't span customers. Check our{" "}
-                  <a href="#">Privacy Policy</a>
+                  Nosotros no enviamos Spam a nuestros clientes, el numero de telefono será usado unicamente como metodo de identificación interna{" "}
                 </small>
               </form>
             </div>
@@ -644,25 +549,11 @@ const About = () => {
           <div class="row justify-content-between align-items-center text-center">
             <div class="col-md-3 text-md-left mb-3 mb-md-0">
               <img
-                src="assets/imgs/navbar-brand.svg"
+                src="assets/imgs/logo.png"
                 width="100"
                 alt="crossroads"
                 class="mb-0"
               />
-            </div>
-            <div class="col-md-9 text-md-right">
-              <a href="#" class="px-3">
-                <small class="font-weight-bold">Our Company</small>
-              </a>
-              <a href="#" class="px-3">
-                <small class="font-weight-bold">Our Location</small>
-              </a>
-              <a href="#" class="px-3">
-                <small class="font-weight-bold">Help Center</small>
-              </a>
-              <a href="components.html" class="pl-3">
-                <small class="font-weight-bold">Components</small>
-              </a>
             </div>
           </div>
         </div>
