@@ -52,6 +52,17 @@ interface TextMessage extends WhatsappMessage {
   };
 }
 
+interface TemplateMessage extends WhatsappMessage {
+  type: "template";
+  template: {
+    name: string;
+    language: {
+      code: string;
+      policy: "deterministic";
+    };
+  };
+}
+
 interface InteractiveMessage extends WhatsappMessage {
   recipient_type: "individual";
   type: "interactive";
@@ -235,6 +246,7 @@ export type {
   AppStatus,
   APIParams,
   TextMessage,
+  TemplateMessage,
   WhatsappMessage,
   InteractiveMessage,
   ReplyButton,

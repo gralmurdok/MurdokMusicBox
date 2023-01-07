@@ -58,4 +58,18 @@ async function persistSongs(phoneNumber: string, trackIds: string[]) {
   });
 }
 
-export { persistUser, retrieveUsersFromDb, persistSongs };
+async function persistSuggestion(
+  name: string,
+  phone: string,
+  suggestion: string
+) {
+  await executeDatabaseOperation(async (dbClient) => {
+    const collection: Collection = dbClient
+      .db("crossroads")
+      .collection("suggestions");
+    const suggestionEntry = { phone, name, suggestion };
+    await collection.insertOne(suggestionEntry);
+  });
+}
+
+export { persistUser, retrieveUsersFromDb, persistSongs, persistSuggestion };

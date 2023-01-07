@@ -1,7 +1,29 @@
 import "./About.css";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import axios from "axios";
 
 const About = () => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [suggestion, setSuggestion] = useState("");
+
+  const submitSuggestion = () => {
+    axios
+      .post("/suggest", {
+        name,
+        phone,
+        suggestion
+      })
+      .then(() => {
+        setName('');
+        setPhone('');
+        setSuggestion('');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <Fragment>
       <nav class="navbar nav-first navbar-dark bg-dark">
@@ -12,12 +34,12 @@ const About = () => {
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <a class="nav-link text-primary" href="#home">
-                LLAMANOS AL: <span class="pl-2 text-muted">0979700737</span>
+                Reserva con nosotros al: <span class="pl-2 text-muted">0979700737</span>
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-primary" href="#home">
-                ENCUENTRANOS EN:{" "}
+                Encuentranos en:{" "}
                 <span class="pl-2 text-muted">
                   Loja, 24 de Mayo entre Miguel Riofrio y Azuay
                 </span>
@@ -88,7 +110,7 @@ const About = () => {
           <div class="row align-items-center">
             <div class="col-md-6">
               <h6 class="section-subtitle">Horarios de apertura</h6>
-              <h3 class="section-title">Horarios de trabajo</h3>
+              <h3 class="section-title">Horarios de atención</h3>
               <p class="mb-1 font-weight-bold">
                 Martes - Miercoles :{" "}
                 <span class="font-weight-normal pl-2 text-muted">
@@ -413,8 +435,7 @@ const About = () => {
                 />
                 <h5 class="my-3">Cross</h5>
                 <p>
-                  Chef independiente, Chef previo en Diabluma y aprendiz del muy
-                  reconocido Chef Mauricio Artieda
+                  Chef independiente, graduado en la UTPL, aprendiz del chef Mauricio Artieda fundador de la carrera de gastronomía
                 </p>
               </div>
             </div>
@@ -427,8 +448,7 @@ const About = () => {
                 />
                 <h5 class="my-3">Claudia</h5>
                 <p>
-                  Magister en Direccion de Hoteles y empresas de Restauracion en
-                  entornos globales
+                  Magister en Direccion de Hoteles y empresas de Restauracion
                 </p>
               </div>
             </div>
@@ -519,7 +539,6 @@ const About = () => {
               />
             </div>
             <div class="col-md-6">
-              <form>
                 <div class="form-group">
                   <input
                     type="text"
@@ -527,6 +546,8 @@ const About = () => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
                     placeholder="Tu nombre (opcional)"
+                    onChange={(e) => setName(e.target.value)}
+                    value={name}
                   />
                 </div>
                 <div class="form-group">
@@ -535,6 +556,8 @@ const About = () => {
                     class="form-control"
                     name="phone"
                     placeholder="Tu telefono (opcional)"
+                    onChange={(e) => setPhone(e.target.value)}
+                    value={phone}
                   />
                 </div>
                 <div class="form-group">
@@ -543,9 +566,11 @@ const About = () => {
                     class="form-control"
                     name="suggestion"
                     placeholder="Escribe tu sugerencia aquí"
+                    onChange={(e) => setSuggestion(e.target.value)}
+                    value={suggestion}
                   />
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">
+                <button onClick={submitSuggestion} class="btn btn-primary btn-block">
                   Enviar sugerencia
                 </button>
                 <small class="form-text text-muted mt-3">
@@ -553,7 +578,6 @@ const About = () => {
                   telefono será usado unicamente como metodo de identificación
                   interna{" "}
                 </small>
-              </form>
             </div>
           </div>
         </div>
