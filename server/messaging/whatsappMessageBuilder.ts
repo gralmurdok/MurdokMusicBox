@@ -6,6 +6,7 @@ import {
   Section,
   SectionRow,
   Song,
+  TemplateMessage,
   TextMessage,
 } from "../types";
 
@@ -14,6 +15,21 @@ function simpleMessage(from: string, message: string): TextMessage {
     messaging_product: "whatsapp",
     to: from,
     text: { body: message },
+  };
+}
+
+function suggestionConfirmationTemplate(from: string): TemplateMessage {
+  return {
+    messaging_product: "whatsapp",
+    to: from,
+    type: "template",
+    template: {
+      name: "suggestion",
+      language: {
+        code: "es",
+        policy: "deterministic",
+      },
+    },
   };
 }
 
@@ -109,4 +125,5 @@ export {
   simpleMessage,
   interactiveReplyButtonsMessage,
   interactiveListMessage,
+  suggestionConfirmationTemplate,
 };

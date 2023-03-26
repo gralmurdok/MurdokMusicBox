@@ -16,7 +16,7 @@
   grid-area: song-queue;
 }
 
-.container {
+.crcontainer {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 45% 55%;
@@ -41,7 +41,7 @@
   }
 }
 
-.Auth-link-container {
+.Auth-link-crcontainer {
   min-width: 100vw;
   min-height: 100vh;
   display: flex;
@@ -111,7 +111,7 @@
   padding: 0 1vw 1vh 1vw;
 }
 
-.SongRow-image-container {
+.SongRow-image-crcontainer {
   padding-top: 6vh;
   width: 100%;
 }
@@ -174,12 +174,12 @@
   font-size: 10vh;
 }
 
-.Queued-songs-container {
+.Queued-songs-crcontainer {
   display: flex;
   flex-direction: column;
 }
 
-.songs-container {
+.songs-crcontainer {
   min-height: 100vh;
 }
 

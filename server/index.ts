@@ -13,11 +13,9 @@ import { replyMessageBackToUser, replyTextMessage } from "./messaging/whatsapp";
 import {
   interactiveListMessage,
   interactiveReplyButtonsMessage,
+  suggestionConfirmationTemplate,
 } from "./messaging/whatsappMessageBuilder";
-
-app.get(["/", "index.html"], (req, res) => {
-  res.redirect("/menu");
-});
+import { persistSuggestion } from "./database/databaseHandler";
 
 app.get("/qr-code", (req, res) => {
   res.redirect(
@@ -78,6 +76,26 @@ app.post("/approve-party", async (req, res) => {
     () => {}
   );
   console.log("approved");
+});
+
+app.post("/suggest", async (req, res) => {
+  await handleExecuteAction(
+    async () => {
+      const normalizedPhone = normalizeOwnerPhone(req.body.phone);
+      await persistSuggestion(
+        req.body.name,
+        normalizedPhone,
+        req.body.suggestion
+      );
+      if (req.body.phone) {
+        await replyMessageBackToUser(
+          suggestionConfirmationTemplate(normalizedPhone)
+        );
+      }
+    },
+    () => {}
+  );
+  res.sendStatus(200);
 });
 
 app.post("/webhook", async (req, res) => {
