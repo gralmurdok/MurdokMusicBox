@@ -9,6 +9,8 @@ async function executeDatabaseOperation(
   try {
     await client.connect();
     await operation(client);
+  } catch(err) {
+    console.log(err);
   } finally {
     await client.close();
   }
