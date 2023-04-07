@@ -95,7 +95,6 @@
 }
 
 .song-artist {
-  margin-top: 1vh;
   font-size: 2.5vw;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -103,8 +102,6 @@
 }
 
 .song-requester {
-  margin-top: 2vh;
-  margin-bottom: 2vh;
   font-size: 2vw;
   display: flex;
   justify-content: center;
