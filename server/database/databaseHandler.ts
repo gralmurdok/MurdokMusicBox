@@ -1,4 +1,4 @@
-import { Collection, MongoClient } from "mongodb";
+import { Collection, MongoClient, ObjectId } from "mongodb";
 import { CrossRoadsUser, CrossroadsUserDBEntry } from "../types";
 
 async function executeDatabaseOperation(
@@ -74,4 +74,32 @@ async function persistSuggestion(
   });
 }
 
-export { persistUser, retrieveUsersFromDb, persistSongs, persistSuggestion };
+async function persistGuest(
+  name: string,
+  phone: string,
+  level: string
+) {
+  await executeDatabaseOperation(async (dbClient) => {
+    const collection: Collection = dbClient
+      .db("crossroads")
+      .collection("weddingGuests");
+    const guestEntry = { phone, name, level };
+    await await collection.updateOne({ phone }, { $set: guestEntry }, { upsert: true });
+  });
+}
+
+async function retrieveGuest(
+  id: string,
+) {
+  let guest = null;
+  await executeDatabaseOperation(async (dbClient) => {
+    const collection: Collection = dbClient
+      .db("crossroads")
+      .collection("weddingGuests");
+    guest = await collection.findOne({ _id: new ObjectId(id) });
+    console.log(guest);
+  });
+  return guest;
+}
+
+export { persistUser, retrieveUsersFromDb, persistSongs, persistSuggestion, persistGuest, retrieveGuest };

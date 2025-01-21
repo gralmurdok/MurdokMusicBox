@@ -29,7 +29,7 @@ const About = () => {
       <nav class="navbar nav-first navbar-dark bg-dark">
         <div class="container">
           <a class="navbar-brand" href="#">
-            <img src="assets/imgs/logo.png" alt="crossroads" />
+            <img src="./assets/imgs/logo.png" alt="crossroads" />
           </a>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
@@ -96,7 +96,7 @@ const About = () => {
 
       <header class="header">
         <div class="overlay">
-          <img src="assets/imgs/logo.png" alt="crossroads" class="logo" />
+          <img src="./assets/imgs/logo.png" alt="crossroads" class="logo" />
           <h1 class="subtitle">Bienvenido a nuestro Restaurante</h1>
           <h1 class="title">The Crossroads Loja</h1>
           <a class="btn btn-primary mt-3" href="#mainmenu">
@@ -139,14 +139,14 @@ const About = () => {
                 <div class="col">
                   <img
                     alt="crossroads"
-                    src="assets/imgs/about-1.jpg"
+                    src="./assets/imgs/about-1.jpg"
                     class="w-100 rounded shadow"
                   />
                 </div>
                 <div class="col">
                   <img
                     alt="crossroads"
-                    src="assets/imgs/about-2.jpg"
+                    src="./assets/imgs/about-2.jpg"
                     class="w-100 rounded shadow"
                   />
                 </div>
@@ -170,14 +170,14 @@ const About = () => {
                 <div class="col">
                   <img
                     alt="crossroads"
-                    src="assets/imgs/about-3.jpg"
+                    src="./assets/imgs/about-3.jpg"
                     class="w-100 rounded shadow"
                   />
                 </div>
                 <div class="col">
                   <img
                     alt="crossroads"
-                    src="assets/imgs/about-4.jpg"
+                    src="./assets/imgs/about-4.jpg"
                     class="w-100 rounded shadow"
                   />
                 </div>
@@ -197,7 +197,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-1.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-1.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -216,7 +216,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-2.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-2.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -235,7 +235,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-3.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-3.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -254,7 +254,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-4.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-4.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -273,7 +273,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-5.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-5.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -291,7 +291,7 @@ const About = () => {
             <div class="col-md-6 mb-4">
               <a href="javascrip:void(0)" class="custom-list">
                 <div class="img-holder">
-                  <img src="assets/imgs/dish-6.jpg" alt="crossroads" />
+                  <img src="./assets/imgs/dish-6.jpg" alt="crossroads" />
                 </div>
                 <div class="info">
                   <div class="head clearfix">
@@ -429,7 +429,7 @@ const About = () => {
             <div class="col-md-6 my-3">
               <div class="team-wrapper text-center">
                 <img
-                  src="assets/imgs/chef-1.jpg"
+                  src="./assets/imgs/chef-1.jpg"
                   class="circle-120 rounded-circle mb-3 shadow"
                   alt="crossroads"
                 />
@@ -442,7 +442,7 @@ const About = () => {
             <div class="col-md-6 my-3">
               <div class="team-wrapper text-center">
                 <img
-                  src="assets/imgs/chef-2.jpg"
+                  src="./assets/imgs/chef-2.jpg"
                   class="circle-120 rounded-circle mb-3 shadow"
                   alt="crossroads"
                 />
@@ -533,7 +533,7 @@ const About = () => {
           <div class="row align-items-center">
             <div class="col-md-6 d-none d-md-block">
               <img
-                src="assets/imgs/contact.jpg"
+                src="./assets/imgs/contact.jpg"
                 alt="crossroads"
                 class="w-100 rounded shadow"
               />
@@ -588,7 +588,7 @@ const About = () => {
           <div class="row justify-content-between align-items-center text-center">
             <div class="col-md-3 text-md-left mb-3 mb-md-0">
               <img
-                src="assets/imgs/logo.png"
+                src="./assets/imgs/logo.png"
                 width="100"
                 alt="crossroads"
                 class="mb-0"
@@ -628,10 +628,10 @@ const About = () => {
           </div>
         </div>
       </footer>
-      <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
-      <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
-      <script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
-      <script src="assets/js/pigga.js"></script>
+      <script src="./assets/vendors/jquery/jquery-3.4.1.js"></script>
+      <script src="./assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+      <script src="./assets/vendors/bootstrap/bootstrap.affix.js"></script>
+      <script src="./assets/js/pigga.js"></script>
     </Fragment>
   );
 };

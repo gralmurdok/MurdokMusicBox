@@ -1,0 +1,95 @@
+.section3 {
+    margin: 0 auto; /* HACK to center it */
+    width: 100vw;
+}
+
+.section3 > .background {
+    width: 100vw;
+    position: absolute;
+    z-index: -1;
+}
+
+.section3 > .namesSection {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.section3 > .namesSection > .mainColumn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section3 > .namesSection > .mainColumn > .fakeRow1 {
+    height: 33vw;
+    width: 100%;
+}
+
+.section3 > .namesSection > .mainColumn > .fakeRow2 {
+    height: 0vw;
+    width: 100%;
+}
+
+.section3 > .namesSection > .mainColumn > .fakeRow3 {
+    height: 0vw;
+    width: 100%;
+}
+
+.section3 > .namesSection > .mainColumn > .mainRow {
+    align-self: center;
+}
+
+.section3 > .namesSection > .mainColumn > .mainRow > img {
+    width: 35vw;
+}
+
+.section3 > .namesSection > .mainColumn > .mainRow > .namesConnector {
+    line-height: 0vw;
+}
+
+.section3 > .namesSection > .mainColumn > .mainRow > .namesConnector > .separator {
+    width: 10vw;
+    display: inline-block;
+}
+
+.section3 > .namesSection > .mainColumn > .weGetMarried {
+    font-family: "LOVE HEWITS", Sans-serif;
+    font-weight: 300;
+    font-size: 15vw;
+}
+
+.section3 > .namesSection > .mainColumn > .marriageDate {
+    font-family: "Bodoni Moda", sans-serif;
+    color: #A7727D;
+    font-size: 5vw;
+    font-weight: 300;
+}
+
+.section3 > .namesSection > .mainColumn > .address {
+    font-family: "Bodoni Moda", sans-serif;
+    color: #A7727D;
+    font-size: 4vw;
+    font-weight: 300;
+}
+
+.section3 > .namesSection > .mainColumn > .hour {
+    font-family: "Bodoni Moda", sans-serif;
+    font-size: 4vw;
+    font-weight: 300;
+    margin-bottom: 5vw;
+}
+
+.section3 > .namesSection > .mainColumn > .seeLocation {
+    font-family: "Bodoni Moda", Sans-serif;
+    fill: #FFFFFF;
+    color: #FFFFFF;
+    background-color: #A7727D;
+    border-style: solid;
+    border-color: #EDDBC7;
+    padding: 2vw;
+    font-size: 4vw;
+    margin-bottom: 10vw;
+}

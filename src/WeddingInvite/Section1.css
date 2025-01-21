@@ -1,0 +1,72 @@
+.section1 {
+    margin: 0 auto; /* HACK to center it */
+    width: 100vw;
+}
+
+.section1 > .background {
+    width: 100vw;
+    position: absolute;
+    z-index: -1;
+}
+
+.section1 > .namesSection {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.section1 > .namesSection > .mainColumn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section1 > .namesSection > .mainColumn > .fakeRow1 {
+    height: 40vw;
+    width: 100%;
+}
+
+.section1 > .namesSection > .mainColumn > .fakeRow2 {
+    height: 20vw;
+    width: 100%;
+}
+
+.section1 > .namesSection > .mainColumn > .fakeRow3 {
+    height: 10vw;
+    width: 100%;
+}
+
+.section1 > .namesSection > .mainColumn > .mainRow {
+    font-family: "LOVE HEWITS", Sans-serif;
+    font-size: 12vw;
+    align-self: center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section1 > .namesSection > .mainColumn > .mainRow > .namesConnector {
+    line-height: 0vw;
+}
+
+.section1 > .namesSection > .mainColumn > .mainRow > .namesConnector > .separator {
+    width: 10vw;
+    display: inline-block;
+}
+
+.section1 > .namesSection > .mainColumn > .weGetMarried {
+    font-family: "Bodoni Moda", sans-serif;
+    font-weight: 300;
+    font-size: 5vw;
+}
+
+.section1 > .namesSection > .mainColumn > .marriageDate {
+    font-family: "Bodoni Moda", sans-serif;
+    color: #A7727D;
+    font-size: 5vw;
+    font-weight: 300;
+    margin-bottom: 10vw;
+}
