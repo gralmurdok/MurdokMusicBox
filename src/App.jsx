@@ -14,7 +14,7 @@ function App() {
         <Route path="visual_show" element={<VisualShow />} />
         <Route path="player" element={<Player />} />
         <Route path="about" element={<About />} />
-        <Route path=":guestId" element={<WeddingInvite />} />
+        <Route path="wedding" element={<WeddingInvite />} />
       </Routes>
     </BrowserRouter>
   );

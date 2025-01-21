@@ -105,7 +105,9 @@ app.post("/register_guest", async (req, res) => {
       await persistGuest(
         req.body.name,
         req.body.phone,
-        req.body.level
+        req.body.level,
+        req.body.admission,
+        req.body.special
       );
     },
     () => {}

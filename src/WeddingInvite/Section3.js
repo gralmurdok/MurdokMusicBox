@@ -24,7 +24,7 @@ const Section3 = () => {
                     <div className="address">Avenida lateral de paso, Loja</div>
                     <div className="hour">a las 17:00 h.</div>
                     <button onClick={() => window.open("https://maps.app.goo.gl/gFK5jcqkJkH6n3v5A")} className="seeLocation">
-                        Ver ubicacion
+                        Ver ubicación
                     </button>
                 </div>
             </div>
