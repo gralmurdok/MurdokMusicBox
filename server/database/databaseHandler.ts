@@ -77,13 +77,15 @@ async function persistSuggestion(
 async function persistGuest(
   name: string,
   phone: string,
-  level: string
+  level: number = 0,
+  admission: number = 1,
+  special: boolean = false
 ) {
   await executeDatabaseOperation(async (dbClient) => {
     const collection: Collection = dbClient
       .db("crossroads")
       .collection("weddingGuests");
-    const guestEntry = { phone, name, level };
+    const guestEntry = { phone, name, level, admission, special };
     await await collection.updateOne({ phone }, { $set: guestEntry }, { upsert: true });
   });
 }

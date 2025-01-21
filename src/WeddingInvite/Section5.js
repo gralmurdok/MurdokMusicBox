@@ -20,12 +20,7 @@ const Section5 = () => {
                 <div className="mainColumn">
                     <div className="fakeRow1" />
                     <div className="mainRow">
-                        <div>Silvana</div>
-                        <div className="namesConnector">
-                            <div className="separator"></div>
-                            y
-                        </div>
-                        <div>Luis</div>
+                        <div>Silvana y Luis</div>
                     </div>
                     <div className="dressCode">Gracias</div>
                     <div className="dressCodeSpa">por acompañarnos en un día tan especial</div>

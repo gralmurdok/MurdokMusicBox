@@ -14,11 +14,11 @@ const WeddingInvite = () => {
     useEffect(() => {
         setInterval(async () => {
             try {
-                // await audio?.current.play()
+                await audio?.current.play()
             } catch(err) {
                 console.log('No se pudo');
             }
-        }, 300);
+        }, 500);
     });
 
     return <Fragment>
