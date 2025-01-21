@@ -15,7 +15,7 @@ import {
   interactiveReplyButtonsMessage,
   suggestionConfirmationTemplate,
 } from "./messaging/whatsappMessageBuilder";
-import { persistSuggestion } from "./database/databaseHandler";
+import { persistGuest, persistSuggestion, retrieveGuest } from "./database/databaseHandler";
 
 app.get("/qr-code", (req, res) => {
   res.redirect(
@@ -96,6 +96,34 @@ app.post("/suggest", async (req, res) => {
     () => {}
   );
   res.sendStatus(200);
+});
+
+app.post("/register_guest", async (req, res) => {
+  console.log(req.body);
+  await handleExecuteAction(
+    async () => {
+      await persistGuest(
+        req.body.name,
+        req.body.phone,
+        req.body.level
+      );
+    },
+    () => {}
+  );
+  res.sendStatus(200);
+});
+
+app.get("/wedding_guest/:id", async (req, res) => {
+  let result = null;
+  await handleExecuteAction(
+    async () => {
+      result = await retrieveGuest(
+        req.params.id
+      );
+    },
+    () => {}
+  );
+  res.json(result);
 });
 
 app.post("/webhook", async (req, res) => {
