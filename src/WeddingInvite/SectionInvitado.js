@@ -11,7 +11,6 @@ const SectionInvitado = () => {
         axios
             .get(`/wedding_guest/${searchParams.get('guestId')}`)
             .then((guestResponse) => {
-                console.log(guestResponse.data);
                 setGuest(guestResponse.data);
             })
             .catch(() => {

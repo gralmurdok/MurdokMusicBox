@@ -1,6 +1,5 @@
 import "./Section5.css"
-import { Fragment, useState } from "react";
-import axios from "axios";
+import { Fragment } from "react";
 
 const Section5 = () => {
     return <Fragment>

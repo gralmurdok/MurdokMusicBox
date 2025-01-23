@@ -1,6 +1,5 @@
 import "./WeddingInvite.css";
-import { Fragment, useEffect, useRef, useState } from "react";
-import axios from "axios";
+import { Fragment, useEffect, useRef } from "react";
 import { Section1 } from "./Section1";
 import { Section2 } from "./Section2";
 import { Section3 } from "./Section3";
@@ -16,7 +15,7 @@ const WeddingInvite = () => {
             try {
                 await audio?.current.play()
             } catch(err) {
-                console.log('No se pudo');
+                // do nothing
             }
         }, 500);
     });

@@ -15,7 +15,7 @@ import {
   interactiveReplyButtonsMessage,
   suggestionConfirmationTemplate,
 } from "./messaging/whatsappMessageBuilder";
-import { persistGuest, persistSuggestion, retrieveGuest } from "./database/databaseHandler";
+import { persistGuest, persistSuggestion, retrieveGuest, retrieveGuests } from "./database/databaseHandler";
 
 app.get("/qr-code", (req, res) => {
   res.redirect(
@@ -122,6 +122,17 @@ app.get("/wedding_guest/:id", async (req, res) => {
       result = await retrieveGuest(
         req.params.id
       );
+    },
+    () => {}
+  );
+  res.json(result);
+});
+
+app.get("/wedding_guests", async (req, res) => {
+  let result = null;
+  await handleExecuteAction(
+    async () => {
+      result = await retrieveGuests();
     },
     () => {}
   );

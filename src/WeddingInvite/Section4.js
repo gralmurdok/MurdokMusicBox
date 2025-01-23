@@ -1,6 +1,5 @@
 import "./Section4.css"
-import { Fragment, useState } from "react";
-import axios from "axios";
+import { Fragment } from "react";
 
 const Section4 = () => {
     return <Fragment>
@@ -27,7 +26,7 @@ const Section4 = () => {
                     <div className="dressCodeSpaNotSelected">Casual</div>
                     <div className="dressCodeSeparator">__________ . __________</div>
                     <div className="fakeRow3" />
-                    <div className="dressCodePlanification">Con el fin de garantizar una experiencia agradable para todos los asistentes, hemos planificado este evento con un enfoque en el público adulto. Les agradecemos su comprensión al abstenerse de traer niños.</div>
+                    <div className="dressCodePlanification">Este evento ha sido planificado con un enfoque en el público adulto. Les agradecemos su comprensión al abstenerse de traer niños.</div>
                 </div>
             </div>
         </div>
