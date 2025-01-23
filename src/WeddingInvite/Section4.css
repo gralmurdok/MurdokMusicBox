@@ -72,23 +72,23 @@
 .section4 > .namesSection > .mainColumn > .dressCodeSpa {
     font-family: "Cormorant Garamond", Sans-serif;
     color: black;
-    font-size: 4vw;
+    font-size: 4.5vw;
     font-weight: 500;
 }
 
 .section4 > .namesSection > .mainColumn > .dressCodeSpaNotSelected {
     font-family: "Cormorant Garamond", Sans-serif;
     color: #99999999;
-    font-size: 4vw;
+    font-size: 4.5vw;
     font-weight: 500;
 }
 
 .section4 > .namesSection > .mainColumn > .dressCodePlanification {
     font-family: "Cormorant Garamond", Sans-serif;
     color: black;
-    font-size: 3vw;
+    font-size: 4.5vw;
     font-weight: 300;
-    line-height: 4vw;
+    line-height: 5vw;
     text-align: center;
     padding: 0 6vw;
 }

@@ -104,4 +104,23 @@ async function retrieveGuest(
   return guest;
 }
 
-export { persistUser, retrieveUsersFromDb, persistSongs, persistSuggestion, persistGuest, retrieveGuest };
+async function retrieveGuests() {
+  let guestsInfo = null;
+  await executeDatabaseOperation(async (dbClient) => {
+    const collection: Collection = dbClient
+      .db("crossroads")
+      .collection("weddingGuests");
+    const entries = await collection.find().toArray();
+    const admissionCount = await collection.aggregate([
+      {$group: {_id:null, total_admissions:{$sum:"$admission"}}}
+    ]).toArray();
+
+    guestsInfo = {
+      entries,
+      total_admissions: admissionCount[0]?.total_admissions
+    }
+  });
+  return guestsInfo;
+}
+
+export { persistUser, retrieveUsersFromDb, persistSongs, persistSuggestion, persistGuest, retrieveGuest, retrieveGuests };
