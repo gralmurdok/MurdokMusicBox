@@ -31,6 +31,7 @@ const Section5 = () => {
                     <div className="dressCodeCta">Cuenta de Ahorros</div>
                     <div className="dressCodeCta">A nombre de: Silvana Robles</div>
                     <div className="dressCodeCta">CI: 1104108483</div>
+                    <div className="dressCodeCta">Email: ssroblesm05@gmail.com</div>
                 </div>
             </div>
         </div>
