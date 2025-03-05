@@ -26,8 +26,8 @@ const Section5 = () => {
                     <div className="dressCodeSeparator">__________ . __________</div>
                     <div className="dressCodePlanification">Nuestro mejor regalo es tu presencia, pero si deseas tener un detalle puedes hacerlo en la siguiente cuenta</div>
                     <div className="fakeRow2" />
-                    <div className="dressCodeCta">Banco Pichincha</div>
-                    <div className="dressCodeCta">Nro. 2207782811</div>
+                    <div className="dressCodeCta">Pichincha: 2207782811</div>
+                    <div className="dressCodeCta">Loja: 2901994733</div>
                     <div className="dressCodeCta">Cuenta de Ahorros</div>
                     <div className="dressCodeCta">A nombre de: Silvana Robles</div>
                     <div className="dressCodeCta">CI: 1104108483</div>
